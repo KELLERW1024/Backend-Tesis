@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\PlanesController;
+use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\IaController;
 use App\Http\Controllers\Document\DocumentController;
 use Illuminate\Http\Request;
@@ -34,9 +35,16 @@ Route::middleware('auth:api')->group(function ($router) {
 
     // Users
     Route::post("users/{id}",[UsersController::class,"update"]);
-    //Route::resource("users", UsersController::class);
+    Route::get('/plans', [PlanesController::class, "index"]);
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
     Route::post('/conversation',[IaController::class,'conversation']);
+
+    Route::post('/conversation/startconversation',[ConversationController::class,'startConversation']);
+
+    Route::post('/conversation/savereply',[ConversationController::class,'conversationSaveReply']);
+
+
+
     Route::post('/exchange',[DocumentController::class,'generar']);
 
     

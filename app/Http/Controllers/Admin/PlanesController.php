@@ -5,16 +5,34 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PlanResource;
 use Illuminate\Http\Request;
-use App\Models\Plans;
+use App\Models\Plan;
 
 class PlanesController extends Controller
 {
       public function index()
     {
         // Obtener todos los planes
-        $plans = Plans::all();
+         $plans = Plan::query()
+            ->select([
+                'id',
+                'name',
+                'code',
+                'description',
+                'price',
+                'billing_cycle',
+                'duration_days',
+                'max_sections',
+                'max_messages',
+                'max_exports'
+            ])
+            ->where('is_active', true)
+            //->orderBy('price', 'asc')
+            ->get();
 
-        return response()->json($plans);
+        return response()->json([
+            'success' => true,
+            'data' => $plans
+        ]);
     }
 
     public function obtenerCapitulosPlan( Request $request ){
@@ -28,7 +46,11 @@ class PlanesController extends Controller
         $planId = $request->get('idPlan');
         
 
-        $plan = Plans::with([
+        $plan = Plan::with([
+            'sections' => function ($query) {
+                    $query->where('is_active', true)
+                        ->orderBy('order_index');
+                },
             'sections.questions'
         ])->findOrFail($planId);
 

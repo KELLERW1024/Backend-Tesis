@@ -14,6 +14,9 @@ class IaController extends Controller
     public function conversation(Request $request)
     {
         $validated = $request->validate([
+                'idPlan' => 'required|integer',
+                'idSection' => 'required|integer',
+                'idConversation' => 'required|integer',
                 'plan' => 'required|string',
                 'title' => 'required|string',
                 'description' => 'required|string',
@@ -61,6 +64,9 @@ class IaController extends Controller
             'role' => 'user',
             'content' => $promptEsp
         ];
+
+
+        app(\App\Services\ConversationService::class)->saveMessage($validated, $promptEsp, "user");
         
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.openai.key'),
@@ -79,13 +85,13 @@ class IaController extends Controller
 
         $reply = $response->json()['output'][0]['content'][0]['text'] ?? null;
 
-        /*$messages[] = [
-            'role' => 'assistant',
-            'content' => $reply
-        ];*/
+        
+        app(\App\Services\ConversationService::class)->saveMessage($validated, $reply, "system");
 
         return response()->json([
             'reply' => $reply
         ]);
     }
+
+    
 }

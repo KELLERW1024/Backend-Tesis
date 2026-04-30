@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class UserSubscription extends Model
+{
+    protected $table = 'user_subscriptions';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'user_id',
+        'plan_id',
+        'plan_variant_id',
+        'provider_subscription_id',
+        'status',
+        'start_date',
+        'end_date',
+    ];
+}
