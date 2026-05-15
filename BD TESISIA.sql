@@ -15,11 +15,6 @@ CREATE TABLE roles (
     description VARCHAR(255)
 ) ENGINE=InnoDB;
 
--- INSERT 
-INSERT INTO roles (name, description) VALUES
-('Administrador', 'Administrador del sistema'),
-('Usuario', 'Usuario');
-
 -- ============================================
 -- USERS
 -- ============================================
@@ -57,15 +52,6 @@ CREATE TABLE plans (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-INSERT INTO plans (name, code,  price, is_active)
-VALUES
-('Tesis Plan de Negocio','PN',  19.99, TRUE),
-('Tesis Plan de Suficiencia Profesional','SP',  19.99, TRUE),
-('Tesis Plan de Innovación','PI',  19.99, TRUE),
-('Plan Negocio Urbano', 'PNU',  199.99, TRUE),
-('Plan Negocio Rural','PNR', 199.99, TRUE),
-('Membresía', 'M', 199.99, TRUE),
-('Cupón Descuento', 'CD', 199.99, TRUE);
 
 -- ============================================
 -- PLANS (VARIENTE PLAN))
@@ -168,94 +154,11 @@ CREATE TABLE sections (
     sub_title VARCHAR(200) NULL,
     type VARCHAR(20) NULL,
     description TEXT,
+    objective TEXT,
     order_index INT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
-
-INSERT INTO sections (title, description, type , is_active, order_index)
-VALUES ( 'Indice General', '', 'GE', TRUE, 0 ), 
-        ( 'Indice de Tablas', '', 'GE', TRUE, 0 ), 
-        ( 'Indice de Figuras', '', 'GE', TRUE , 0), 
-        ( 'Resumen Ejecutivo', '', 'GE', TRUE, 0 ), 
-        ( 'Introducción', '', 'GE', TRUE , 0 ), 
-
-        -- Suficiencia profesional
-        ( 'Introducción', '', 'SP', FALSE, 1 ), 
-        ( 'Capítulo I', 'Trayectoria Profesional',  'SP', TRUE , 2), 
-        ( 'Capítulo II', 'Contexto de la Experiencia', 'SP', TRUE, 3 ), 
-        ( 'Capítulo III', 'Fundamentos Teóricos',  'SP', TRUE, 4 ), 
-        ( 'Capítulo IV', 'Aplicación Profesional', 'SP', TRUE, 5 ), 
-        ( 'Capítulo V', 'Análisis Crítico de la Experiencia', 'SP', TRUE , 6), 
-        ( 'Conlusiones', '', 'SP', FALSE , 7), 
-        ( 'Recomendaciones', '', 'SP', FALSE , 8),
-
-        -- Proyecto de Innovacion
-        ( 'Introducción', '', 'PI', FALSE, 1 ), 
-        ( 'Capítulo I', 'Problema u oportunidad e hipótesis',  'PI', TRUE , 2), 
-        ( 'Capítulo II', 'Cliente, insights y validación inicial', 'PI', TRUE , 3), 
-        ( 'Capítulo III', 'Diseño de la solución innovadora',  'PI', TRUE , 4), 
-        ( 'Capítulo IV', 'Modelo de negocio y prototipo', 'PI', TRUE , 5 ), 
-        ( 'Capítulo V', 'Validación de mercado y aprendizaje', 'PI', TRUE, 6 ), 
-        ( 'Capítulo VI', 'Viabilidad operativa y económica', 'PI', TRUE, 7 ), 
-        ( 'Capítulo VII', 'Cierre, decisión y anexos', 'PI', TRUE , 8),
-        ( 'Conlusiones', '', 'PI', FALSE, 9 ), 
-        ( 'Recomendaciones', '', 'PI', FALSE, 10 ),
-
-        -- PLAN de Negocio
-        ( 'Introducción', '', 'PN', FALSE , 1), 
-        ( 'Capítulo I', 'Formulación de la idea y oportunidad de negocio',  'PN', TRUE, 2 ), 
-        ( 'Capítulo II', 'Plan estratégico y organizacional',  'PN', TRUE, 3 ), 
-        ( 'Capítulo III', 'Análisis del entorno, mercado y actores', 'PN', TRUE , 4), 
-        ( 'Capítulo IV', 'Plan de Marketing', 'PN', TRUE , 5), 
-        ( 'Capítulo V', 'Plan de operaciones','PN', TRUE, 6 ), 
-        ( 'Capítulo VI', 'Organización legal y gestión del talento','PN', TRUE , 7), 
-        ( 'Capítulo VII', 'Plan financiero y evaluación', 'PN', TRUE , 8), 
-        ( 'Conlusiones', '', 'PN', FALSE, 9 ), 
-        ( 'Recomendaciones', '', 'PN', FALSE , 10),
-
-        -- PLAN de Negocio URBANO
-        ( 'Introducción', '', 'PNU', FALSE, 1 ), 
-        ( 'Capítulo I', 'Idea de negocio y oportunidad',  'PNU', TRUE, 2 ), 
-        ( 'Capítulo II', 'Cliente, competencia y propuesta de valor',  'PNU', TRUE, 3 ), 
-        ( 'Capítulo III', 'Modelo comercial y operación básica', 'PNU', TRUE, 4 ), 
-        ( 'Capítulo IV', 'Organización y formalización mínima', 'PNU', TRUE, 5 ), 
-        ( 'Capítulo V', 'Inversión, costos y rentabilidad preliminar','PNU', TRUE, 6 ), 
-        ( 'Capítulo VI', 'Riesgos, decisión y hoja de ruta','PNU', TRUE , 7), 
-        ( 'Capítulo VII', 'Anexos y evidencias','PNU', TRUE, 8 ), 
-        ( 'Conlusiones', '', 'PNU', FALSE, 9 ), 
-        ( 'Recomendaciones', '', 'PNU', FALSE , 10),
-
-         -- PLAN de Negocio RURAL
-         ( 'Introducción', '', 'PNR', FALSE , 1), 
-        ( 'Capítulo I', 'Idea de negocio y oportunidad territorial',  'PNR', TRUE, 2), 
-        ( 'Capítulo II', 'Recurso, oferta productiva y sostenibilidad',  'PNR', TRUE, 3 ), 
-        ( 'Capítulo III', 'Cliente, mercado y cadena comercial', 'PNR', TRUE, 4 ), 
-        ( 'Capítulo IV', 'Modelo de acopio, transformación y comercialización', 'PNR', TRUE, 5 ), 
-        ( 'Capítulo V', 'Organización productiva y formalización','PNR', TRUE, 6 ), 
-        ( 'Capítulo VI', 'Inversión, costos, rentabilidad y flujo preliminar','PNR', TRUE, 7 ), 
-        ( 'Capítulo VII', 'Riesgos productivos, comerciales y territoriales','PNR', TRUE , 8), 
-        ( 'Capítulo VII', 'Anexos y evidencias','PNR', TRUE , 9), 
-        ( 'Conlusiones', '', 'PNR', FALSE , 10), 
-        ( 'Recomendaciones', '', 'PNR', FALSE , 11),
-
-        -- Plan MEJORA
-        ( 'Introducción', '', 'PM', FALSE, 1 ), 
-        ( 'Capítulo I', 'Reseña de la empresa y contexto',  'PM', TRUE, 2 ), 
-        ( 'Capítulo II', 'Diagnóstico empresarial',  'PM', TRUE, 3), 
-        ( 'Capítulo III', 'Problema, causas y oportunidad de mejora',  'PM', TRUE , 4), 
-        ( 'Capítulo IV', 'Propuesta de mejora',  'PM', TRUE, 5 ), 
-        ( 'Capítulo V', 'Implementación',  'PM', TRUE, 6 ), 
-        ( 'Capítulo VI', 'Monitoreo, indicadores y control', 'PM', TRUE, 7 ), 
-        ( 'Capítulo VII', 'Cierre, conclusiones y anexos', 'PM', TRUE, 8 ),
-        ( 'Conlusiones', '', 'PM', FALSE, 9 ), 
-        ( 'Recomendaciones', '', 'PM', FALSE , 10),
-
-
-        ( 'Conlusiones', '', 'GE', TRUE , 0), 
-        ( 'Recomendaciones', '', 'GE', TRUE, 0 );
-
-
 
 -- ============================================
 -- QUESTIONS
@@ -270,6 +173,11 @@ CREATE TABLE questions (
     validation_detail TEXT  NULL,
     apa_detail TEXT  NULL,
     question_type ENUM('text','boolean','multiple_choice') DEFAULT 'text',
+     -- Tipo de respuesta permitida
+    allow_text BOOLEAN DEFAULT TRUE,
+    allow_image BOOLEAN DEFAULT FALSE,
+    allow_document BOOLEAN DEFAULT FALSE,
+
     type_section VARCHAR(20) NULL,
     order_index INT NULL,
     is_required BOOLEAN DEFAULT TRUE,
@@ -344,6 +252,69 @@ CREATE TABLE user_answers (
 
     INDEX (conversation_id)
 ) ENGINE=InnoDB;
+
+-- ============================================
+-- references_library
+-- ============================================
+CREATE TABLE references_library (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    authors TEXT NOT NULL,
+    publication_year VARCHAR(10),
+    title TEXT NOT NULL,
+    publisher VARCHAR(255),
+    url TEXT,
+    source_type ENUM(
+        'book',
+        'journal_article',
+        'web_page',
+        'thesis',
+        'report',
+        'conference_paper'
+    ) DEFAULT 'book',
+    reference_hash CHAR(64) UNIQUE NOT NULL,
+    doi VARCHAR(100),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ============================================
+-- answer_reference_rel
+-- ============================================
+CREATE TABLE answer_reference_rel (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    answer_id BIGINT NOT NULL,
+    reference_id BIGINT NOT NULL,
+
+    citation_order INT NULL,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(answer_id, reference_id),
+
+    FOREIGN KEY (answer_id) REFERENCES user_answers(id) ON DELETE CASCADE,
+    FOREIGN KEY (reference_id) REFERENCES references_library(id) ON DELETE CASCADE
+);
+
+
+
+-- ============================================
+-- answer_files
+-- ============================================
+
+CREATE TABLE answer_files (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    answer_id BIGINT NOT NULL,
+
+    file_type ENUM('image', 'document') NOT NULL,
+    file_url VARCHAR(500) NOT NULL,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (answer_id)
+        REFERENCES user_answers(id)
+        ON DELETE CASCADE
+);
 
 -- ============================================
 -- conversation_section_progress

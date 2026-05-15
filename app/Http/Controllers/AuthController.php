@@ -36,7 +36,7 @@ class AuthController extends Controller
             "user" => [
                 "id" => auth('api')->user()->id,
                 "name" => auth('api')->user()->name,
-                "last_name" => auth('api')->user()->surname,
+                "last_name" => auth('api')->user()->last_name,
                 "email"=> auth('api')->user()->email,
                 //"roles" => auth('api')->user()->getRoleNames(),
                 //"permissions" => $permissions,

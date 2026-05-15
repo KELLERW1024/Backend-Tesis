@@ -19,7 +19,9 @@ class PlanResource extends JsonResource
 
             //relaciones
             'sections' => SectionResource::collection(
-                $this->whenLoaded('sections')
+                // $this->whenLoaded
+                // ('sections')
+                ($this->sections)
             ),
         ];
     }

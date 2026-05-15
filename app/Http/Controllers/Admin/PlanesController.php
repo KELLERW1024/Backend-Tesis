@@ -63,8 +63,7 @@ class PlanesController extends Controller
 
             return $section;
         });
-        //$plan = Plans::with('sections.questions')
-          //  ->findOrFail($planId);
+        
 
         return new PlanResource($plan);
 

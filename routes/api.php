@@ -37,15 +37,24 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::post("users/{id}",[UsersController::class,"update"]);
     Route::get('/plans', [PlanesController::class, "index"]);
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
+    Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
+
+
     Route::post('/conversation',[IaController::class,'conversation']);
+    Route::post('/conversation/validateanswer',[IaController::class,'validateAnswer']);
 
     Route::post('/conversation/startconversation',[ConversationController::class,'startConversation']);
 
     Route::post('/conversation/savereply',[ConversationController::class,'conversationSaveReply']);
 
+    //Route::get('/conversation/conversationprogress',[ConversationController::class,'conversationProgress']);
+    Route::get('/conversation/conversationsUser',[ConversationController::class,'conversationsUser']);
+
+    Route::get('conversation/suscriptionconversation',[ConversationController::class,'getSuscriptionConversation']);
 
 
-    Route::post('/exchange',[DocumentController::class,'generar']);
+
+    Route::get('/download',[DocumentController::class,'generar']);
 
     
 });

@@ -14,16 +14,17 @@ class SectionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'sub_title' => $this->sub_title,
-            'order' => $this->order_index,
             'description' => $this->description,
 
-            // 👇 relación optimizada
-            'questions' => QuestionResource::collection($this->whenLoaded('questions')),
-            'progress' => $this->progress ?? null,
+            'questions' => QuestionResource::collection(
+                // $this->whenLoaded('questions')
+                $this->questions),
+            'answer_section' => $this->answer ?? null,
         ];
     }
 }

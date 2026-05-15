@@ -11,4 +11,9 @@ class Question extends Model
     {
         return $this->belongsTo(Section::class, 'section_id');
     }
+    public function userAnswer()
+    {
+        return $this->hasOne(UserAnswers::class, 'question_id')
+            ->where('user_id', auth()->id());
+    }
 }

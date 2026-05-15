@@ -6,44 +6,65 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\TemplateProcessor;
+use App\Models\UserAnswers;
 
 class DocumentController extends Controller
 {
     //
     public function generar(Request $request)
     {
-        //$user = Auth::user();
+        $user = auth()->user();
 
-        // Ejemplo: puedes traer esto desde BD
-        $respuestas = [
-            [
-                'pregunta' => '¿Qué es Laravel?',
-                'respuesta' => 'Laravel es un framework de PHP moderno.'
-            ],
-            [
-                'pregunta' => '¿Qué es PHPWord?',
-                'respuesta' => 'Es una librería para generar documentos Word.'
-            ]
-        ];
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-        // Construir contenido dinámico
-        $contenido = "Introduccion del plan";
+        $validated = $request->validate([
+            'idConversation' => 'required|integer'
+        ]);
 
-        // foreach ($respuestas as $r) {
-        //     $contenido .= "Pregunta: {$r['pregunta']}\n";
-        //     $contenido .= "Respuesta: {$r['respuesta']}\n\n";
-        // }
+        $idConversation = $request->get('idConversation');
+
+        if (!$idConversation) {
+            return response()->json(['message' => 'idConversation is required'], 400);
+        }
+
+        $answers = UserAnswers::with('section')
+        ->where('conversation_id', $idConversation)
+        ->get()
+        ->map(function ($item) {
+            return [
+                'section_id' => $item->section_id,
+                'section_title' => $item->section?->title,
+                'section_description' => $item->section?->description,
+                'answer_text' => $item->answer_text,
+            ];
+        });
 
         // Ruta de la plantilla
-        $templatePath = storage_path('app/templates/Plantilla.docx');
-
+        $templatePath = resource_path('templates/Plantilla TPN.docx');
+        if (!file_exists($templatePath)) {
+            dd('No existe la plantilla en: ' . $templatePath);
+        }
         $template = new TemplateProcessor($templatePath);
 
-        // Reemplazar variable
-        $template->setValue('contenido', $contenido);
+        // Clonar bloque según cantidad de respuestas
+        $template->cloneBlock('bloque', count($answers), true, true);
+
+        foreach ($answers as $index => $answer) {
+            $i = $index + 1;
+
+            $template->setValue("capitulo#{$i}", 
+                $answer['section_title'] . ' : ' . $answer['section_description']
+            );
+
+            $template->setValue("contenido#{$i}", 
+                $answer['answer_text']
+            );
+        }
 
         // Guardar archivo
-        $fileName = 'reporte.docx'; //'reporte_'.$user->id.'.docx';
+        $fileName = 'reporte.docx';
         $tempFile = storage_path($fileName);
 
         $template->saveAs($tempFile);

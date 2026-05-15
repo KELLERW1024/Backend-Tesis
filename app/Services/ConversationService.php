@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserSubscription;
 use App\Models\Conversation; 
+use App\Models\UserAnswers; 
 
 class ConversationService
 {
@@ -38,6 +39,21 @@ class ConversationService
             ];
         });
     }
+    public function getConversation(int $idConversation): array
+    {
+         return UserAnswers::where('conversation_id', $idConversation)
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->filter(function ($row) {
+                return !empty($row->answer_text);
+            })
+            ->map(function ($row) {
+                return [
+                    'role' => 'user',
+                    'content' => $row->answer_text,
+                ];
+        })->values()->toArray();
+    }
 
 
     public function saveMessage(array $data, String $message , String $role )
@@ -46,6 +62,7 @@ class ConversationService
 
             $conversationId = $data['idConversation'];
             $sectionId = $data['idSection'];
+            $questionId = $data['idQuestion'];
             //$reply = $data['reply'];
 
 
@@ -53,6 +70,7 @@ class ConversationService
             DB::table('conversation_messages')->insert([
                 'conversation_id' => $conversationId,
                 'section_id' => $sectionId,
+                'question_id' => $questionId,
                 'role' => $role,
                 'message_text' => $message,
                 'created_at' => now()
@@ -64,6 +82,7 @@ class ConversationService
                     [
                         'conversation_id' => $conversationId,
                         'section_id' => $sectionId,
+                        'current_question_id' => $questionId,
                     ],
                     [
                         'status' => 'in_progress' ,
@@ -121,6 +140,19 @@ class ConversationService
                         [
                             'conversation_id' => $conversationId,
                             'section_id' => $sectionId,
+                        ],
+                        [
+                            'status' => 'completed' ,
+                            'updated_at' => now(),
+                            'user_id' => auth()->id(),
+                        ]
+                    );
+
+            // Actualizamos de estado conversations
+            DB::table('conversations')
+                    ->updateOrInsert(
+                        [
+                            'id' => $conversationId,
                         ],
                         [
                             'status' => 'completed' ,

@@ -46,4 +46,5 @@ class ConversationSectionProgress extends Model
     {
         return $this->belongsTo(Question::class, 'current_question_id');
     }
+    
 }
