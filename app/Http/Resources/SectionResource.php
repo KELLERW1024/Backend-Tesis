@@ -25,6 +25,9 @@ class SectionResource extends JsonResource
                 // $this->whenLoaded('questions')
                 $this->questions),
             'answer_section' => $this->answer ?? null,
+            'progress_section' => $this-> progress ?? null,
+
+
         ];
     }
 }

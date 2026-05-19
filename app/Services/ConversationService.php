@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\UserSubscription;
 use App\Models\Conversation; 
 use App\Models\UserAnswers; 
+use App\Models\Question; 
 
 class ConversationService
 {
@@ -77,19 +78,19 @@ class ConversationService
             ]);
 
             // Actualizar progreso
-            DB::table('conversation_section_progress')
-                ->updateOrInsert(
-                    [
-                        'conversation_id' => $conversationId,
-                        'section_id' => $sectionId,
-                        'current_question_id' => $questionId,
-                    ],
-                    [
-                        'status' => 'in_progress' ,
-                        'updated_at' => now(),
-                        'user_id' => auth()->id(),
-                    ]
-                );
+            // DB::table('conversation_section_progress')
+            //     ->updateOrInsert(
+            //         [
+            //             'conversation_id' => $conversationId,
+            //             'section_id' => $sectionId,
+            //             'current_question_id' => $questionId,
+            //         ],
+            //         [
+            //             'status' => 'in_progress' ,
+            //             'updated_at' => now(),
+            //             'user_id' => auth()->id(),
+            //         ]
+            //     );
 
             return response()->json([
                 'message' => 'Conversation Save',
@@ -103,6 +104,7 @@ class ConversationService
         
             $conversationId = $data['idConversation'];
             $sectionId = $data['idSection'];
+            $questionId = $data['idQuestion'];
             $reply = $data['reply'];
             
             
@@ -110,6 +112,7 @@ class ConversationService
             $progress = DB::table('conversation_section_progress')
                 ->where('conversation_id', $conversationId)
                 ->where('section_id', $sectionId)
+                ->where('current_question_id', $questionId)
                 ->first();
 
             //if (!$progress) {
@@ -117,6 +120,7 @@ class ConversationService
             //}
 
             $currentSectionId = $progress->section_id ?? $sectionId;
+            $currentQuestionId = $progress->section_id->current_question_id ?? $questionId;
 
             /*if (!$currentQuestionId) {
                 throw new \Exception('No hay pregunta actual');
@@ -127,6 +131,7 @@ class ConversationService
                 [
                     'conversation_id' => $conversationId,
                     'section_id' => $currentSectionId,
+                    'question_id' => $currentQuestionId,
                 ],
                 [
                     'user_id' => auth()->id(),
@@ -134,12 +139,17 @@ class ConversationService
                     'created_at' => now(),
                 ]
             );
+            // Este estado se modificara cunado se haya completado la construcion de la section ya que la tabla solo acepta una conversastion x section
 
-            DB::table('conversation_section_progress')
+            $allAnswered = $this->sectionCompleted($sectionId, $conversationId);
+
+            if( $allAnswered ){
+                DB::table('conversation_section_progress')
                     ->updateOrInsert(
                         [
                             'conversation_id' => $conversationId,
                             'section_id' => $sectionId,
+                            // 'current_question_id' => $currentQuestionId
                         ],
                         [
                             'status' => 'completed' ,
@@ -147,24 +157,41 @@ class ConversationService
                             'user_id' => auth()->id(),
                         ]
                     );
+            }
+
+            
 
             // Actualizamos de estado conversations
-            DB::table('conversations')
-                    ->updateOrInsert(
-                        [
-                            'id' => $conversationId,
-                        ],
-                        [
-                            'status' => 'completed' ,
-                            'updated_at' => now(),
-                            'user_id' => auth()->id(),
-                        ]
-                    );
+            // DB::table('conversations')
+            //         ->updateOrInsert(
+            //             [
+            //                 'id' => $conversationId,
+            //             ],
+            //             [
+            //                 'status' => 'completed' ,
+            //                 'updated_at' => now(),
+            //                 'user_id' => auth()->id(),
+            //             ]
+            //         );
             
             return response()->json([
                 'message' => 'Section Reply Save',
             ]);
         });
+    }
+
+    public function sectionCompleted( $sectionId, $conversationId){
+
+        $questionIds = Question::where('section_id', $sectionId)->pluck('id');
+
+        $answeredIds = UserAnswers::where('conversation_id', $conversationId)
+                                    ->whereIn('question_id', $questionIds)
+                                    ->pluck('question_id');
+
+        $allAnswered = $questionIds->diff($answeredIds)->isEmpty();
+
+        return $allAnswered;
+
     }
     
 }

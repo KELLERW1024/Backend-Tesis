@@ -37,22 +37,40 @@ class ConversationController extends Controller
     }
 
     
-    public function conversationSaveReply(Request $request)
-    {
-        $validated = $request->validate([
-            'idPlan' => 'required|integer',
-            'idConversation' => 'required|integer',
-            'idSection' => 'required|integer',
-            'reply' => 'required|string',
-        ]);
+public function conversationSaveReply(Request $request)
+{
+    $validated = $request->validate([
+        'idPlan' => 'required|integer',
+        'idConversation' => 'required|integer',
+        'idSection' => 'required|integer',
+        'idQuestion' => 'required|integer',
+        'reply' => 'required|string',
+    ]);
+
+    try {
 
         $result = app(\App\Services\ConversationService::class)
-        ->saveUserAnswer($validated);
+            ->saveUserAnswer($validated);
 
-        return response()->json($result);
+        return response()->json([
+            'success' => true,
+            'message' => 'Reply saved successfully',
+            'data' => $result,
+            'errors' => null
+        ], 200);
 
+    } catch (\Throwable $e) {
 
+        return response()->json([
+            'success' => false,
+            'message' => 'Error saving reply',
+            'data' => null,
+            'errors' => [
+                'exception' => $e->getMessage()
+            ]
+        ], 500);
     }
+}
 
     public function conversationsUser()
     {
@@ -117,23 +135,34 @@ class ConversationController extends Controller
             ->where('user_id', auth()->id())
             ->get();
 
+        $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idSuscriptionConversation)
+            ->where('user_id', auth()->id())
+            ->get()
+            ->keyBy('section_id');
+
         $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
 
         $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
 
-        $subscription->plan->sections->each(function ($section) use ($answersSections, $answersQuestions) {
+        $subscription->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
 
             // answer de section
             $section->setAttribute(
                 'answer',
                 $answersSections[$section->id]->answer_text ?? null
             );
+            //progress de section
+            $section->setAttribute(
+                'progress',
+                $progressSectionConversation[$section->id]->status ?? null
+            );
+
 
             // answers de questions
             $section->questions->each(function ($question) use ($answersQuestions) {
 
                 $question->setAttribute(
-                    'answer_text',
+                    'answer',
                     $answersQuestions[$question->id]->answer_text ?? null
                 );
 

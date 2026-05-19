@@ -8,6 +8,17 @@ use App\Models\Plans;
 
 class Section extends Model
 {
+
+    protected $fillable = [
+        'title',
+        'sub_title',
+        'type',
+        'description',
+        'objective',
+        'order_index',
+        'is_active'
+    ];
+
     public function questions()
     {
         return $this->hasMany(Question::class, 'section_id');
