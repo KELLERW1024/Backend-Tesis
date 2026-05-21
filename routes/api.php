@@ -40,7 +40,7 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
 
 
-    Route::post('/conversation',[IaController::class,'conversation']);
+    Route::post('/conversation/validateAnswerResponse',[IaController::class,'validateAnswerResponse']);
     Route::post('/conversation/validateanswer',[IaController::class,'validateAnswer']);
 
     Route::post('/conversation/startconversation',[ConversationController::class,'startConversation']);

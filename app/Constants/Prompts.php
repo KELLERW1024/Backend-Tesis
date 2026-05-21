@@ -19,8 +19,22 @@ TEXT;
     public const PROMPT_ESPECIFICO = <<<TEXT
 Ésta pregunta corresponde al [Capítulo] : [Descripcion Capítulo] , pero no incluir [Capítulo] : [Descripcion Capítulo] en la respuesta.
 
-Ésta es la pregunta: [Pregunta] que correponde al capítulo y esta la respuesta: [Respuesta] que ingresó el usuario,
+Ésta es la pregunta: [Pregunta] que correponde al capítulo, esta su validacion: [Validacion] y esta la respuesta: [Respuesta] que ingresó el usuario,
 construir párrafos estrurando la idea a partir de las respuesta dada,  teniendo en cuenta el capítulo y descripción . 
+TEXT;
+
+    public const PROMPT_ESPECIFICO_APA = <<<TEXT
+Ésta pregunta corresponde al [Capítulo] : [Descripcion Capítulo] , pero no incluir [Capítulo] : [Descripcion Capítulo] en la respuesta.
+
+Ésta es la pregunta: [Pregunta] que correponde al capítulo, esta su validacion: [Validacion] y esta la respuesta: [Respuesta] que ingresó el usuario,
+construir párrafos estrurando la idea a partir de las respuesta dada,  teniendo en cuenta el capítulo y descripción. Debes actuar como un generador de bibliografía académica.
+
+REGLAS:
+- No expliques nada
+- Devuelve entre 3 y 6 referencias
+- Usa formato APA 7ma edición en cada referencia
+- Las referencias deben ser realistas y académicamente coherentes con el tema.
+
 TEXT;
 
     public const PROMPT_INSTRUCCIONES = <<<TEXT

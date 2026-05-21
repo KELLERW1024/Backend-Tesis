@@ -7,56 +7,59 @@ use App\Constants\Prompts;
 class PromptService
 {
 
-    public function buildValidationPrompt(array $data): string
+    public function buildValidationPrompt( array $data ): string
     {
 
-            \Log::info('BUILD VALIDATION INPUT DATA', [
-            'pregunta' => $data['pregunta'] ?? null,
-            'detail' => $data['detail'] ?? null,
-            'evidence' => $data['evidence'] ?? null,
-            'respuesta' => $data['respuesta'] ?? null,
-            'file_content_length' => strlen($data['file_content'] ?? ''),
-            'file_content_sample' => substr($data['file_content'] ?? '', 0, 300),
-        ]);
-        $sections = [];
+        //     \Log::info('BUILD VALIDATION INPUT DATA', [
+        //     'pregunta' => $data['pregunta'] ?? null,
+        //     'detail' => $data['detail'] ?? null,
+        //     'evidence' => $data['evidence'] ?? null,
+        //     'respuesta' => $data['respuesta'] ?? null,
+        //     'file_content_length' => strlen($data['file_content'] ?? ''),
+        //     'file_content_sample' => substr($data['file_content'] ?? '', 0, ),
+        //     'image_content_sample' => substr($data['image_content'] ?? '', 0, ),
+        // ]);
+            $sections = [];
 
-        $sections[] = "Evalúa si la respuesta del usuario responde correctamente la pregunta tomando en cuenta el detalle y la evidencia. Y meciona que está faltando";
+            $sections[] = "Evalúa si la respuesta del usuario responde correctamente la pregunta tomando en cuenta el detalle y la validacion. Y menciona que está faltando";
 
-        $sections[] = "PREGUNTA:\n{$data['pregunta']}";
-        $sections[] = "DETALLE:\n{$data['detail']}";
-        $sections[] = "EVIDENCIA:\n{$data['evidence']}";
+            $sections[] = "PREGUNTA:\n{$data['question']}";
+            $sections[] = "DETALLE:\n{$data['detail']}";
+            $sections[] = "VALIDACION:\n{$data['validation']}";
+            // $sections[] = "APA:\n{$data['apa']}";
 
-        if (!empty($data['file_content'])) {
-             $sections[] = "RESPUESTA DEL USUARIO:\n{$data['respuesta']}\n\n{$data['file_content']}";
-        }
+            $response = "RESPUESTA DEL USUARIO:\n{$data['response']}";
 
-        else if (!empty($data['image_analysis'])) {
-            $sections[] = "RESPUESTA DEL USUARIO:\n{$data['respuesta']}\n\n{$data['image_analysis']}\n";
-        }else {
-             $sections[] = "RESPUESTA DEL USUARIO:\n{$data['respuesta']}";
-        }
+            if (!empty($data['image_content'])) {
+                $response .= "\n\n{$data['image_content']}";
+            }
 
+            if (!empty($data['file_content'])) {
+                $response .= "\n\n{$data['file_content']}";
+            }
+
+            $sections[] = $response;
+
+            $sections[] = "
+                            REGLAS:
+                            - Evalúa solo la respuesta textual
+                            - No inventes información externa
+                            - Sé estricto con coherencia con el material dado
+                            - Devuelve true en is_valid en el json a partir de un score de 75 y el feedback tiene que ser corto y preciso.
+
+                            Devuelve únicamente JSON válido:
+                            {
+                            \"is_valid\": true,
+                            \"score\": 85,
+                            \"feedback\": \"...\"
+                            }
+                            ";
         
-        // $sections[] = "RESPUESTA DEL USUARIO:\n{$data['respuesta']}";
-
-        $sections[] = "
-                REGLAS:
-                - Evalúa solo la respuesta textual
-                - No inventes información externa
-                - Sé estricto con coherencia con el material dado
-                - Devuelve true en is_valid en el json a partir de un score de 75 y el feedback tiene que ser corto y preciso.
-
-                Devuelve únicamente JSON válido:
-                {
-                \"is_valid\": true,
-                \"score\": 85,
-                \"feedback\": \"...\"
-                }
-                ";
+        
 
         return implode("\n\n", array_filter($sections));
     }
-    public function buildMessages( array $data, array $history ): array {
+    public function buildMessages( array $data, array $history , string   $documentContent,string   $imageContent, bool $isApa): array {
 
         $promptIni = str_replace(
             '[ESPECIALIDAD:]',
@@ -64,15 +67,45 @@ class PromptService
             Prompts::PROMPT_INICIAL
         );
 
-        $promptEsp = strtr(
-            Prompts::PROMPT_ESPECIFICO,
-            [
-                '[Capítulo]' => $data['title'],
-                '[Descripcion Capítulo]' => $data['description'],
-                '[Pregunta]' => $data['question'],
-                '[Respuesta]' => $data['response'],
-            ]
-        );
+        $response = $data['response'];
+
+        if (!empty($imageContent)) {  $response .= "\n\nIMAGEN:\n" . $imageContent;  }
+
+        if (!empty($documentContent)) {  $response .= "\n\nDOCUMENTO:\n" . $documentContent;  }
+        
+        if( !$isApa ){
+            $promptEsp = strtr(
+                Prompts::PROMPT_ESPECIFICO,
+                [
+                    '[Capítulo]' => $data['title'],
+                    '[Descripcion Capítulo]' => $data['description'],
+                    '[Pregunta]' => $data['question'],
+                    '[Validacion]' => $data['validation'],
+                    '[Respuesta]' => $data['response'],
+                ]
+            );
+        }else{
+            $promptEsp = strtr(
+                Prompts::PROMPT_ESPECIFICO_APA,
+                [
+                    '[Capítulo]' => $data['title'],
+                    '[Descripcion Capítulo]' => $data['description'],
+                    '[Pregunta]' => $data['question'],
+                    '[Validacion]' => $data['validation'],
+                    '[Respuesta]' => $data['response'],
+                ]
+            );
+        }
+        // $promptEsp = strtr(
+        //     Prompts::PROMPT_ESPECIFICO,
+        //     [
+        //         '[Capítulo]' => $data['title'],
+        //         '[Descripcion Capítulo]' => $data['description'],
+        //         '[Pregunta]' => $data['question'],
+        //         '[Validacion]' => $data['validation'],
+        //         '[Respuesta]' => $data['response'],
+        //     ]
+        // );
 
         $messages = collect($history)
             ->take(-10)

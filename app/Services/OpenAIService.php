@@ -48,114 +48,126 @@ class OpenAIService
         return json_decode($content, true);
     }
 
-    public function imageJson(string $prompt, array $imageUrls): array
-    {
-        $images = [];
+    // public function imageJson(string $prompt, array $imageUrls): array
+    // {
+    //     $images = [];
 
-        foreach ($imageUrls as $url) {
-            $images[] = [
-                'type' => 'input_image',
-                'image_url' => $url,
-            ];
-        }
+    //     foreach ($imageUrls as $url) {
+    //         $images[] = [
+    //             'type' => 'input_image',
+    //             'image_url' => $url,
+    //         ];
+    //     }
 
-        $response = Http::withToken(config('services.openai.key'))
-            ->post($this->url, [
-                'model' => 'gpt-4.1-mini',
+    //     $response = Http::withToken(config('services.openai.key'))
+    //         ->post($this->url, [
+    //             'model' => 'gpt-4.1-mini',
 
-                'input' => [
-                    [
-                        'role' => 'user',
-                        'content' => array_merge(
-                            [
-                                [
-                                    'type' => 'input_text',
-                                    'text' => $prompt,
-                                ]
-                            ],
-                            $images
-                        ),
-                    ],
-                ],
+    //             'input' => [
+    //                 [
+    //                     'role' => 'user',
+    //                     'content' => array_merge(
+    //                         [
+    //                             [
+    //                                 'type' => 'input_text',
+    //                                 'text' => $prompt,
+    //                             ]
+    //                         ],
+    //                         $images
+    //                     ),
+    //                 ],
+    //             ],
 
-                'text' => [
-                    'format' => [
-                        'type' => 'json_object'
-                    ]
-                ]
-            ]);
+    //             'text' => [
+    //                 'format' => [
+    //                     'type' => 'json_object'
+    //                 ]
+    //             ]
+    //         ]);
 
-        if ($response->failed()) {
-            throw new \Exception($response->body());
-        }
+    //     if ($response->failed()) {
+    //         throw new \Exception($response->body());
+    //     }
 
-        $content = $response->json()['output'][0]['content'][0]['text']
-            ?? '{}';
+    //     $content = $response->json()['output'][0]['content'][0]['text']
+    //         ?? '{}';
 
-        return json_decode($content, true);
-    }
+    //     return json_decode($content, true);
+    // }
 
-    public function imageJsonGPT4(string $prompt, string $imageUrl): array
-    {
-        $response = Http::withToken(config('services.openai.key'))
-            ->post('https://api.openai.com/v1/responses', [
-                'model' => 'gpt-4o',
+    // public function imageJsonGPT4(string $prompt, string $imageUrl): array
+    // {
+    //     $response = Http::withToken(config('services.openai.key'))
+    //         ->post('https://api.openai.com/v1/responses', [
+    //             'model' => 'gpt-4o',
 
-                'input' => [
-                    [
-                        'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'input_text',
-                                'text' => $prompt
-                            ],
-                            [
-                                'type' => 'input_image',
-                                'image_url' => $imageUrl
-                            ]
-                        ]
-                    ]
-                ],
+    //             'input' => [
+    //                 [
+    //                     'role' => 'user',
+    //                     'content' => [
+    //                         [
+    //                             'type' => 'input_text',
+    //                             'text' => $prompt
+    //                         ],
+    //                         [
+    //                             'type' => 'input_image',
+    //                             'image_url' => $imageUrl
+    //                         ]
+    //                     ]
+    //                 ]
+    //             ],
 
-                'text' => [
-                    'format' => [
-                        'type' => 'json_object'
-                    ]
-                ]
-            ]);
+    //             'text' => [
+    //                 'format' => [
+    //                     'type' => 'json_object'
+    //                 ]
+    //             ]
+    //         ]);
 
-        if ($response->failed()) {
-            throw new \Exception($response->body());
-        }
+    //     if ($response->failed()) {
+    //         throw new \Exception($response->body());
+    //     }
 
-        $content = $response->json()['output'][0]['content'][0]['text']
-            ?? '{}';
+    //     $content = $response->json()['output'][0]['content'][0]['text']
+    //         ?? '{}';
 
-        return json_decode($content, true);
-    }
+    //     return json_decode($content, true);
+    // }
 
-    public function generateImage(string $prompt): string
-    {
-        $response = Http::withToken(config('services.openai.key'))
-            ->post('https://api.openai.com/v1/images/generations', [
-                'model' => 'gpt-image-1',
-                'prompt' => $prompt,
-                'size' => '1024x1024',
-                'response_format' => 'url'
-            ]);
+    // public function generateImages(string $prompt): array
+    // {
+    //     $response = Http::withToken(config('services.openai.key'))
+    //         ->timeout(120)
+    //         ->post('https://api.openai.com/v1/images/generations', [
+    //             'model' => 'gpt-image-1',
+    //             'prompt' => $prompt,
+    //             'size' => '1024x1024',
+    //             'quality' => 'low',
+    //             // 'response_format' => 'url',
+    //             'n' => 1
+    //         ]);
 
-        if ($response->failed()) {
-            throw new \Exception($response->body());
-        }
+    //     if ($response->failed()) {
+    //         throw new \Exception($response->body());
+    //     }
 
-        $url = $response->json()['data'][0]['url'] ?? null;
+    //     $raw = $response->json();
 
-        if (!$url) {
-            throw new \Exception('No image URL returned from OpenAI');
-        }
+    //     $images = collect($raw['data'] ?? [])
+    //         ->map(function ($item) {
+    //             return $item['url']
+    //                 ?? (isset($item['b64_json']) ? 'data:image/png;base64,' . $item['b64_json'] : null);
+    //         })
+    //         ->filter()
+    //         ->values()
+    //         ->toArray();
 
-        return $url;
-    }
+    //     if (empty($images)) {
+    //         throw new \Exception('No images returned from OpenAI');
+    //     }
+
+    //     return $images;
+    // }
 
     public function imageInputJsonOutput(string $prompt, string $image): array
     {
@@ -193,5 +205,43 @@ class OpenAIService
         $content = $response->json()['output'][0]['content'][0]['text'] ?? '{}';
 
         return json_decode($content, true);
+    }
+
+    public function imageInputStringOutput(string $prompt, string $image): string
+    {
+        $response = Http::withToken(config('services.openai.key'))
+            ->post($this->url, [
+                'model' => 'gpt-4.1-mini',
+
+                'input' => [
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'input_text',
+                                'text' => $prompt,
+                            ],
+                            [
+                                'type' => 'input_image',
+                                'image_url' => $image,
+                            ]
+                        ],
+                    ],
+                ],
+
+                'text' => [
+                    'format' => [
+                        'type' => 'text'
+                    ]
+                ]
+            ]);
+
+        if ($response->failed()) {
+            throw new \Exception($response->body());
+        }
+
+        $content = $response->json()['output'][0]['content'][0]['text'] ?? '{}';
+
+        return $content;
     }
 }
