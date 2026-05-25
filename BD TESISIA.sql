@@ -243,6 +243,7 @@ CREATE TABLE user_answers (
     conversation_id BIGINT NOT NULL,
     answer_text LONGTEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
     UNIQUE (conversation_id, question_id),
 
@@ -307,7 +308,15 @@ CREATE TABLE answer_files (
     answer_id BIGINT NOT NULL,
 
     file_type ENUM('image', 'document') NOT NULL,
-    file_url VARCHAR(500) NOT NULL,
+
+     file_path VARCHAR(500) NOT NULL,
+    original_name VARCHAR(255),
+    mime_type VARCHAR(100),
+    size BIGINT,
+    description TEXT NULL,
+    fuente VARCHAR(255) NULL,
+    metadata JSON NULL,
+    analysis TEXT NULL,
 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 

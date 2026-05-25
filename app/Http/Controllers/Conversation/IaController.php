@@ -156,11 +156,12 @@ class IaController extends Controller
             //$respuestaImage = $this->openAIService->generateImages( $documentContent );
             \Log::error('REPLY => {}' .  $reply );
             
-            return response()->json([
-                'is_valid' => true , 
-                'response' => $reply 
-                //'images' => $respuestaImage
-            ]);
+            // return response()->json([
+            //     'is_valid' => true , 
+            //     'response' => $reply 
+            //     //'images' => $respuestaImage
+            // ]);
+            return response()-> json( json_decode($reply, true) );
 
     }
     // public function validateAnswer(  Request $request, FileTextExtractorService $fileProcessor ) {

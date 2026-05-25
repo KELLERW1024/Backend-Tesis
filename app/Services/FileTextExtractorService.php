@@ -38,4 +38,24 @@ class FileTextExtractorService
             default => null
         };
     }
+     public function extractTable($file): ?string
+    {
+       
+        if (!$file) {
+            return null;
+        }
+
+         $mime = $file->getMimeType();
+
+        return match (true) {
+
+         
+
+            str_contains($mime, 'spreadsheet') ||
+            str_contains($mime, 'excel') =>
+                $this->excel->extractTable($file),
+
+            default => null
+        };
+    }
 }

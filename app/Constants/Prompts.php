@@ -20,20 +20,64 @@ TEXT;
 Ésta pregunta corresponde al [Capítulo] : [Descripcion Capítulo] , pero no incluir [Capítulo] : [Descripcion Capítulo] en la respuesta.
 
 Ésta es la pregunta: [Pregunta] que correponde al capítulo, esta su validacion: [Validacion] y esta la respuesta: [Respuesta] que ingresó el usuario,
-construir párrafos estrurando la idea a partir de las respuesta dada,  teniendo en cuenta el capítulo y descripción . 
+construir párrafos estrurando la idea a partir de las respuesta dada,  teniendo en cuenta el capítulo y descripción. Las respuesta lo adjuntas en reponse del JSON 
+y references retornas con valor null
+
+ESTRUCTURA JSON:
+
+{
+    "is_valid" => true,
+    "response": "",
+    "references": [
+        {
+        "authors": [],
+        "title": "",
+        "year": "",
+        "source_type": "book | journal_article | web_page | report",
+        "url": "",
+        "apa_citation": ""
+        }
+  ]
+}
 TEXT;
 
     public const PROMPT_ESPECIFICO_APA = <<<TEXT
 Ésta pregunta corresponde al [Capítulo] : [Descripcion Capítulo] , pero no incluir [Capítulo] : [Descripcion Capítulo] en la respuesta.
 
 Ésta es la pregunta: [Pregunta] que correponde al capítulo, esta su validacion: [Validacion] y esta la respuesta: [Respuesta] que ingresó el usuario,
-construir párrafos estrurando la idea a partir de las respuesta dada,  teniendo en cuenta el capítulo y descripción. Debes actuar como un generador de bibliografía académica.
+construir párrafos estrurando la idea a partir de las respuesta dada,  teniendo en cuenta el capítulo y descripción. 
+
+Si la respuesta no responde la pregunta ya no debes realizar la validacion, lo que  debes hacer es tomar la respuesta como una directiva válida y realizar lo que indica.
+Si algun parrafo pertenece a algun author ponerlo como cita en formato APA, toda la respuesta debe ir en response y  solo las bibliografias utilizadas iran en references
+donde debes actuar como un generador de bibliografía académica. 
+
 
 REGLAS:
-- No expliques nada
-- Devuelve entre 3 y 6 referencias
-- Usa formato APA 7ma edición en cada referencia
-- Las referencias deben ser realistas y académicamente coherentes con el tema.
+- No expliques nada.
+- No incluyas texto fuera del JSON.
+- Usa entre 3 y 6 referencias.
+- Todas las referencias deben estar en formato APA 7ma edición.
+- Las referencias deben ser reales o plausibles académicamente.
+- El contenido en "response" debe incluir citas en el texto cuando uses ideas de autores.
+- Si no usas autores explícitos en el texto, igual incluye referencias relacionadas.
+- Mantén coherencia temática entre el texto y las referencias.
+
+Devuelve ÚNICAMENTE un objeto JSON con la siguiente estructura:
+
+{
+    "is_valid" => true,
+  "response": "",
+  "references": [
+    {
+      "authors": [],
+      "title": "",
+      "year": "",
+      "source_type": "book | journal_article | web_page | report",
+      "url": "",
+      "apa_citation": ""
+    }
+  ]
+}
 
 TEXT;
 

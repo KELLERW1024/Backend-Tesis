@@ -21,7 +21,9 @@ class PromptService
         // ]);
             $sections = [];
 
-            $sections[] = "Evalúa si la respuesta del usuario responde correctamente la pregunta tomando en cuenta el detalle y la validacion. Y menciona que está faltando";
+            $sections[] = "Evalúa si la respuesta del usuario responde correctamente la pregunta tomando en cuenta el detalle y la validacion. Y menciona que está faltando, 
+            pero si la respuesta no responde la pregunta, debes verificar estrictamente que sea una paticion válida que ayude a resolver la pregunta
+            y ya no debes realizar la validacion, lo que  debes hacer es tomar la respuesta como una directiva válida y devolver el json valido con is_valid igual a true.";
 
             $sections[] = "PREGUNTA:\n{$data['question']}";
             $sections[] = "DETALLE:\n{$data['detail']}";
@@ -96,16 +98,7 @@ class PromptService
                 ]
             );
         }
-        // $promptEsp = strtr(
-        //     Prompts::PROMPT_ESPECIFICO,
-        //     [
-        //         '[Capítulo]' => $data['title'],
-        //         '[Descripcion Capítulo]' => $data['description'],
-        //         '[Pregunta]' => $data['question'],
-        //         '[Validacion]' => $data['validation'],
-        //         '[Respuesta]' => $data['response'],
-        //     ]
-        // );
+        
 
         $messages = collect($history)
             ->take(-10)

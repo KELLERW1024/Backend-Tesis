@@ -37,40 +37,59 @@ class ConversationController extends Controller
     }
 
     
-public function conversationSaveReply(Request $request)
-{
-    $validated = $request->validate([
-        'idPlan' => 'required|integer',
-        'idConversation' => 'required|integer',
-        'idSection' => 'required|integer',
-        'idQuestion' => 'required|integer',
-        'reply' => 'required|string',
-    ]);
+    public function conversationSaveReply(Request $request, ConversationService $conversationService)
+    {
+        $validated = $request->validate([
+            'idPlan' => 'required|integer',
+            'idSection' => 'nullable|integer',
+            'idConversation' => 'nullable|integer',
+            'idQuestion' => 'nullable|integer',
 
-    try {
+            'reply' => 'nullable|string',
 
-        $result = app(\App\Services\ConversationService::class)
-            ->saveUserAnswer($validated);
+            'metadata' => 'nullable|string',
+            'references' => 'nullable|string',
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Reply saved successfully',
-            'data' => $result,
-            'errors' => null
-        ], 200);
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:20480'
+        ]);
+        // \Log::error('OpenAI error: ' . $e->getMessage());
+         \Log::info('DEBUG conversationSaveReply', [
+                'metadata' => json_decode($request->metadata, true),
+                'files' => $request->file('files'),
+                'references' => json_decode($request->references, true),
+                'all_request' => $request->all(),
+            ]);
 
-    } catch (\Throwable $e) {
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Error saving reply',
-            'data' => null,
-            'errors' => [
-                'exception' => $e->getMessage()
-            ]
-        ], 500);
+        $files = $request->file('files') ?? [];
+        $metadata = json_decode($request->metadata, true) ?? [];
+        $references = json_decode($request->references, true) ?? [];
+        
+        try {
+
+            $result =  $conversationService->saveUserAnswer($validated, $files , $metadata, $references );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reply saved successfully',
+                'data' => $result,
+                'errors' => null
+            ], 200);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving reply',
+                'data' => null,
+                'errors' => [
+                    'exception' => $e->getMessage()
+                ]
+            ], 500);
+        }
+
+        
     }
-}
 
     public function conversationsUser()
     {
