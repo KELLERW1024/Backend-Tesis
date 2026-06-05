@@ -68,4 +68,17 @@ class PlanesController extends Controller
         return new PlanResource($plan);
 
     }
+
+    public function getPlanId(Request $request)
+    {
+        $idPlan = $request->get('idPlan');
+
+        $plan = Plan::where('id', $idPlan)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return response()->json($plan);
+    }
+
+    // public function existPlanUsers()
 }

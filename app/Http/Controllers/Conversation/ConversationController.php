@@ -128,70 +128,187 @@ class ConversationController extends Controller
         return response()->json($data);
     }
 
-     public function getSuscriptionConversation( Request $request ){
-        $user = auth()->user();
+    public function getSuscriptionConversation( Request $request ){
+    $user = auth()->user();
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
 
-        $userId = auth()->id();
-        $idSuscriptionConversation = $request->get('idConversation');
-        
+    $userId = auth()->id();
+    $idSuscriptionConversation = $request->get('idConversation');
+    
 
-       $subscription = UserSubscription::with([
-            'plan.sections' => function ($q) {
-                $q->where('is_active', true)
-                ->orderBy('order_index');
-            },
-            'plan.sections.questions',
-        ])
-        ->where('id', $idSuscriptionConversation)
+    $subscription = UserSubscription::with([
+        'plan.sections' => function ($q) {
+            $q->where('is_active', true)
+            ->orderBy('order_index');
+        },
+        'plan.sections.questions',
+    ])
+    ->where('id', $idSuscriptionConversation)
+    ->where('user_id', auth()->id())
+    ->firstOrFail();
+
+    $answers = UserAnswers::where('conversation_id', $idSuscriptionConversation)
         ->where('user_id', auth()->id())
-        ->firstOrFail();
+        ->get();
 
-        $answers = UserAnswers::where('conversation_id', $idSuscriptionConversation)
-            ->where('user_id', auth()->id())
-            ->get();
+    $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idSuscriptionConversation)
+        ->where('user_id', auth()->id())
+        ->get()
+        ->keyBy('section_id');
 
-        $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idSuscriptionConversation)
-            ->where('user_id', auth()->id())
-            ->get()
-            ->keyBy('section_id');
+    $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
 
-        $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
+    $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
 
-        $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
+    $subscription->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
 
-        $subscription->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
+        // answer de section
+        $section->setAttribute(
+            'answer',
+            $answersSections[$section->id]->answer_text ?? null
+        );
+        //progress de section
+        $section->setAttribute(
+            'progress',
+            $progressSectionConversation[$section->id]->status ?? null
+        );
 
-            // answer de section
-            $section->setAttribute(
+
+        // answers de questions
+        $section->questions->each(function ($question) use ($answersQuestions) {
+
+            $question->setAttribute(
                 'answer',
-                $answersSections[$section->id]->answer_text ?? null
+                $answersQuestions[$question->id]->answer_text ?? null
             );
-            //progress de section
-            $section->setAttribute(
-                'progress',
-                $progressSectionConversation[$section->id]->status ?? null
-            );
-
-
-            // answers de questions
-            $section->questions->each(function ($question) use ($answersQuestions) {
-
-                $question->setAttribute(
-                    'answer',
-                    $answersQuestions[$question->id]->answer_text ?? null
-                );
-
-            });
 
         });
 
-            
+    });
 
-        return new SubscriptionResource($subscription);
-        //return response()->json($progress);
+        
+
+    return new SubscriptionResource($subscription);
+    //return response()->json($progress);
+}
+
+// =====================================================================
+// ========================================================
+
+
+    public function getConversationPlanUser( Request $request)
+    {
+            $user = auth()->user();
+
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    $userId = auth()->id();
+    $idSuscriptionConversation = $request->get('idConversation');
+    
+
+    $subscription = UserSubscription::with([
+        'plan.sections' => function ($q) {
+            $q->where('is_active', true)
+            ->orderBy('order_index');
+        },
+        'plan.sections.questions',
+    ])
+    ->where('id', $idSuscriptionConversation)
+    ->where('user_id', auth()->id())
+    ->firstOrFail();
+
+    // $answers = UserAnswers::where('conversation_id', $idSuscriptionConversation)
+    //     ->where('user_id', auth()->id())
+    //     ->get();
+    $answers = UserAnswers::with('files')
+    ->where('conversation_id', $idSuscriptionConversation)
+    ->where('user_id', auth()->id())
+    ->get();
+
+    $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idSuscriptionConversation)
+        ->where('user_id', auth()->id())
+        ->get()
+        ->keyBy('section_id');
+
+    $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
+
+    $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
+
+    $subscription->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
+
+        // answer de section
+        $section->setAttribute(
+            'answer',
+            $answersSections[$section->id]->answer_text ?? null
+        );
+        //progress de section
+        $section->setAttribute(
+            'progress',
+            $progressSectionConversation[$section->id]->status ?? null
+        );
+
+
+        // answers de questions
+        $section->questions->each(function ($question) use ($answersQuestions) {
+
+            $answer = $answersQuestions->get($question->id);
+
+            $question->setAttribute(
+                'answer',
+                $answer->answer_text ?? null
+            );
+
+            $question->setAttribute(
+                'files',
+                $answer ? $answer->files->map(function ($file) {
+                    return [
+                        'id' => $file->id,
+                        'file_type' => $file->file_type,
+                        'file_url' => asset('storage/' . $file->file_path),
+                        'description' =>  $file->description,
+                        'fuente' =>  $file->fuente,
+                    ];
+                }) : []
+            );
+
+            // $question->setAttribute(
+            //     'answer',
+            //     $answersQuestions[$question->id]->answer_text ?? null
+            // );
+
+        });
+
+    });
+
+        
+
+    return new SubscriptionResource($subscription);
+    }
+
+    public function storeOrUpdate(Request $request, $id = null)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'user_id' => 'required|integer',
+        ]);
+
+        $conversation = Conversation::updateOrCreate(
+            ['id' => $id], // condición
+            [
+                'title' => $request->title,
+                'user_id' => $request->user_id,
+                'status' => 'active',
+            ]
+        );
+
+        return response()->json([
+            'message' => $id ? 'Actualizado correctamente' : 'Creado correctamente',
+            'data' => $conversation
+        ]);
     }
 }

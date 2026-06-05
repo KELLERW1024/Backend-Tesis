@@ -28,13 +28,12 @@ class IaController extends Controller
     public function validateAnswerResponse(  Request $request, FileTextExtractorService $fileProcessor ) {
 
         $data = $request->validate([
-            // 'pregunta' => 'required|string',
             'apa' => 'boolean',
             'detail' => 'nullable|string',
             'validation' => 'nullable|string',
             'files' => 'nullable|array',
             'files.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
-             'idPlan' => 'required|integer',
+            'idPlan' => 'required|integer',
             'idSection' => 'required|integer',
             'idConversation' => 'required|integer',
             'idQuestion' => 'required|integer',
@@ -45,7 +44,7 @@ class IaController extends Controller
             'response' => 'nullable|string',
             'is_visual' => 'boolean',
         ]);
-         $isApa = $request->boolean('apa');
+        $isApa = $request->boolean('apa');
 
         $files = $request->file('files');
 
@@ -81,7 +80,7 @@ class IaController extends Controller
 
             try {
                 $imageContent = $this->openAIService->imageInputStringOutput(
-                    prompt: 'Debes obtener la informacion exacta de esta imagen sin comentarios extras ',
+                    prompt: 'Debes obtener la informacion exacta de esta imagen sin comentarios extras. ',
                     image: $imageDataUri
                 );
             } catch (\Throwable $e) {

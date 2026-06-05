@@ -7,6 +7,7 @@ use App\Models\UserSubscription;
 use App\Models\Conversation; 
 use App\Models\UserAnswers;
 use App\Models\Question; 
+use App\Models\ConversationSectionProgress; 
 
 class ConversationService
 {
@@ -18,6 +19,17 @@ class ConversationService
     public function startConversation($userId, $planId)
     {
          return DB::transaction(function () use ($userId, $planId) {
+            $exists = UserSubscription::where('user_id', $userId)
+                ->where('plan_id', $planId)
+                ->where('status', 'active')
+                ->exists();
+            if ($exists) {
+                
+                return [
+                    'status' => 201 ,
+                    'message' => 'Ya tienes una suscripción activa'
+                ];
+            }
 
             $subscription = UserSubscription::firstOrCreate([
                 'user_id' => $userId,
@@ -40,6 +52,7 @@ class ConversationService
             );
 
             return [
+                'status' => 200 ,
                 'subscription_id' => $subscription->id,
                 'conversation_id' => $conversation->id
             ];
@@ -135,6 +148,31 @@ class ConversationService
                     'answer_text' => $reply,
                 ]
             );
+            // VERIFICA SI TODAS LAS PREGUNTAS DE LA SECTION YA ESTAN CULMINADAS
+            $questionIds = Question::where('section_id', $sectionId)
+                ->pluck('id');
+
+            $answeredIds = UserAnswers::where('conversation_id', $conversationId)
+                ->whereIn('question_id', $questionIds)
+                ->pluck('question_id');
+
+            $missing = $questionIds->diff($answeredIds);
+
+            if( $missing->isEmpty() ){
+
+                   ConversationSectionProgress::updateOrCreate(
+                    [
+                        'conversation_id' => $conversationId,
+                        'section_id' => $sectionId,
+                    ],
+                    [
+                        'user_id' => auth()->id(),
+                        'status' => 'completed',
+                        'completed_at' => now(),
+                    ]
+                );
+            }
+            
 
             /**
              * ============================================

@@ -20,4 +20,8 @@ class UserAnswers extends Model
     {
         return $this->belongsTo(Section::class, 'section_id');
     }
+    public function files()
+    {
+        return $this->hasMany(AnswerFile::class, 'answer_id');
+    }
 }

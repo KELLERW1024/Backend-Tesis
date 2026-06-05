@@ -23,6 +23,7 @@ class QuestionResource extends JsonResource
             //'order' => $this->order_index,
 
             'answer_question' => $this->answer ?? null,
+            'files' => $this->whenNotNull($this->files),
         ];
     }
 
