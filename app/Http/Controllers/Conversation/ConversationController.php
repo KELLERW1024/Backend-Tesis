@@ -49,6 +49,7 @@ class ConversationController extends Controller
 
             'metadata' => 'nullable|string',
             'references' => 'nullable|string',
+            'table' => 'nullable|string',
 
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:20480'
         ]);
@@ -265,7 +266,9 @@ class ConversationController extends Controller
 
             $question->setAttribute(
                 'files',
-                $answer ? $answer->files->map(function ($file) {
+                $answer ? $answer->files
+                ->whereIn('file_type', 'image')
+                ->map(function ($file) {
                     return [
                         'id' => $file->id,
                         'file_type' => $file->file_type,
@@ -274,12 +277,21 @@ class ConversationController extends Controller
                         'fuente' =>  $file->fuente,
                     ];
                 }) : []
-            );
+            );      
 
-            // $question->setAttribute(
-            //     'answer',
-            //     $answersQuestions[$question->id]->answer_text ?? null
-            // );
+            $question->setAttribute(
+                    'tables',
+                    $answer
+                        ? $answer->tables->map(function ($table) {
+                            return [
+                                'id' => $table->id,
+                                'title' => $table->nombre,
+                                'data' => json_decode($table->data, true),
+                                'created_at' => $table->created_at,
+                            ];
+                        })
+                        : []
+            );
 
         });
 
@@ -290,25 +302,42 @@ class ConversationController extends Controller
     return new SubscriptionResource($subscription);
     }
 
-    public function storeOrUpdate(Request $request, $id = null)
+    public function updateTitleConversation(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'user_id' => 'required|integer',
-        ]);
+        try {
 
-        $conversation = Conversation::updateOrCreate(
-            ['id' => $id], // condición
-            [
+            $request->validate([
+                'id' => 'required|integer|exists:conversations,id',
+                'title' => 'required|string|max:255',
+            ]);
+
+            $conversation = Conversation::findOrFail($request->id);
+
+            $conversation->update([
                 'title' => $request->title,
-                'user_id' => $request->user_id,
-                'status' => 'active',
-            ]
-        );
+            ]);
 
-        return response()->json([
-            'message' => $id ? 'Actualizado correctamente' : 'Creado correctamente',
-            'data' => $conversation
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Actualizado correctamente',
+                'data' => $conversation
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

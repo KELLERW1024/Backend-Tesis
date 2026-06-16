@@ -47,6 +47,7 @@ Route::middleware('auth:api')->group(function ($router) {
     // Route::post('/conversation/validateanswer',[IaController::class,'validateAnswer']);
 
     Route::post('/conversation/startconversation',[ConversationController::class,'startConversation']);
+    Route::post('/conversation/updatetitleconversation',[ConversationController::class,'updateTitleConversation']);
 
     Route::post('/conversation/savereply',[ConversationController::class,'conversationSaveReply']);
 

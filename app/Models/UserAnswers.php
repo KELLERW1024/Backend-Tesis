@@ -24,4 +24,8 @@ class UserAnswers extends Model
     {
         return $this->hasMany(AnswerFile::class, 'answer_id');
     }
+    public function tables()
+    {
+        return $this->hasMany(Tabla::class, 'answer_id');
+    }
 }

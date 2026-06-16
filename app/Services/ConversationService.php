@@ -8,6 +8,10 @@ use App\Models\Conversation;
 use App\Models\UserAnswers;
 use App\Models\Question; 
 use App\Models\ConversationSectionProgress; 
+use App\Models\Tabla; 
+use App\Models\TablaColumna; 
+use App\Models\TablaFila; 
+use App\Models\TablaCelda; 
 
 class ConversationService
 {
@@ -19,40 +23,28 @@ class ConversationService
     public function startConversation($userId, $planId)
     {
          return DB::transaction(function () use ($userId, $planId) {
-            $exists = UserSubscription::where('user_id', $userId)
-                ->where('plan_id', $planId)
-                ->where('status', 'active')
-                ->exists();
-            if ($exists) {
-                
-                return [
-                    'status' => 201 ,
-                    'message' => 'Ya tienes una suscripción activa'
-                ];
-            }
 
-            $subscription = UserSubscription::firstOrCreate([
+            // ✔ Siempre crear nueva suscripción
+            $subscription = UserSubscription::create([
                 'user_id' => $userId,
                 'plan_id' => $planId,
                 'status' => 'active',
             ]);
 
-           $conversation = Conversation::firstOrCreate(
-                [
-                    'user_id' => $userId,
-                    'subscription_id' => $subscription->id,
-                    'status' => 'active',
-                ],
-                [
-                    'title' => 'Nueva conversación',
-                    'summary' => null,
-                    'started_at' => now(),
-                    'last_activity_at' => now(),
-                ]
-            );
+            // ✔ Crear conversación asociada a esa suscripción
+            $conversation = Conversation::create([
+                'user_id' => $userId,
+                'subscription_id' => $subscription->id,
+                'status' => 'active',
+                'title' => 'Nuevo plan',
+                'summary' => null,
+                'started_at' => now(),
+                'last_activity_at' => now(),
+            ]);
 
+            // ✔ SOLO ARRAY (NO RESPONSE)
             return [
-                'status' => 200 ,
+                'status' => 200,
                 'subscription_id' => $subscription->id,
                 'conversation_id' => $conversation->id
             ];
@@ -183,19 +175,35 @@ class ConversationService
 
                 $meta = $metadata[$index] ?? [];
 
-                $path = $file->store(
-                    "answers/{$userAnswer->id}",
-                    'public'
-                );
+                // Guarda el archivo solo si es imagen
+                $path = '';
+                if ($file && in_array($file->extension(), ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                    $path = $file->store(
+                        "answers/{$userAnswer->id}",
+                        'public'
+                    );
+                }
                 $extension = strtolower($file->getClientOriginalExtension());
 
                 $parsedData = null;
-                 // 🧠 SOLO documentos procesables
+                 // SOLO documentos procesables
                 if (in_array($extension, ['xls', 'xlsx'])) {
 
-                     $parsedData = $this->excelService->extractTable($file->getRealPath());
-                    
+                    $parsedData = $this->excelService->extractTable($file->getRealPath());
+
+                    $sheet = $parsedData['sheets'][0] ?? [];
+
+                    \Log::info('USER ANSWER ID', [
+                        'id' => $userAnswer->id
+                    ]);
+
+                    $tabla = Tabla::create([
+                        'nombre' => pathinfo(  $file->getClientOriginalName(), PATHINFO_FILENAME ) ,
+                        'answer_id' => $userAnswer->id ,
+                        'data' => json_encode($parsedData)
+                    ]);
                 }
+
 
                 DB::table('answer_files')->insert([
                     'answer_id' => $userAnswer->id,
@@ -234,75 +242,103 @@ class ConversationService
                     'created_at' => now(),
                 ]);
             }
+            $table = isset($data['table'])  ? json_decode($data['table'], true)  : null;
+
+            if (
+                is_array($table) &&
+                isset($table['title']) &&
+                isset($table['columns']) &&
+                isset($table['rows'])
+            ) {
+
+                Tabla::create([
+                    'nombre' => $table['title'],
+                    'fuente' => 'Elaboración propia',
+                    'answer_id' => $userAnswer->id,
+                    'data' => json_encode($table, JSON_UNESCAPED_UNICODE)
+                ]);
+
+                DB::table('answer_files')->insert([
+                    'answer_id' => $userAnswer->id,
+                    'file_path' => $table['title'] ,
+                    'file_type' => 'document',
+                    
+                    'description' => $table['title'] ?? null,
+                    'fuente' => 'Elaboración propia',
+                    'created_at' => now(),
+                ]);
+            }
 
             /**
              * ============================================
              * GUARDAR REFERENCIAS
              * ============================================
              */
-            foreach ($references as $index => $ref) {
+            if (!empty($references)) {
+                foreach ($references as $index => $ref) {
 
-                $hash = hash(
-                    'sha256',
-                    strtolower(
-                        ($ref['title'] ?? '') .
-                        ($ref['year'] ?? '') .
-                        implode(',', $ref['authors'] ?? [])
-                    )
-                );
-
-                $reference = DB::table('references_library')
-                    ->where('reference_hash', $hash)
-                    ->first();
-
-                if (!$reference) {
-
-                    $referenceId = DB::table('references_library')
-                        ->insertGetId([
-                            'authors' => json_encode(
-                                $ref['authors'] ?? []
-                            ),
-
-                            'publication_year' => $ref['year'] ?? null,
-
-                            'title' => $ref['title'] ?? '',
-
-                            'publisher' => $ref['publisher'] ?? null,
-
-                            'url' => $ref['url'] ?? null,
-
-                            'source_type' => $ref['source_type'] ?? 'book',
-
-                            'doi' => $ref['doi'] ?? null,
-
-                            // 'apa_citation' => $ref['apa_citation'] ?? null,
-
-                            'reference_hash' => $hash,
-
-                            'created_at' => now(),
-
-                            'updated_at' => now(),
-                        ]);
-
-                } else {
-
-                    $referenceId = $reference->id;
-                }
-
-                /**
-                 * RELACIONAR RESPUESTA ↔ REFERENCIA
-                 */
-                DB::table('answer_reference_rel')
-                    ->updateOrInsert(
-                        [
-                            'answer_id' => $userAnswer->id,
-                            'reference_id' => $referenceId,
-                        ],
-                        [
-                            'citation_order' => $index + 1,
-                            'created_at' => now(),
-                        ]
+                    $hash = hash(
+                        'sha256',
+                        strtolower(
+                            ($ref['title'] ?? '') .
+                            ($ref['year'] ?? '') .
+                            implode(',', $ref['authors'] ?? [])
+                        )
                     );
+
+                    $reference = DB::table('references_library')
+                        ->where('reference_hash', $hash)
+                        ->first();
+
+                    if (!$reference) {
+
+                        $referenceId = DB::table('references_library')
+                            ->insertGetId([
+                                'authors' => json_encode(
+                                    $ref['authors'] ?? []
+                                ),
+
+                                'publication_year' => $ref['year'] ?? null,
+
+                                'title' => $ref['title'] ?? '',
+
+                                'publisher' => $ref['publisher'] ?? null,
+
+                                'url' => $ref['url'] ?? null,
+
+                                'source_type' => $ref['source_type'] ?? 'book',
+
+                                'doi' => $ref['doi'] ?? null,
+
+                                // 'apa_citation' => $ref['apa_citation'] ?? null,
+
+                                'reference_hash' => $hash,
+
+                                'created_at' => now(),
+
+                                'updated_at' => now(),
+                            ]);
+
+                    } else {
+
+                        $referenceId = $reference->id;
+                    }
+
+                    /**
+                     * RELACIONAR RESPUESTA ↔ REFERENCIA
+                     */
+                    DB::table('answer_reference_rel')
+                        ->updateOrInsert(
+                            [
+                                'answer_id' => $userAnswer->id,
+                                'reference_id' => $referenceId,
+                            ],
+                            [
+                                'citation_order' => $index + 1,
+                                'created_at' => now(),
+                            ]
+                        );
+                }
             }
 
             DB::commit();

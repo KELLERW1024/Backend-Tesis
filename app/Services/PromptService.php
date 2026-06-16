@@ -121,4 +121,38 @@ class PromptService
 
         return $messages;
     }
+
+    public function buildMessageTable(string $resp): string
+    {
+        return <<<PROMPT
+        A partir de la siguiente respuesta:
+
+        {$resp}
+
+        Convierte la información en una tabla.
+
+        Responde únicamente con JSON válido.
+
+        Formato esperado:
+
+        {
+            "title": "string",
+            "columns": ["columna1", "columna2"],
+            "rows": [
+            ["valor1", "valor2"],
+            ["valor1", "valor2"]
+            ]
+        }
+
+        Reglas:
+        - No agregues explicaciones.
+        - No uses markdown.
+        - No uses bloques de código.
+        - La respuesta debe ser únicamente JSON válido.
+        - Detecta automáticamente las columnas y filas.
+        - Si la información no puede representarse como una tabla o no contiene datos tabulares, responde únicamente:
+
+        null
+        PROMPT;
+    }
 }

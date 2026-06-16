@@ -24,6 +24,7 @@ class QuestionResource extends JsonResource
 
             'answer_question' => $this->answer ?? null,
             'files' => $this->whenNotNull($this->files),
+            'tables' => $this->whenNotNull($this->tables),
         ];
     }
 

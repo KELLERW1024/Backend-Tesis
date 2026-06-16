@@ -28,7 +28,7 @@ class IaController extends Controller
     public function validateAnswerResponse(  Request $request, FileTextExtractorService $fileProcessor ) {
 
         $data = $request->validate([
-            'apa' => 'boolean',
+            'generate_table' => 'boolean',
             'detail' => 'nullable|string',
             'validation' => 'nullable|string',
             'files' => 'nullable|array',
@@ -44,7 +44,8 @@ class IaController extends Controller
             'response' => 'nullable|string',
             'is_visual' => 'boolean',
         ]);
-        $isApa = $request->boolean('apa');
+
+        //$generateTable = $request->boolean('generate_table');
 
         $files = $request->file('files');
 
@@ -103,7 +104,7 @@ class IaController extends Controller
                 return response()->json($result);
 
             }else{
-                return $this->responseIA( $request, $data, $documentContent, $imageContent, $isApa );
+                return $this->responseIA( $request, $data, $documentContent, $imageContent );
                 
             }
 
@@ -126,7 +127,7 @@ class IaController extends Controller
             }else{
                 // RESPUESTA ++++>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-                return $this->responseIA( $request, $data, $documentContent, $imageContent, $isApa);
+                return $this->responseIA( $request, $data, $documentContent, $imageContent ); //$isApa);
                 
             }
         }
@@ -135,7 +136,7 @@ class IaController extends Controller
        
     }
 
-    public function responseIA( Request $request, array $data, string $documentContent, string $imageContent , bool $isApa){
+    public function responseIA( Request $request, array $data, string $documentContent, string $imageContent ){
             //  $isVisual = $request->boolean('is_visual');
 
             $objective = Section::where('id', $data['idSection'] )->value('objective');
@@ -145,22 +146,38 @@ class IaController extends Controller
             \Log::info(' HISTORY : ' , $history );
 
 
-            $messages = $this->promptService->buildMessages( $data,  $history,  $documentContent,  $imageContent, $isApa);
+            $messages = $this->promptService->buildMessages( $data,  $history,  $documentContent,  $imageContent, false );
             \Log::info(' MESSAGGES : ' , $messages );
 
             $reply = $this->openAIService->chat($messages);
             // $messagesString = collect($messages)
             //         ->pluck('content')
             //         ->implode("\n\n");
+            $messageTable = $this->promptService->buildMessageTable(  $data['response'] );
+            $replyTable = null; 
+            if($data['generate_table'] == true ){
+                $tableResponse= $this->openAIService->chat( $messageTable );
+
+                $replyTable = json_decode($tableResponse, true);
+
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $replyTable = null;
+                }
+            }
+            
+
             //$respuestaImage = $this->openAIService->generateImages( $documentContent );
             \Log::error('REPLY => {}' .  $reply );
+
+            /// GENERAR IMAGEN CON IA Y PONER EN CADA LLAMADA AL AI POR MENSAJE EN EL  CAMPO IMAGE_IA_COUNT DE LA TABLA 
             
-            // return response()->json([
-            //     'is_valid' => true , 
-            //     'response' => $reply 
-            //     //'images' => $respuestaImage
-            // ]);
-            return response()-> json( json_decode($reply, true) );
+            return response()->json([
+                'is_valid' => true , 
+                'response' => json_decode($reply, true),
+                'table' => $replyTable
+                //'images' => $respuestaImage
+            ]);
+            //return response()-> json( json_decode($reply, true) );
 
     }
     // public function validateAnswer(  Request $request, FileTextExtractorService $fileProcessor ) {

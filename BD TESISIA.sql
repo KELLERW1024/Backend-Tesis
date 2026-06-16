@@ -220,6 +220,7 @@ CREATE TABLE conversation_messages (
     role ENUM('system','user','assistant') NOT NULL,
     message_text LONGTEXT NOT NULL,
     tokens_used INT,
+    image_ia_count INT DEFAULT 0;
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
@@ -309,7 +310,7 @@ CREATE TABLE answer_files (
 
     file_type ENUM('image', 'document') NOT NULL,
 
-     file_path VARCHAR(500) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
     original_name VARCHAR(255),
     mime_type VARCHAR(100),
     size BIGINT,
@@ -525,3 +526,80 @@ ALTER TABLE conversations
 ADD created_at DATETIME NULL;
 ALTER TABLE conversations
 ADD updated_at DATETIME NULL;
+
+-- ================= TABLAS EXCEL
+CREATE TABLE tablas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    answer_id BIGINT NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    archivo_original VARCHAR(255),
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    FOREIGN KEY (answer_id)
+        REFERENCES user_answers(id)
+        ON DELETE CASCADE
+);
+
+-- =========================
+-- COLUMNAS
+-- =========================
+CREATE TABLE tablas_columnas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tabla_id BIGINT NOT NULL,
+    posicion INT NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    FOREIGN KEY (tabla_id)
+        REFERENCES tablas(id)
+        ON DELETE CASCADE,
+
+    UNIQUE (tabla_id, posicion)
+);
+
+-- =========================
+-- FILAS
+-- =========================
+CREATE TABLE tablas_filas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tabla_id BIGINT NOT NULL,
+    posicion INT NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    FOREIGN KEY (tabla_id)
+        REFERENCES tablas(id)
+        ON DELETE CASCADE,
+
+    UNIQUE (tabla_id, posicion)
+);
+
+-- =========================
+-- CELDAS
+-- =========================
+CREATE TABLE tablas_celdas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    fila_id BIGINT NOT NULL,
+    columna_id BIGINT NOT NULL,
+    valor LONGTEXT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    FOREIGN KEY (fila_id)
+        REFERENCES tablas_filas(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (columna_id)
+        REFERENCES tablas_columnas(id)
+        ON DELETE CASCADE,
+
+    UNIQUE (fila_id, columna_id)
+);
+
+ALTER TABLE tablas
+ADD COLUMN data JSON;
+
+ALTER TABLE tablas
+ADD fuente VARCHAR(255);
