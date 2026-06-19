@@ -75,7 +75,7 @@ class PromptService
 
         if (!empty($documentContent)) {  $response .= "\n\nDOCUMENTO:\n" . $documentContent;  }
         
-        if( !$isApa ){
+        // if( !$isApa ){
             $promptEsp = strtr(
                 Prompts::PROMPT_ESPECIFICO,
                 [
@@ -84,20 +84,21 @@ class PromptService
                     '[Pregunta]' => $data['question'],
                     '[Validacion]' => $data['validation'],
                     '[Respuesta]' => $data['response'],
+                    '[Apa]' => $data['apa'],
                 ]
             );
-        }else{
-            $promptEsp = strtr(
-                Prompts::PROMPT_ESPECIFICO_APA,
-                [
-                    '[Capítulo]' => $data['title'],
-                    '[Descripcion Capítulo]' => $data['description'],
-                    '[Pregunta]' => $data['question'],
-                    '[Validacion]' => $data['validation'],
-                    '[Respuesta]' => $data['response'],
-                ]
-            );
-        }
+        // }else{
+            // $promptEsp = strtr(
+            //     Prompts::PROMPT_ESPECIFICO_APA,
+            //     [
+            //         '[Capítulo]' => $data['title'],
+            //         '[Descripcion Capítulo]' => $data['description'],
+            //         '[Pregunta]' => $data['question'],
+            //         '[Validacion]' => $data['validation'],
+            //         '[Respuesta]' => $data['response'],
+            //     ]
+            // );
+        // }
         
 
         $messages = collect($history)

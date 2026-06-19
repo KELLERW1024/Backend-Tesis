@@ -43,6 +43,7 @@ class IaController extends Controller
             'question' => 'required|string',
             'response' => 'nullable|string',
             'is_visual' => 'boolean',
+            'apa' => 'nullable|string',
         ]);
 
         //$generateTable = $request->boolean('generate_table');

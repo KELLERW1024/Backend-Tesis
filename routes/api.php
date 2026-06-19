@@ -62,7 +62,11 @@ Route::middleware('auth:api')->group(function ($router) {
 
 
 
-    Route::get('/download',[DocumentController::class,'generar']);
+    Route::get('/download',[DocumentController::class,'generarDocument']);
+
+    
 
     
 });
+
+Route::get('/test-zip', [DocumentController::class, 'testZip']);

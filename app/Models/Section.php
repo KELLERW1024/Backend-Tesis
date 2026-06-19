@@ -33,4 +33,8 @@ class Section extends Model
             'plan_id'
         );
     }
+    public function userAnswers()
+    {
+        return $this->hasMany(UserAnswers::class, 'section_id');
+    }
 }
