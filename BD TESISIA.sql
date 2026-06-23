@@ -603,3 +603,18 @@ ADD COLUMN data JSON;
 
 ALTER TABLE tablas
 ADD fuente VARCHAR(255);
+
+CREATE TABLE plan_prices (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  plan_id BIGINT NOT NULL,
+  billing_cycle ENUM('monthly','yearly','lifetime'),
+  price DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (plan_id) REFERENCES plans(id)
+);
+
+CREATE TABLE plan_price_features (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  plan_price_id BIGINT NOT NULL,
+  features JSON NULL;
+  FOREIGN KEY (plan_price_id) REFERENCES plan_prices(id)
+);

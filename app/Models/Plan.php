@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Section;
+use App\Models\Coupon;
 class Plan extends Model
 {
      protected $table = 'plans';
@@ -31,5 +32,10 @@ class Plan extends Model
             'plan_id',
             'section_id'
         );
+    }
+
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_plans');
     }
 }

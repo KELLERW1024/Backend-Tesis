@@ -246,42 +246,42 @@ class DocumentController extends Controller
 
 
 
-        $answers = UserAnswers::with(['section', 'files', 'tables'])
-            ->where('conversation_id', $idConversation)
-            ->get()
-            ->map(function ($item) {
+        // $answers = UserAnswers::with(['section', 'files', 'tables'])
+        //     ->where('conversation_id', $idConversation)
+        //     ->get()
+        //     ->map(function ($item) {
 
-                return [
-                    'section_id' => $item->section_id,
-                    'section_title' => $item->section?->title,
-                    'section_description' => $item->section?->description,
-                    'answer_text' => $item->answer_text,
+        //         return [
+        //             'section_id' => $item->section_id,
+        //             'section_title' => $item->section?->title,
+        //             'section_description' => $item->section?->description,
+        //             'answer_text' => $item->answer_text,
 
-                    'files' => $item->files->map(function ($file) {
-                        return [
-                            'id' => $file->id,
-                            'url' => $file->file_path,
-                            'name' => $file->description,
-                            'fuente' => $file->fuente,
-                        ];
-                    })->toArray(),
+        //             'files' => $item->files->map(function ($file) {
+        //                 return [
+        //                     'id' => $file->id,
+        //                     'url' => $file->file_path,
+        //                     'name' => $file->description,
+        //                     'fuente' => $file->fuente,
+        //                 ];
+        //             })->toArray(),
 
-                    'tables' => $item->tables->map(function ($table) {
-                        return [
-                            'id' => $table->id,
-                            'data' => $table->data,
-                            'name' => $table->nombre,
-                            'fuente' => $table->fuente,
-                        ];
-                    })->toArray(),
-                ];
-            });
+        //             'tables' => $item->tables->map(function ($table) {
+        //                 return [
+        //                     'id' => $table->id,
+        //                     'data' => $table->data,
+        //                     'name' => $table->nombre,
+        //                     'fuente' => $table->fuente,
+        //                 ];
+        //             })->toArray(),
+        //         ];
+        //     });
 
-        if ($answers->isEmpty()) {
-            return response()->json([
-                'message' => 'No existen respuestas para esta conversación'
-            ], 404);
-        }
+        // if ($answers->isEmpty()) {
+        //     return response()->json([
+        //         'message' => 'No existen respuestas para esta conversación'
+        //     ], 404);
+        // }
 
         $phpWord = new PhpWord();
 
@@ -361,18 +361,35 @@ class DocumentController extends Controller
 
         $contadorFigura = 1;
         $contadorTabla = 1;
+
+        $phpWord->addTitleStyle(
+            2,
+            [
+                'bold' => true,
+                'size' => 14,
+                'name' => 'Arial',
+            ]
+        );
+
+        $firstSection = true;
         foreach( $subscription->plan->sections as $sectionT ){
 
-                $titulo = trim(
-                    ($sectionT->title ?? '') .
-                    ' : ' .
-                    ($sectionT->description ?? '')
-                );
+            if (!$firstSection) {
+                $section->addPageBreak();
+            }
 
-                $section->addTitle(
-                    $this->cleanText($titulo),
-                    2
-                );
+            $firstSection = false;
+
+            $titulo = trim(
+                ($sectionT->title ?? '') .
+                ' : ' .
+                ($sectionT->description ?? '')
+            );
+
+            $section->addTitle(
+                $this->cleanText($titulo),
+                2
+            );
 
             foreach ( $sectionT->userAnswers as $answer) {
 
@@ -395,11 +412,11 @@ class DocumentController extends Controller
 
                 foreach ($answer->files as $file) {
 
-                    if (empty($file->url )) {
+                    if (empty($file->file_path )) {
                         continue;
                     }
 
-                    $fullPath = storage_path('app/public/' . $file->url );
+                    $fullPath = storage_path('app/public/' . $file->file_path );
 
                     if (!file_exists($fullPath)) {
                         continue;
@@ -407,17 +424,24 @@ class DocumentController extends Controller
 
                     $section->addTextBreak();
 
+                    $noBreakStyle = [
+                        'keepNext' => true,
+                        'keepLines' => true,
+                    ];
+
                     // Figura X
                     $section->addText(
-                        'Figura ' . $contadorFigura,
-                        ['bold' => true]
+                        'Figura ' . $contadorFigura.'.',
+                        ['bold' => true],
+                        $noBreakStyle
                     );
 
-                    if (!empty($file->name)) {
+                    if (!empty($file->description)) {
                         $section->addText(
-                            $this->cleanText($file->name),
-                            ['bold' => true, 'size' => 10],
-                            ['alignment' => Jc::CENTER]
+                            $this->cleanText($file->description),
+                            ['bold' => false, 'size' => 10],
+                            ['alignment' => Jc::START],
+                            $noBreakStyle
                         );
                     }
 
@@ -425,14 +449,15 @@ class DocumentController extends Controller
                         $fullPath,
                         [
                             'width' => 350,
-                            'alignment' => Jc::CENTER
+                            'alignment' => Jc::CENTER,
+                            'wrappingStyle' => 'inline'
                         ]
                     );
 
                     
                     if (!empty($file->fuente )) {
                         $section->addText(
-                            'Nota. ' . $this->cleanText($file->fuente ),
+                            'Fuente: ' . $this->cleanText($file->fuente ),
                             [
                                 'italic' => true,
                                 'size' => 10
@@ -459,8 +484,8 @@ class DocumentController extends Controller
 
                     if (
                         !$tableData ||
-                        !isset($tableData->columns ) ||
-                        !isset($tableData->rows )
+                        !isset($tableData['columns'] ) ||
+                        !isset($tableData['rows'] )
                     ) {
                         continue;
                     }
@@ -468,14 +493,14 @@ class DocumentController extends Controller
                     $section->addTextBreak();
 
                     $section->addText(
-                        'Tabla ' . $contadorTabla,
+                        'Tabla ' . $contadorTabla. '.',
                         ['bold' => true]
                     );
 
-                    if (!empty($tableInfo->name )) {
+                    if (!empty($tableInfo->nombre )) {
                         $section->addText(
-                            $this->cleanText($tableInfo->name ),
-                            ['bold' => true]
+                            $this->cleanText($tableInfo->nombre ),
+                            ['bold' => false]
                         );
                     }
 
@@ -491,13 +516,11 @@ class DocumentController extends Controller
 
                     $table->addRow();
 
-                    foreach ($tableData->columns as $column) {
+                    foreach ($tableData['columns'] as $column) {
 
-                        $table->addCell(2000, [
-                            'bgColor' => 'D9D9D9'
-                        ])->addText(
+                        $table->addCell(2000)->addText(
                             $this->cleanText($column),
-                            ['bold' => true]
+                            ['bold' => true, 'size' => 11]
                         );
                     }
 
@@ -505,7 +528,7 @@ class DocumentController extends Controller
                     | Filas
                     */
 
-                    foreach ($tableData->rows as $row) {
+                    foreach ($tableData['rows'] as $row) {
 
                         $table->addRow();
 

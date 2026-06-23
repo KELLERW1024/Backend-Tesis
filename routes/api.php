@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\PlanesController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\IaController;
+use App\Http\Controllers\Coupon\CouponController;
 use App\Http\Controllers\Document\DocumentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +57,9 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::get('/conversation/conversationplanuser',[ConversationController::class,'getConversationPlanUser']);
 
     Route::get('conversation/suscriptionconversation',[ConversationController::class,'getSuscriptionConversation']);
+
+    Route::post('coupon/savecoupon',[CouponController::class,'saveCoupon']);
+    Route::get('coupons',[CouponController::class,'index']);
 
     Route::post('/payment', [PagoController::class, 'payment']);
     Route::post('/mp/webhook', [WebhookController::class, 'handle']);

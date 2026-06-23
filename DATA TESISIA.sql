@@ -308,6 +308,24 @@ VALUES                      ( 1 , 24 ),( 1 , 25 ),( 1 , 26 ),( 1 , 27 ),( 1 , 28
 
 
 
+-- Precios de los planes 
+INSERT INTO plan_prices (plan_id, billing_cycle, price)
+VALUES
+(1, 'monthly', 19.99),
+(1, 'yearly', 199.99),
+(1, 'lifetime', 249.99),
+(2, 'monthly', 19.99),
+(2, 'yearly', 199.99),
+(2, 'lifetime', 249.99),
+(3, 'monthly', 19.99),
+(3, 'yearly', 199.99),
+(3, 'lifetime', 249.99),
+(4, 'monthly', 19.99),
+(4, 'yearly', 199.99),
+(4, 'lifetime', 249.99),
+(5, 'monthly', 19.99),
+(5, 'yearly', 199.99),
+(5, 'lifetime', 249.99);
 
 
             
