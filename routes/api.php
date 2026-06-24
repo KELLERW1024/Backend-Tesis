@@ -60,8 +60,11 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::post('coupon/savecoupon',[CouponController::class,'saveCoupon']);
     Route::get('coupons',[CouponController::class,'index']);
+    Route::post('payment/validate', [CouponController::class, 'validateCoupon']);
 
     Route::post('/payment', [PagoController::class, 'payment']);
+    Route::post('/payment/yape', [PagoController::class, 'registerYapePayment']);
+
     Route::post('/mp/webhook', [WebhookController::class, 'handle']);
 
 

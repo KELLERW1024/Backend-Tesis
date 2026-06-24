@@ -6,12 +6,81 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Coupon;
+use App\Models\Plan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class CouponController extends Controller
 {
     //
+    public function validateCoupon(Request $request)
+    {
+       Log::info('🔵 Iniciando validación de cupón', [
+            'request' => $request->all()
+        ]);
+
+        $request->validate([
+            'code' => 'required',
+            'plan_id' => 'required|exists:plans,id'
+        ]);
+
+        $coupon = Coupon::where('code', $request->code)
+            ->where('is_active', 1)
+            ->where(function ($q) {
+                $q->whereNull('valid_until')
+                ->orWhere('valid_until', '>=', now());
+            })
+            ->first();
+
+
+        if (!$coupon) {
+            Log::warning('❌ Cupón no válido o expirado', [
+                'code' => $request->code
+            ]);
+
+            return response()->json([
+                'valid' => false,
+                'message' => 'Cupón no válido o expirado'
+            ], 422);
+        }
+
+        $plan = Plan::findOrFail($request->plan_id);
+
+        $price = $plan->price;
+
+        // validar si aplica al plan
+        $applies = $coupon->plans()
+            ->where('plans.id', $plan->id)
+            ->exists();
+
+        if (!$applies) {
+
+            return response()->json([
+                'valid' => false,
+                'message' => 'Este cupón no aplica a este plan'
+            ], 422);
+        }
+
+        // calcular descuento
+        $discount = match ($coupon->discount_type) {
+            'percentage' => round($price * ($coupon->discount_value / 100), 2),
+            'fixed' => min($coupon->discount_value, $price),
+            default => 0
+        };
+
+        $final = max($price - $discount, 0);
+
+        Log::info('✅ Cupón validado correctamente');
+
+        return response()->json([
+            'valid' => true,
+            'coupon' => $coupon,
+            'price' => $price,
+            'discount_amount' => $discount,
+            'final_amount' => $final
+        ]);
+    }
      // LISTAR COUPONS
     public function index()
     {

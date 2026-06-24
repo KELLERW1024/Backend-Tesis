@@ -618,3 +618,11 @@ CREATE TABLE plan_price_features (
   features JSON NULL;
   FOREIGN KEY (plan_price_id) REFERENCES plan_prices(id)
 );
+
+
+ALTER TABLE payments
+ADD COLUMN operation_number VARCHAR(100) NULL,
+ADD COLUMN security_code VARCHAR(100) NULL,
+ADD COLUMN voucher_path VARCHAR(255) NULL;
+ALTER TABLE payments
+ADD COLUMN updated_at DATETIME NULL;
