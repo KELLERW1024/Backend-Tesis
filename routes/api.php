@@ -65,6 +65,8 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::post('/payment', [PagoController::class, 'payment']);
     Route::post('/payment/yape', [PagoController::class, 'registerYapePayment']);
 
+    Route::get('/payment/getpayments', [PagoController::class, 'getPayments']);
+
     Route::post('/mp/webhook', [WebhookController::class, 'handle']);
 
 

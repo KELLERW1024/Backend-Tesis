@@ -101,11 +101,10 @@ class ConversationController extends Controller
         }
 
        $conversations = Conversation::with([
-            'subscription.plan',
-            'sectionProgress.section'
-        ])
-        ->where('user_id', $user->id)
-        ->get();
+                                            'subscription.plan',
+                                            'subscription.payments',
+                                            'sectionProgress.section'
+                                            ]) ->where('user_id', $user->id)->get();
 
         $data = [
             'user' => [
@@ -117,11 +116,17 @@ class ConversationController extends Controller
 
                 $planName = $conversation->subscription?->plan?->name;
 
+                $paymentStatus = $conversation->subscription?->payments
+                                                                ?->sortByDesc('created_at')
+                                                                ->first()
+                                                                ?->status;
+
                 return [
                     'id' => $conversation->id,
                     'status' => $conversation->status,
                     'title' => $conversation->title,
                     'plan_name' => $planName,
+                    'payment_status' => $paymentStatus,
                 ];
             }),
         ];
