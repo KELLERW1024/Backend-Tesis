@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Plan;
+use App\Models\Package;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,13 +24,14 @@ class Coupon extends Model
         'is_active'
     ];
 
-    public function plans()
+    public function packages()
     {
         return $this->belongsToMany(
-            Plan::class,
-            'coupon_plans',
+            Package::class,
+            'coupon_package',
             'coupon_id',
-            'plan_id'
+            'package_id'
         );
     }
+
 }

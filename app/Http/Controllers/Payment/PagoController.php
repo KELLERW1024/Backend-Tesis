@@ -304,7 +304,7 @@ class PagoController extends Controller
 
                     'plan_name' => $conversation->subscription?->plan?->name,
 
-                    'payment_status' => $conversation->subscription?->latestPayment?->status,
+                    'payments' => $conversation->subscription?->payments,
                 ];
             }),
         ];

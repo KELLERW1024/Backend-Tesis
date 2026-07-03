@@ -19,7 +19,6 @@ class PlanesController extends Controller
                 'code',
                 'description',
                 'price',
-                'billing_cycle',
                 'duration_days',
                 'max_sections',
                 'max_messages',

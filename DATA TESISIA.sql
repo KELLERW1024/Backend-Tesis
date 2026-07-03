@@ -7,13 +7,11 @@ INSERT INTO roles (name, description) VALUES
 -- PLANES
 INSERT INTO plans (name, code,  price, is_active, description)
 VALUES
-('Tesis Plan de Negocio','PN',  19.99, TRUE, 'Servicio de elaboración de tesis enfocado en planes de negocio, con estructura académica completa, desarrollo metodológico y soporte de contenido basado en investigación.'),
-('Tesis Plan de Suficiencia Profesional','SP',  19.99, TRUE, 'Desarrollo de tesis orientada a la experiencia profesional del usuario, incluyendo análisis de actividades laborales, sustento teórico y redacción académica formal.'),
-('Tesis Plan de Innovación','PI',  19.99, TRUE, 'Elaboración de tesis enfocada en proyectos innovadores, con enfoque creativo, tecnológico o de mejora de procesos dentro de una organización.'),
-('Plan Negocio Urbano', 'PNU',  199.99, TRUE, 'Desarrollo integral de planes de negocio orientados a entornos urbanos, considerando análisis de mercado, competencia, viabilidad financiera y estrategias de implementación.'),
-('Plan Negocio Rural','PNR', 199.99, TRUE, 'Elaboración de planes de negocio enfocados en zonas rurales, con análisis de recursos locales, sostenibilidad, impacto comunitario y viabilidad económica.'),
-('Membresía', 'M', 199.99, TRUE, 'Acceso completo a la plataforma durante el periodo de suscripción, incluyendo generación de contenidos con inteligencia artificial, exportación a Word y soporte académico.' ),
-('Cupón Descuento', 'CD', 199.99, TRUE, 'Código promocional que permite acceder a descuentos especiales en los servicios disponibles dentro de la plataforma.');
+('Tesis Plan de Negocio','PN',  0, TRUE, 'Servicio de elaboración de tesis enfocado en planes de negocio, con estructura académica completa, desarrollo metodológico y soporte de contenido basado en investigación.'),
+('Tesis Plan de Suficiencia Profesional','SP',  0, TRUE, 'Desarrollo de tesis orientada a la experiencia profesional del usuario, incluyendo análisis de actividades laborales, sustento teórico y redacción académica formal.'),
+('Tesis Plan de Innovación','PI',  0, TRUE, 'Elaboración de tesis enfocada en proyectos innovadores, con enfoque creativo, tecnológico o de mejora de procesos dentro de una organización.'),
+('Plan Negocio Urbano', 'PNU',  0, TRUE, 'Desarrollo integral de planes de negocio orientados a entornos urbanos, considerando análisis de mercado, competencia, viabilidad financiera y estrategias de implementación.'),
+('Plan Negocio Rural','PNR', 0, TRUE, 'Elaboración de planes de negocio enfocados en zonas rurales, con análisis de recursos locales, sostenibilidad, impacto comunitario y viabilidad económica.');
 
 -- CAPITULOS
 INSERT INTO sections (title, description, type , is_active, order_index, objective)
@@ -308,37 +306,65 @@ VALUES                      ( 1 , 24 ),( 1 , 25 ),( 1 , 26 ),( 1 , 27 ),( 1 , 28
 
 
 
--- Precios de los planes 
-INSERT INTO plan_prices (plan_id, billing_cycle, price)
+INSERT INTO packages ( name, description, duration_months, local_price, international_price, unit_price, benefits , num_plans) 
 VALUES
-(1, 'monthly', 19.99),
-(1, 'yearly', 199.99),
-(1, 'lifetime', 249.99),
-(2, 'monthly', 19.99),
-(2, 'yearly', 199.99),
-(2, 'lifetime', 249.99),
-(3, 'monthly', 19.99),
-(3, 'yearly', 199.99),
-(3, 'lifetime', 249.99),
-(4, 'monthly', 19.99),
-(4, 'yearly', 199.99),
-(4, 'lifetime', 249.99),
-(5, 'monthly', 19.99),
-(5, 'yearly', 199.99),
-(5, 'lifetime', 249.99);
+                ( 'ValiPlan Junior', '', 1, 0, 0, 0, 'Acceso básico, a un proyecto, 3 capítulos básicos', 1 ),
 
+                ( 'Emprendedor', '', 3, 97, 26, 97, 'Acceso completo a 1 proyecto, con descarga de documento al completar.', 1 ),
+                ( 'Productivo', '', 3, 97, 26, 97, 'Acceso completo a 1 proyecto, con descarga de documento al completar.' , 2),
+
+                ( 'Profesional', '', 5, 349, 94, 349, 'Acceso completo a 1 proyecto tesis , con descarga de documento al completar.', 1 ),
+                ( 'Profesional Duo', '', 6, 497, 133, 248.5, 'Acceso completo a 2 proyectos tesis , con descarga de documento al completar.', 2 ),
+
+                ( 'Asesor senior', '', 6, 499, 134, 166, 'Acceso completo a 3 proyecto tesis , con descarga de documento al completar.', 3 ),
+                ( 'Asesor ejecutivo', '', 12, 997, 267, 166, 'Acceso completo a 6 proyecto tesis , con descarga de documento al completar.', 6 ),
+
+                ( 'Corporativo Emprende pro', '', 12, 69 , 18, 69, 'Acceso completo de 50 a 100 proyectos tesis , con descarga de documento al completar.', 50 ),
+                ( 'Corporativo pro', '', 12, 179 , 48, 179, 'Acceso completo de 50 a 100 proyectos tesis, 2 capacitaciones, reportes por docente,  con descarga de documento al completar.', 100 );
+
+
+INSERT INTO package_plan (package_id, plan_id)
+VALUES
+    (1, 4),
+    (1, 5),
+    (2, 4),
+    (2, 5),
+    (3, 1),
+    (3, 2),
+    (3, 3),
+    (3, 4),
+    (3, 5),
+    (4, 1),
+    (4, 2),
+    (4, 3),
+    (4, 4),
+    (4, 5),
+    (5, 1),
+    (5, 2),
+    (5, 3),
+    (5, 4),
+    (5, 5),
+    (6, 1),
+    (6, 2),
+    (6, 3),
+    (6, 4),
+    (6, 5),
+    (7, 1),
+    (7, 2),
+    (7, 3),
+    (7, 4),
+    (7, 5),
+    (8, 1),
+    (8, 2),
+    (8, 3),
+    (8, 4),
+    (8, 5),
+    (9, 1),
+    (9, 2),
+    (9, 3),
+    (9, 4),
+    (9, 5);
 
             
-
-
-
-
-            
-
-
-
-
-
-
 
 

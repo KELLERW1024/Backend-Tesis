@@ -85,7 +85,7 @@ class CouponController extends Controller
     public function index()
     {
         return response()->json([
-            'data' => Coupon::with('plans')->get()
+            'data' => Coupon::with('packages')->get()
         ]);
     }
 
@@ -105,27 +105,27 @@ class CouponController extends Controller
             'is_active' => 'boolean',
 
             // 🔥 IMPORTANTE
-            'plan_ids' => 'required|array',
-            'plan_ids.*' => 'exists:plans,id',
+            'package_ids' => 'required|array',
+            'package_ids.*' => 'exists:packages,id',
         ]);
 
         try {
 
             $coupon = DB::transaction(function () use ($validated) {
 
-                $planIds = $validated['plan_ids'];
-                unset($validated['plan_ids']);
+                $packageIds = $validated['package_ids'];
+                unset($validated['package_ids']);
 
                 $coupon = Coupon::create($validated);
 
-                $coupon->plans()->sync($planIds);
+                $coupon->packages()->sync($packageIds);
 
                 return $coupon;
             });
 
             return response()->json([
                 'message' => 'Cupón creado correctamente',
-                'data' => $coupon->load('plans')
+                'data' => $coupon->load('packages')
             ], 201);
 
         } catch (\Throwable $e) {
@@ -140,7 +140,7 @@ class CouponController extends Controller
     public function show($id)
     {
          return response()->json([
-            'data' => Coupon::with('plans')->get()
+            'data' => Coupon::with('packages')->get()
         ]);
     }
     // ACTUALIZAR

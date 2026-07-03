@@ -5,6 +5,7 @@ use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\IaController;
 use App\Http\Controllers\Coupon\CouponController;
 use App\Http\Controllers\Document\DocumentController;
+use App\Http\Controllers\Package\PackageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -42,6 +43,10 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::get('/plans/getplanid', [PlanesController::class, "getPlanId"]);
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
+
+    Route::get('packages',[PackageController::class,'index']);
+    Route::get('getpackageplans',[PackageController::class,'getPackagePlans']);
+
 
 
     Route::post('/conversation/validateAnswerResponse',[IaController::class,'validateAnswerResponse']);

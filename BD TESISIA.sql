@@ -34,7 +34,7 @@ CREATE TABLE users (
 ) ENGINE=InnoDB;
 
 -- ============================================
--- PLANS (PLANES DE SUSCRIPCIÓN)
+-- PLANS 
 -- ============================================
 
 CREATE TABLE plans (
@@ -47,51 +47,12 @@ CREATE TABLE plans (
     max_sections INT NULL,
     max_messages INT NULL,
     max_exports INT NULL,
-    billing_cycle ENUM('monthly','yearly','lifetime') DEFAULT 'monthly',
     is_active BOOLEAN DEFAULT TRUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-
 -- ============================================
--- PLANS (VARIENTE PLAN))
--- ============================================
-CREATE TABLE plan_variants (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    plan_id BIGINT NOT NULL,
-    name VARCHAR(100),
-    code VARCHAR(10) NOT NULL,
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
-);
-
-
-
--- ============================================
--- USER_SUBSCRIPTIONS => Pone el estado en una tabla estado de suscripcion
--- ============================================
-
-CREATE TABLE user_subscriptions (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    plan_id BIGINT NOT NULL,
-    plan_variant_id BIGINT NULL,
-    provider_subscription_id VARCHAR(150),
-    status ENUM('pending','active','expired','cancelled') DEFAULT 'pending',
-
-    start_date DATETIME,
-    end_date DATETIME,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE RESTRICT,
-    FOREIGN KEY (plan_variant_id) REFERENCES plan_variants(id) ON DELETE SET NULL,
-
-    INDEX (user_id),
-    INDEX (status)
-) ENGINE=InnoDB;
-
--- ============================================
--- GENERATED COUPONS
+-- COUPONS
 -- ============================================
 CREATE TABLE coupons (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -114,34 +75,6 @@ CREATE TABLE coupons (
     is_active BOOLEAN DEFAULT TRUE,
 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
--- ============================================
--- PAYMENTS
--- ============================================
-
-CREATE TABLE payments (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    subscription_id BIGINT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(10) DEFAULT 'USD',
-    payment_provider VARCHAR(50),
-    provider_payment_id VARCHAR(150),
-    status ENUM('pending','completed','failed','refunded') DEFAULT 'pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-    payment_type ENUM('subscription','one_time') DEFAULT 'subscription',
-
-    coupon_id BIGINT NULL,
-    discount_amount DECIMAL(10,2) DEFAULT 0,
-    final_amount DECIMAL(10,2),
-
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (subscription_id) REFERENCES user_subscriptions(id) ON DELETE CASCADE,
-    FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
-
-    INDEX (user_id),
-    INDEX (status)
 ) ENGINE=InnoDB;
 
 -- ============================================
@@ -188,7 +121,6 @@ CREATE TABLE questions (
     INDEX idx_section_order (section_id, order_index)
 ) ENGINE=InnoDB;
 
-
 -- ============================================
 -- CONVERSATIONS (MÚLTIPLES POR USUARIO) => El estado se guarda
 -- ============================================
@@ -220,7 +152,7 @@ CREATE TABLE conversation_messages (
     role ENUM('system','user','assistant') NOT NULL,
     message_text LONGTEXT NOT NULL,
     tokens_used INT,
-    image_ia_count INT DEFAULT 0;
+    image_ia_count INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
@@ -244,7 +176,7 @@ CREATE TABLE user_answers (
     conversation_id BIGINT NOT NULL,
     answer_text LONGTEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     UNIQUE (conversation_id, question_id),
 
@@ -399,6 +331,149 @@ CREATE TABLE generated_documents (
     INDEX (conversation_id)
 ) ENGINE=InnoDB;
 
+
+
+
+
+
+-- ===================================================
+
+CREATE TABLE plan_sections (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    plan_id BIGINT NOT NULL,
+    section_id BIGINT NOT NULL,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE (plan_id, section_id),
+
+    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
+
+    INDEX (plan_id),
+    INDEX (section_id)
+) ENGINE=InnoDB;
+
+
+
+
+
+-- ================= TABLAS EXCEL
+CREATE TABLE tablas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    answer_id BIGINT NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    archivo_original VARCHAR(255),
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    FOREIGN KEY (answer_id)
+        REFERENCES user_answers(id)
+        ON DELETE CASCADE
+);
+
+
+ALTER TABLE tablas
+ADD COLUMN data JSON;
+
+ALTER TABLE tablas
+ADD fuente VARCHAR(255);
+
+
+
+-- ADDDDD PAGO PAQUETES 
+CREATE TABLE packages (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    duration_months INT NOT NULL,
+    local_price DECIMAL(10,2) NOT NULL,
+    international_price DECIMAL(10,2) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    benefits TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE package_plan (
+    package_id BIGINT  NOT NULL,
+    plan_id BIGINT  NOT NULL,
+
+    PRIMARY KEY (package_id, plan_id),
+
+    FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+);
+
+-- ============================================
+-- USER_SUBSCRIPTIONS => Pone el estado en una tabla estado de suscripcion
+-- ============================================
+
+CREATE TABLE user_subscriptions (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    package_id BIGINT NOT NULL,
+    plan_id BIGINT NULL,
+    provider_subscription_id VARCHAR(150),
+    status ENUM('pending','active','expired','cancelled') DEFAULT 'pending',
+
+    start_date DATETIME,
+    end_date DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE RESTRICT,
+
+    INDEX (user_id),
+    INDEX (status)
+) ENGINE=InnoDB;
+
+-- ============================================
+-- GENERATED coupon_plans 
+-- ============================================
+CREATE TABLE coupon_package (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+
+    coupon_id BIGINT NOT NULL,
+    package_id BIGINT NOT NULL,
+
+    FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
+    FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE,
+
+    UNIQUE (coupon_id, package_id)
+) ENGINE=InnoDB;
+
+
+-- ============================================
+-- PAYMENTS
+-- ============================================
+CREATE TABLE payments (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    subscription_id BIGINT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'USD',
+    payment_provider VARCHAR(50),
+    provider_payment_id VARCHAR(150),
+    status ENUM('pending','completed','failed','refunded') DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    payment_type ENUM('subscription','one_time') DEFAULT 'subscription',
+
+    coupon_id BIGINT NULL,
+    discount_amount DECIMAL(10,2) DEFAULT 0,
+    final_amount DECIMAL(10,2),
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (subscription_id) REFERENCES user_subscriptions(id) ON DELETE CASCADE,
+    FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
+
+    INDEX (user_id),
+    INDEX (status)
+) ENGINE=InnoDB;
+
+
 -- ================================================
 -- La tabla payment_events se usa cuando quieres guardar todos los eventos o notificaciones que envía la pasarela, no solo el pago final.
 -- ================================================
@@ -439,53 +514,6 @@ CREATE TABLE coupon_redemptions (
     INDEX (user_id)
 ) ENGINE=InnoDB;
 
-
--- ============================================
--- GENERATED coupon_plans 
--- ============================================
-CREATE TABLE coupon_plans (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-
-    coupon_id BIGINT NOT NULL,
-    plan_id BIGINT NOT NULL,
-
-    FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE,
-
-    UNIQUE (coupon_id, plan_id)
-) ENGINE=InnoDB;
-
--- ===================================================
-
-CREATE TABLE plan_sections (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    plan_id BIGINT NOT NULL,
-    section_id BIGINT NOT NULL,
-
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-    UNIQUE (plan_id, section_id),
-
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
-
-    INDEX (plan_id),
-    INDEX (section_id)
-) ENGINE=InnoDB;
-
--- ============================================
--- plan_variant_sections
--- ============================================
-CREATE TABLE plan_variant_sections (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    plan_variant_id BIGINT NOT NULL,
-    section_id BIGINT NOT NULL,
-
-    UNIQUE (plan_variant_id, section_id),
-    FOREIGN KEY (plan_variant_id) REFERENCES plan_variants(id) ON DELETE CASCADE,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
-);
-
 -- ============================================
 -- user_token_quota
 -- ============================================
@@ -509,6 +537,7 @@ CREATE TABLE user_token_quota (
     INDEX (period_end)
 ) ENGINE=InnoDB;
 
+
 -- ==========================
 ALTER TABLE conversations
 ADD subscription_id BIGINT NULL;
@@ -527,97 +556,6 @@ ADD created_at DATETIME NULL;
 ALTER TABLE conversations
 ADD updated_at DATETIME NULL;
 
--- ================= TABLAS EXCEL
-CREATE TABLE tablas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    answer_id BIGINT NOT NULL,
-    nombre VARCHAR(255) NOT NULL,
-    archivo_original VARCHAR(255),
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-
-    FOREIGN KEY (answer_id)
-        REFERENCES user_answers(id)
-        ON DELETE CASCADE
-);
-
--- =========================
--- COLUMNAS
--- =========================
-CREATE TABLE tablas_columnas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tabla_id BIGINT NOT NULL,
-    posicion INT NOT NULL,
-    nombre VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-
-    FOREIGN KEY (tabla_id)
-        REFERENCES tablas(id)
-        ON DELETE CASCADE,
-
-    UNIQUE (tabla_id, posicion)
-);
-
--- =========================
--- FILAS
--- =========================
-CREATE TABLE tablas_filas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tabla_id BIGINT NOT NULL,
-    posicion INT NOT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-
-    FOREIGN KEY (tabla_id)
-        REFERENCES tablas(id)
-        ON DELETE CASCADE,
-
-    UNIQUE (tabla_id, posicion)
-);
-
--- =========================
--- CELDAS
--- =========================
-CREATE TABLE tablas_celdas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    fila_id BIGINT NOT NULL,
-    columna_id BIGINT NOT NULL,
-    valor LONGTEXT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-
-    FOREIGN KEY (fila_id)
-        REFERENCES tablas_filas(id)
-        ON DELETE CASCADE,
-
-    FOREIGN KEY (columna_id)
-        REFERENCES tablas_columnas(id)
-        ON DELETE CASCADE,
-
-    UNIQUE (fila_id, columna_id)
-);
-
-ALTER TABLE tablas
-ADD COLUMN data JSON;
-
-ALTER TABLE tablas
-ADD fuente VARCHAR(255);
-
-CREATE TABLE plan_prices (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  plan_id BIGINT NOT NULL,
-  billing_cycle ENUM('monthly','yearly','lifetime'),
-  price DECIMAL(10,2) NOT NULL,
-  FOREIGN KEY (plan_id) REFERENCES plans(id)
-);
-
-CREATE TABLE plan_price_features (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  plan_price_id BIGINT NOT NULL,
-  features JSON NULL;
-  FOREIGN KEY (plan_price_id) REFERENCES plan_prices(id)
-);
 
 
 ALTER TABLE payments
@@ -626,3 +564,9 @@ ADD COLUMN security_code VARCHAR(100) NULL,
 ADD COLUMN voucher_path VARCHAR(255) NULL;
 ALTER TABLE payments
 ADD COLUMN updated_at DATETIME NULL;
+
+ALTER TABLE packages
+ADD COLUMN num_plans INT NOT NULL DEFAULT 0;
+
+ALTER TABLE packages
+ADD COLUMN is_active INT NOT NULL DEFAULT 1;

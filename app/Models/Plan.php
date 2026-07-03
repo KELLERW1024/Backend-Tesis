@@ -38,4 +38,14 @@ class Plan extends Model
     {
         return $this->belongsToMany(Coupon::class, 'coupon_plans');
     }
+
+    public function packages()
+    {
+        return $this->belongsToMany(
+            Package::class,
+            'package_plan',
+            'plan_id',
+            'package_id'
+        );
+    }
 }
