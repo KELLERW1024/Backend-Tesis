@@ -101,7 +101,9 @@ class ConversationController extends Controller
         }
 
        $conversations = Conversation::with([
-                                            'subscription.plan',
+                                            'plan',
+                                            'subscription.package',
+                                            // 'subscription.plan',
                                             'subscription.payments',
                                             'sectionProgress.section'
                                             ]) ->where('user_id', $user->id)->get();
@@ -114,7 +116,8 @@ class ConversationController extends Controller
 
             'conversations' => $conversations->map(function ($conversation) {
 
-                $planName = $conversation->subscription?->plan?->name;
+                $packageName = $conversation->subscription?->package?->name;
+                $planName = $conversation -> plan?->name; 
 
                 $paymentStatus = $conversation->subscription?->payments
                                                                 ?->sortByDesc('created_at')
@@ -126,6 +129,7 @@ class ConversationController extends Controller
                     'status' => $conversation->status,
                     'title' => $conversation->title,
                     'plan_name' => $planName,
+                    'package_name' => $packageName,
                     'payment_status' => $paymentStatus,
                 ];
             }),
@@ -134,72 +138,84 @@ class ConversationController extends Controller
         return response()->json($data);
     }
 
-    public function getSuscriptionConversation( Request $request ){
-    $user = auth()->user();
+    public function getConversationPlan( Request $request ){
+        $user = auth()->user();
 
-    if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401);
-    }
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-    $userId = auth()->id();
-    $idSuscriptionConversation = $request->get('idConversation');
-    
+        $userId = auth()->id();
+        $idConversation = $request->get('idConversation');
+        
 
-    $subscription = UserSubscription::with([
-        'plan.sections' => function ($q) {
-            $q->where('is_active', true)
-            ->orderBy('order_index');
-        },
-        'plan.sections.questions',
-    ])
-    ->where('id', $idSuscriptionConversation)
-    ->where('user_id', auth()->id())
-    ->firstOrFail();
-
-    $answers = UserAnswers::where('conversation_id', $idSuscriptionConversation)
+        // $subscription = UserSubscription::with([
+        //     'plan.sections' => function ($q) {
+        //         $q->where('is_active', true)
+        //         ->orderBy('order_index');
+        //     },
+        //     'plan.sections.questions',
+        // ])
+        // ->where('id', $idConversation)
+        // ->where('user_id', auth()->id())
+        // ->firstOrFail();
+        //\
+        $conversation = Conversation::with([  
+            'plan.sections'=> function ($q) {
+                $q->where('is_active', true)
+                ->orderBy('order_index');
+            },
+            'plan.sections.questions',
+         ])
+        ->where('id', $idConversation)
         ->where('user_id', auth()->id())
-        ->get();
+        ->firstOrFail();
+        //
 
-    $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idSuscriptionConversation)
-        ->where('user_id', auth()->id())
-        ->get()
-        ->keyBy('section_id');
+        $answers = UserAnswers::where('conversation_id', $idConversation)
+            ->where('user_id', auth()->id())
+            ->get();
 
-    $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
+        $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idConversation)
+            ->where('user_id', auth()->id())
+            ->get()
+            ->keyBy('section_id');
 
-    $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
+        $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
 
-    $subscription->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
+        $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
 
-        // answer de section
-        $section->setAttribute(
-            'answer',
-            $answersSections[$section->id]->answer_text ?? null
-        );
-        //progress de section
-        $section->setAttribute(
-            'progress',
-            $progressSectionConversation[$section->id]->status ?? null
-        );
+        $conversation->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
 
-
-        // answers de questions
-        $section->questions->each(function ($question) use ($answersQuestions) {
-
-            $question->setAttribute(
+            // answer de section
+            $section->setAttribute(
                 'answer',
-                $answersQuestions[$question->id]->answer_text ?? null
+                $answersSections[$section->id]->answer_text ?? null
             );
+            //progress de section
+            $section->setAttribute(
+                'progress',
+                $progressSectionConversation[$section->id]->status ?? null
+            );
+
+
+            // answers de questions
+            $section->questions->each(function ($question) use ($answersQuestions) {
+
+                $question->setAttribute(
+                    'answer',
+                    $answersQuestions[$question->id]->answer_text ?? null
+                );
+
+            });
 
         });
 
-    });
-
         
 
-    return new SubscriptionResource($subscription);
+        return new SubscriptionResource($conversation);
     //return response()->json($progress);
-}
+    }
 
 // =====================================================================
 // ========================================================
@@ -214,29 +230,41 @@ class ConversationController extends Controller
     }
 
     $userId = auth()->id();
-    $idSuscriptionConversation = $request->get('idConversation');
+    $idConversation = $request->get('idConversation');
     
 
-    $subscription = UserSubscription::with([
-        'plan.sections' => function ($q) {
-            $q->where('is_active', true)
-            ->orderBy('order_index');
-        },
-        'plan.sections.questions',
-    ])
-    ->where('id', $idSuscriptionConversation)
-    ->where('user_id', auth()->id())
-    ->firstOrFail();
+    // $subscription = UserSubscription::with([
+    //     'plan.sections' => function ($q) {
+    //         $q->where('is_active', true)
+    //         ->orderBy('order_index');
+    //     },
+    //     'plan.sections.questions',
+    // ])
+    // ->where('id', $idSuscriptionConversation)
+    // ->where('user_id', auth()->id())
+    // ->firstOrFail();
+     $conversation = Conversation::with([  
+            'plan.sections'=> function ($q) {
+                $q->where('is_active', true)
+                ->orderBy('order_index');
+            },
+            'plan.sections.questions',
+         ])
+        ->where('id', $idConversation)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
+
+    
 
     // $answers = UserAnswers::where('conversation_id', $idSuscriptionConversation)
     //     ->where('user_id', auth()->id())
     //     ->get();
     $answers = UserAnswers::with('files')
-    ->where('conversation_id', $idSuscriptionConversation)
+    ->where('conversation_id', $idConversation)
     ->where('user_id', auth()->id())
     ->get();
 
-    $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idSuscriptionConversation)
+    $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idConversation)
         ->where('user_id', auth()->id())
         ->get()
         ->keyBy('section_id');
@@ -245,7 +273,7 @@ class ConversationController extends Controller
 
     $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
 
-    $subscription->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
+    $conversation->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
 
         // answer de section
         $section->setAttribute(
@@ -304,7 +332,7 @@ class ConversationController extends Controller
 
         
 
-    return new SubscriptionResource($subscription);
+    return new SubscriptionResource($conversation);
     }
 
     public function updateTitleConversation(Request $request)

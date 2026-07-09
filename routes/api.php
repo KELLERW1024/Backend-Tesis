@@ -61,7 +61,7 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::get('/conversation/conversationsUser',[ConversationController::class,'conversationsUser']);
     Route::get('/conversation/conversationplanuser',[ConversationController::class,'getConversationPlanUser']);
 
-    Route::get('conversation/suscriptionconversation',[ConversationController::class,'getSuscriptionConversation']);
+    Route::get('conversation/conversationPlan',[ConversationController::class,'getConversationPlan']);
 
     Route::post('coupon/savecoupon',[CouponController::class,'saveCoupon']);
     Route::get('coupons',[CouponController::class,'index']);
@@ -69,6 +69,7 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::post('/payment', [PagoController::class, 'payment']);
     Route::post('/payment/yape', [PagoController::class, 'registerYapePayment']);
+    Route::post('/payment/free', [PagoController::class, 'registerFree']);
 
     Route::get('/payment/getpayments', [PagoController::class, 'getPayments']);
 

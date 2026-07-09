@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Services\ConversationService;
 use App\Services\OpenAIService;
+use App\Services\ReplicateService;
 use App\Models\Section;
 
 
@@ -22,6 +23,7 @@ class IaController extends Controller
     protected OpenAIService $openAIService,
     protected PromptService $promptService,
     protected UploadService $uploadService,
+      private ReplicateService $replicateService
 
     ) {}
 
@@ -165,6 +167,12 @@ class IaController extends Controller
                     $replyTable = null;
                 }
             }
+
+            // CONDICIONAL PARA CREAR LA IMAGEN
+            $image = $this->replicateService->generateImage(
+                $data['response']
+            );
+
             
 
             //$respuestaImage = $this->openAIService->generateImages( $documentContent );
@@ -175,8 +183,8 @@ class IaController extends Controller
             return response()->json([
                 'is_valid' => true , 
                 'response' => json_decode($reply, true),
-                'table' => $replyTable
-                //'images' => $respuestaImage
+                'table' => $replyTable ,
+                'image' => $image,
             ]);
             //return response()-> json( json_decode($reply, true) );
 

@@ -20,21 +20,33 @@ class ConversationService
     {
         $this->excelService = $excelService;
     }
-    public function startConversation($userId, $planId)
-    {
-         return DB::transaction(function () use ($userId, $planId) {
 
-            // ✔ Siempre crear nueva suscripción
+    public function registerUserSuscription( $userId, $packageId ){
+
+        return DB::transaction(function () use ($userId, $packageId) {
+
             $subscription = UserSubscription::create([
                 'user_id' => $userId,
-                'plan_id' => $planId,
+                'package_id' => $packageId,
                 'status' => 'active',
             ]);
+
+            return [
+                'status' => 200,
+                'subscription_id' => $subscription->id
+            ];
+        });
+
+    }
+    public function startConversation($userId, $planId, $suscriptionId )
+    {
+         return DB::transaction(function () use ($userId,  $planId, $suscriptionId) {
 
             // ✔ Crear conversación asociada a esa suscripción
             $conversation = Conversation::create([
                 'user_id' => $userId,
-                'subscription_id' => $subscription->id,
+                'plan_id' => $planId,
+                'subscription_id' => $suscriptionId ,
                 'status' => 'active',
                 'title' => 'Nuevo plan',
                 'summary' => null,
@@ -45,7 +57,6 @@ class ConversationService
             // ✔ SOLO ARRAY (NO RESPONSE)
             return [
                 'status' => 200,
-                'subscription_id' => $subscription->id,
                 'conversation_id' => $conversation->id
             ];
         });

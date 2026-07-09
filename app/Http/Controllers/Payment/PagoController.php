@@ -14,9 +14,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use MercadoPago\Client\Common\RequestOptions;
 use App\Models\Plan;
+use App\Models\Package;
 use App\Models\CouponRedemption;
 use Illuminate\Support\Facades\Log;
 use App\Models\Conversation;
+
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -158,11 +161,83 @@ class PagoController extends Controller
             ], 500);
         }
     }
+   
+    public function registerFree(Request $request)
+    {
+        $request->validate([
+            'package_id' => 'required|integer|exists:packages,id',
+            'plans' => 'required|array|min:1',
+            'plans.*' => 'integer|exists:plans,id',
+           
+        ]);
+
+        try {
+
+            $result = DB::transaction(function () use ($request) {
+
+                $packageId = $request->package_id;
+                $plans = $request->plans;
+
+                $conversationsIds = [];
+
+                $suscriptionResult = $this->conversationService->registerUserSuscription( auth()->id(), $packageId );
+                //Pago
+                $payment = Payments::create([
+                    'user_id' => auth()->id(),
+                    'amount' => 0,
+                    'final_amount' => 0,
+                    'payment_provider' => 'free',
+                    'status' => 'completed',
+                    'subscription_id' => $suscriptionResult['subscription_id'],
+                ]);
+
+                foreach ( $plans as $planId ) {
+
+                    $conversationResult = $this->conversationService->startConversation(
+                        auth()->id(), 
+                        $planId ,
+                        $suscriptionResult['subscription_id'],
+                    );
+
+                    if (!$conversationResult) {
+                        throw new \Exception('Error al crear la conversación para el plan ' . $planId);
+                    }
+
+                    $conversationsIds[] = $conversationResult['conversation_id'];
+                }
+
+                return [
+                    'payment_id' => $payment->id,
+                    'subscription_id' => $suscriptionResult['subscription_id'],
+                    'conversation_ids' => $conversationsIds,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pago registrado correctamente',
+                'payment_id' => $result['payment_id'],
+                'subscription_id' => $result['subscription_id'],
+                'conversation_ids' => $result['conversation_ids']
+            ]);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 
     public function registerYapePayment(Request $request)
     {
+        \Log::info($request->all());
+
         $request->validate([
-            'plan_id' => 'required|exists:plans,id',
+            'package_id' => 'required|exists:packages,id',
+            'plans' => 'required|array|min:1',
+            'plans.*' => 'exists:plans,id',
             'security_code' => 'required|string',
             'operation_number' => 'required|unique:payments,operation_number',
             'voucher' => 'nullable|image|max:5120',
@@ -171,13 +246,12 @@ class PagoController extends Controller
             'discount_amount' => 'nullable|numeric|min:0',
             'final_amount'    => 'nullable|numeric|min:0',
         ]);
-
         try {
 
             $result = DB::transaction(function () use ($request) {
 
-                // 🔹 Plan
-                $plan = Plan::findOrFail($request->plan_id);
+                $packageId = $request->package_id;
+                $plans = $request->plans;
 
                 // 🔹 Cupón (opcional)
                 $coupon = null;
@@ -203,21 +277,41 @@ class PagoController extends Controller
                         ->store('payments/yape', 'public');
                 }
 
-                // 🔹 Conversación + suscripción
-                $conversationResult = $this->conversationService->startConversation(
-                    auth()->id(),
-                    $plan->id
-                );
+                //
+
+                $conversationsIds = [];
+
+                $suscriptionResult = $this->conversationService->registerUserSuscription( auth()->id(), $packageId );
+
+                // 🔹 Plan
+                $package = Package::findOrFail($packageId);
+
+                foreach ($request->plans as $planId) {
+                    // 🔹 Conversación
+                    $conversationResult = $this->conversationService->startConversation(
+                        auth()->id(), 
+                        $planId ,
+                        $suscriptionResult['subscription_id'],
+                    );
+
+                    if (!$conversationResult) {
+                        throw new \Exception('Error al crear la conversación para el plan ' . $planId);
+                    }
+
+                    $conversationsIds[] = $conversationResult['conversation_id'];
+                }
+
+                
 
                 // 🔹 Montos
-                $originalAmount = $plan->price;
+                $originalAmount = $package->local_price;
                 $discountAmount = $request->discount_amount ?? 0;
-                $finalAmount = $request->final_amount ?? $plan->price;
+                $finalAmount = $request->final_amount ?? $package->local_price;
 
                 // 🔹 Pago
                 $payment = Payments::create([
                     'user_id' => auth()->id(),
-                    'plan_id' => $plan->id,
+                    'subscription_id' => $suscriptionResult['subscription_id'],
                     'coupon_id' => $coupon?->id,
                     'security_code' => $request->security_code,
                     'operation_number' => $request->operation_number,
@@ -229,7 +323,7 @@ class PagoController extends Controller
 
                     'payment_provider' => 'yape',
                     'status' => 'pending',
-                    'subscription_id' => $conversationResult['subscription_id'],
+                    
                 ]);
 
                 // 🔹 Redención de cupón
@@ -245,8 +339,8 @@ class PagoController extends Controller
 
                 return [
                     'payment_id' => $payment->id,
-                    'conversation_id' => $conversationResult['conversation_id'],
-                    'subscription_id' => $conversationResult['subscription_id'],
+                    'subscription_id' => $suscriptionResult['subscription_id'],
+                    'conversation_ids' => $conversationsIds,
                 ];
             });
 
@@ -254,7 +348,7 @@ class PagoController extends Controller
                 'success' => true,
                 'message' => 'Pago registrado correctamente',
                 'payment_id' => $result['payment_id'],
-                'conversation_id' => $result['conversation_id'],
+                'conversation_id' => $result['conversation_ids'],
                 'subscription_id' => $result['subscription_id']
             ]);
 

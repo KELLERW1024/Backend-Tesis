@@ -12,6 +12,7 @@ class Conversation extends Model
 
     protected $fillable = [
         'user_id',
+        'plan_id',
         'subscription_id',
         'title',
         'summary',
@@ -37,5 +38,10 @@ class Conversation extends Model
     public function subscription()
     {
         return $this->belongsTo(UserSubscription::class, 'subscription_id');
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
     }
 }

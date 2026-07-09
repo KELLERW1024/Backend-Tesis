@@ -570,3 +570,9 @@ ADD COLUMN num_plans INT NOT NULL DEFAULT 0;
 
 ALTER TABLE packages
 ADD COLUMN is_active INT NOT NULL DEFAULT 1;
+
+ALTER TABLE conversations
+    ADD COLUMN plan_id BIGINT NOT NULL,
+    ADD CONSTRAINT fk_conversations_plan
+        FOREIGN KEY (plan_id) REFERENCES plans(id),
+    ADD INDEX idx_conversations_plan (plan_id);

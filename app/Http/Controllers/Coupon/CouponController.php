@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Coupon;
 
 use App\Http\Controllers\Controller;
+use App\Models\Package;
 use Illuminate\Http\Request;
 
 use App\Models\Coupon;
@@ -16,13 +17,10 @@ class CouponController extends Controller
     //
     public function validateCoupon(Request $request)
     {
-       Log::info('🔵 Iniciando validación de cupón', [
-            'request' => $request->all()
-        ]);
 
         $request->validate([
             'code' => 'required',
-            'plan_id' => 'required|exists:plans,id'
+            'package_id' => 'required|exists:packages,id'
         ]);
 
         $coupon = Coupon::where('code', $request->code)
@@ -45,13 +43,13 @@ class CouponController extends Controller
             ], 422);
         }
 
-        $plan = Plan::findOrFail($request->plan_id);
+        $package = Package::findOrFail($request->package_id);
 
-        $price = $plan->price;
+        $price = $package->local_price;
 
         // validar si aplica al plan
-        $applies = $coupon->plans()
-            ->where('plans.id', $plan->id)
+        $applies = $coupon->packages()
+            ->where('packages.id', $package->id)
             ->exists();
 
         if (!$applies) {
