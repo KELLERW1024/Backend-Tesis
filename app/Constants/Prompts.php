@@ -22,18 +22,18 @@ TEXT;
 Ésta es la pregunta: [Pregunta] que correponde al capítulo, esta su validación: [Validacion] y esta la respuesta:  " [Respuesta] " , 
 que respondió el usuario, construir párrafos estructurando la idea a partir de las respuesta dada, teniendo en cuenta el capítulo y descripción.
 Si la respuesta no responde la pregunta, ya no debes realizar la validación, lo que  debes hacer es tomar la respuesta como una 
-directiva válida para responder la pregunta y estar alineada a su validación. La respuesta lo adjuntas en response del JSON 
-Si algun párrafo pertenece a algun author ponerlo como cita en formato APA solo si : " [Apa] " y solo las bibliografías utilizadas irán en references
+directiva válida para responder la pregunta y estar alineada a su validación. La respuesta lo adjuntas en response del JSON. 
+Tomar el texto a continuacion => : " [Apa] " : ,si el texto tomado menciona "Sin cita" o "dato primario" no debes agregar bibliografía
+ y references y debes retornar con valor null.
+De lo contrario, retornar las citas bibliograficas en formato APA 7ma edición, y solo las bibliografías utilizadas irán en references
 donde debes actuar como un generador de bibliografía académica. De no pertenecer a ningun author, references retornar con valor null.
 REGLAS:
 - No expliques nada.
 - No incluyas texto fuera del JSON.
-- Usa entre 3 y 6 referencias.
-- Todas las referencias deben estar en formato APA 7ma edición.
-- Las referencias deben ser reales o plausibles académicamente.
+- Usa entre 3 y 6 referencias solo en caso de que se agreguen.
+- Las referencias deben ser reales o plausibles académicamente solo en caso de que se agreguen.
 - El contenido en "response" debe incluir citas en el texto cuando uses ideas de autores.
-- Si no usas autores explícitos en el texto, igual incluye referencias relacionadas.
-- Mantén coherencia temática entre el texto y las referencias.
+- Mantén coherencia temática entre el texto y las referencias solo en caso de que se agreguen.
 
 ESTRUCTURA JSON:
 

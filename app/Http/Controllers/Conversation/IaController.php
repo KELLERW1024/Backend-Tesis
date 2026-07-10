@@ -141,6 +141,7 @@ class IaController extends Controller
 
     public function responseIA( Request $request, array $data, string $documentContent, string $imageContent ){
             //  $isVisual = $request->boolean('is_visual');
+        try {
 
             $objective = Section::where('id', $data['idSection'] )->value('objective');
             \Log::info(' OBJECTIVE : ' . $objective );
@@ -153,9 +154,7 @@ class IaController extends Controller
             \Log::info(' MESSAGGES : ' , $messages );
 
             $reply = $this->openAIService->chat($messages);
-            // $messagesString = collect($messages)
-            //         ->pluck('content')
-            //         ->implode("\n\n");
+           
             $messageTable = $this->promptService->buildMessageTable(  $data['response'] );
             $replyTable = null; 
             if($data['generate_table'] == true ){
@@ -169,16 +168,17 @@ class IaController extends Controller
             }
 
             // CONDICIONAL PARA CREAR LA IMAGEN
-            $image = $this->replicateService->generateImage(
-                $data['response']
-            );
+            $image = null;
+            if( $data['is_visual']  ){
+                 $image = $this->replicateService->generateImage(
+                    'la imagen tiene que ser lo mas realista posible sobre el tema : ' . $data['response']
+                );
+            }
 
-            
-
-            //$respuestaImage = $this->openAIService->generateImages( $documentContent );
+            // ADD CONVERSATION A LA BITACORA
+            $this->saveBitacoraConversation($data, $reply);
+           
             \Log::error('REPLY => {}' .  $reply );
-
-            /// GENERAR IMAGEN CON IA Y PONER EN CADA LLAMADA AL AI POR MENSAJE EN EL  CAMPO IMAGE_IA_COUNT DE LA TABLA 
             
             return response()->json([
                 'is_valid' => true , 
@@ -187,7 +187,33 @@ class IaController extends Controller
                 'image' => $image,
             ]);
             //return response()-> json( json_decode($reply, true) );
+         } catch (\Throwable $e) {
 
+            \Log::error('Error en responseIA', [
+                'exception' => $e,
+                'conversation_id' => $data['idConversation'] ?? null,
+            ]);
+
+            return response()->json([
+                'is_valid' => false,
+                'message' => 'Ocurrió un error al procesar la solicitud.',
+            ], 500);
+        }
+
+    }
+    private function saveBitacoraConversation(array $data, string $reply): void
+    {
+        $this->conversationService->saveMessage(
+            $data,
+            $data['response'],
+            'user'
+        );
+
+        $this->conversationService->saveMessage(
+            $data,
+            $reply,
+            'system'
+        );
     }
     // public function validateAnswer(  Request $request, FileTextExtractorService $fileProcessor ) {
 
