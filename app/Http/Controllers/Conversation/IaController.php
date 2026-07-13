@@ -169,14 +169,18 @@ class IaController extends Controller
 
             // CONDICIONAL PARA CREAR LA IMAGEN
             $image = null;
-            if( $data['is_visual']  ){
+
+            $count_ia_image = $this->conversationService->IAimagesXQuestion( $data  );
+
+            if( $data['is_visual'] && $count_ia_image < 20 ){
                  $image = $this->replicateService->generateImage(
-                    'la imagen tiene que ser lo mas realista posible sobre el tema : ' . $data['response']
+                    "la imagen tiene que ser lo mas realista posible sobre el tema : " .  $data['response']
                 );
             }
 
             // ADD CONVERSATION A LA BITACORA
             $this->saveBitacoraConversation($data, $reply);
+            
            
             \Log::error('REPLY => {}' .  $reply );
             
@@ -185,6 +189,7 @@ class IaController extends Controller
                 'response' => json_decode($reply, true),
                 'table' => $replyTable ,
                 'image' => $image,
+                'count_ia_image' => $count_ia_image
             ]);
             //return response()-> json( json_decode($reply, true) );
          } catch (\Throwable $e) {

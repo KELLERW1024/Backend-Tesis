@@ -51,7 +51,11 @@ class ConversationController extends Controller
             'references' => 'nullable|string',
             'table' => 'nullable|string',
 
-            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:20480'
+            'url_imagen_ia' => 'nullable|string',
+            'desc_imagen_ia' => 'nullable|string',
+
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:20480', 
+
         ]);
         // \Log::error('OpenAI error: ' . $e->getMessage());
          \Log::info('DEBUG conversationSaveReply', [

@@ -13,6 +13,9 @@ use App\Models\TablaColumna;
 use App\Models\TablaFila; 
 use App\Models\TablaCelda; 
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+
 class ConversationService
 {
     public $excelService;
@@ -85,7 +88,15 @@ class ConversationService
             $conversationId = $data['idConversation'];
             $sectionId = $data['idSection'];
             $questionId = $data['idQuestion'];
-            //$reply = $data['reply'];
+
+            // Agregar image
+            if (!empty($data['is_visual']) && $data['is_visual']) {
+
+                $newImageCount = 1;
+
+            } else {
+                $newImageCount = 0;
+            }
 
 
             // Guardar mensaje 
@@ -95,6 +106,7 @@ class ConversationService
                 'question_id' => $questionId,
                 'role' => $role,
                 'message_text' => $message,
+                'image_ia_count' => $newImageCount,
                 'created_at' => now()
             ]);
 
@@ -114,9 +126,24 @@ class ConversationService
             //     );
 
             return response()->json([
-                'message' => 'Conversation Save',
+                'message' => 'Conversation Save'
             ]);
         });
+    }
+    public function IAimagesXQuestion( array $data ){
+
+        $conversationId = $data['idConversation'];
+        $questionId = $data['idQuestion'];
+         // Contar imágenes IA usadas para esta pregunta
+        $imageCount = DB::table('conversation_messages')
+        ->where('conversation_id', $conversationId)
+        ->where('question_id', $questionId)
+        ->where('role', 'user')
+        ->sum('image_ia_count');
+
+        return  $imageCount ;
+
+
     }
 
     public function saveUserAnswer(
@@ -182,6 +209,47 @@ class ConversationService
              * GUARDAR ARCHIVOS
              * ============================================
              */
+            $path = '';
+
+            if (!empty($data['url_imagen_ia'])) {
+
+                $imageResponse = Http::get($data['url_imagen_ia']);
+
+                if ($imageResponse->successful()) {
+
+                    $extension = 'webp';
+
+                    $filename = 'imagen_ia_' . time() . '.' . $extension;
+
+                    $path = "answers/{$userAnswer->id}/{$filename}";
+
+                    Storage::disk('public')->put(
+                        $path,
+                        $imageResponse->body()
+                    );
+                    $mimeType = 'image/webp';
+                    $fileSize = Storage::disk('public')->size($path);
+
+                    DB::table('answer_files')->insert([
+                        'answer_id' => $userAnswer->id,
+
+                        'file_type' => 'image',
+
+                        'file_path' => $path,
+
+                        'original_name' => 'imagen_ia.webp',
+
+                        'mime_type' => $mimeType,
+
+                        'size' => $fileSize,
+                        
+                        'description' => $data['desc_imagen_ia'],
+                        'fuente' => 'Elaboración propia',
+
+                        'created_at' => now(),
+                    ]);
+                }
+            }
             foreach ($files as $index => $file) {
 
                 $meta = $metadata[$index] ?? [];
@@ -253,6 +321,8 @@ class ConversationService
                     'created_at' => now(),
                 ]);
             }
+
+            // TABLA GENERADA X IA
             $table = isset($data['table'])  ? json_decode($data['table'], true)  : null;
 
             if (
