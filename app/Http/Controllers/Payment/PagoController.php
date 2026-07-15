@@ -32,34 +32,43 @@ class PagoController extends Controller
     {
         $this->conversationService = $conversationService;
     }
+
     public function payment(Request $request)
     {
-        MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
+        \Log::info($request->all());
 
-        $client = new PaymentClient();
+        $request->validate([
+            'package_id' => 'required|exists:packages,id',
+            'plans' => 'required|array|min:1',
+            'plans.*' => 'exists:plans,id',
 
-        $request_options = new RequestOptions();
+            'coupon_code'     => 'nullable|string',
+            'discount_amount' => 'nullable|numeric|min:0',
+            'final_amount'    => 'nullable|numeric|min:0',
+        ]);
+
+       
 
          // Evita pagos duplicados si el usuario reintenta la solicitud
         // $request_options->setCustomHeaders([
         //     'X-Idempotency-Key' => (string) Str::uuid(),
         // ]);
 
-        Log::info($request->all());
-
         try {
+            MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
+
+            $client = new PaymentClient();
+
+            $request_options = new RequestOptions();
 
             $data = $request->input('formData');
 
             $couponCode = $request->coupon_code;
 
-             // Verificamos que el plan exista 
-            $plan = Plan::findOrFail($request->plan_id);
+            // Verificamos que el paquete exista 
+            $package= Package::findOrFail($request->package_id);
 
-            $discountAmount = $request->discount_amount ?? 0 ;
-            $originalPrice = $request->original_price;
-            $finalAmount = $request->final_amount  ?? $plan->price;
-            $planId = $request->plan_id;
+            $packageId = $request->package_id;
 
             // 🔹 Cupón (opcional)
             $coupon = null;
@@ -76,31 +85,26 @@ class PagoController extends Controller
                     throw new \Exception('Ya has usado este cupón');
                 }
             }
-
-            // 🔹 Conversación + suscripción
-            $conversationResult = $this->conversationService->startConversation(
-                auth()->id(),
-                $plan->id
-            );
+            // fin verificacion cupon 
 
             $payment = $client->create([
-                // "body" => [
-                    "token" => $data['token'],
-                    "issuer_id" => $data['issuer_id'],
-                    "payment_method_id" => $data['payment_method_id'],
-                    "transaction_amount" => (float) $data['transaction_amount'],
-                    "installments" => $data['installments'] ?? 1,
-                    "payer" => [
-                        "email" => data_get($data, 'payer.email'),
-                        "identification" => [
-                            "type" => data_get($data, 'payer.identification.type'),
-                            "number" => data_get($data, 'payer.identification.number'),
+                    // "body" => [
+                        "token" => $data['token'],
+                        "issuer_id" => $data['issuer_id'],
+                        "payment_method_id" => $data['payment_method_id'],
+                        "transaction_amount" => (float) $data['transaction_amount'],
+                        "installments" => $data['installments'] ?? 1,
+                        "payer" => [
+                            "email" => data_get($data, 'payer.email'),
+                            "identification" => [
+                                "type" => data_get($data, 'payer.identification.type'),
+                                "number" => data_get($data, 'payer.identification.number'),
+                            ]
                         ]
-                    ]
-                // ]
-            ], $request_options);
+                    // ]
+                ], $request_options);
 
-            // Mapear estados de Mercado Pago a tu BD
+                // Mapear estados de Mercado Pago a tu BD
             $status = match ($payment->status) {
                 'approved' => 'completed',
                 'pending', 'in_process' => 'pending',
@@ -108,38 +112,80 @@ class PagoController extends Controller
                 'refunded', 'charged_back' => 'refunded',
                 default => 'pending',
             };
-             
-            Payments::create([
-                'user_id' => auth()->id(), 
-                'subscription_id' => $conversationResult['subscription_id'], // <-- ajusta según tu lógica
-                'amount' => $payment->transaction_amount, // revisar
-                'currency' => $payment->currency_id, // Revisar 
-                'payment_provider' => 'mercadopago',
-                'provider_payment_id' => $payment->id,
-                'status' => $status,
-                'payment_type' => 'subscription', // Pendiente
-                'coupon_id' => $coupon?->id ,
-                'discount_amount' => $discountAmount,
-                'final_amount' => $finalAmount,
-            ]);
 
-            // 🔹 Redención de cupón
-            if ($coupon) {
-                CouponRedemption::create([
-                    'coupon_id' => $coupon->id,
-                    'user_id' => auth()->id(),
-                    'payment_id' => $payment->id,
+
+            $result = DB::transaction(function () use ($request, $payment, $status, $coupon, $package  ) {
+
+                $discountAmount = $request->discount_amount ?? 0 ;
+                // $originalPrice = $request->original_price;
+                $finalAmount = $request->final_amount  ?? $package->local_price;
+               
+                // Se crea la  Conversación + suscripción solo si el estado del pago es competado
+                if ($status === 'completed') {
+
+                    $suscriptionResult = $this->conversationService->registerUserSuscription( auth()->id(), $request['package_id'] );
+
+                    $conversationsIds = [];
+
+                    foreach ($request->plans as $planId) {
+                            // 🔹 Conversación
+                            $conversationResult = $this->conversationService->startConversation(
+                                auth()->id(), 
+                                $planId ,
+                                $suscriptionResult['subscription_id'],
+                            );
+
+                            if (!$conversationResult) {
+                                throw new \Exception('Error al crear la conversación para el plan ' . $planId);
+                            }
+
+                            $conversationsIds[] = $conversationResult['conversation_id'];
+                    }
+                }
+             
+                Payments::create([
+                    'user_id' => auth()->id(), 
+                    'subscription_id' => $suscriptionResult['subscription_id'], // <-- ajusta según tu lógica
+                    'amount' => $payment->transaction_amount, // revisar
+                    'currency' => $payment->currency_id, // Revisar 
+                    'payment_provider' => 'mercadopago',
+                    'provider_payment_id' => $payment->id,
+                    'status' => $status,
+                    'payment_type' => 'subscription', // Pendiente
+                    'coupon_id' => $coupon?->id ,
                     'discount_amount' => $discountAmount,
-                    'used_at' => now(),
+                    'final_amount' => $finalAmount,
                 ]);
-            }
+
+                // 🔹 Redención de cupón
+                if ($coupon) {
+                    CouponRedemption::create([
+                        'coupon_id' => $coupon->id,
+                        'user_id' => auth()->id(),
+                        'payment_id' => $payment->id,
+                        'discount_amount' => $discountAmount,
+                        'used_at' => now(),
+                    ]);
+                }
+
+                return [
+                    'payment_id' => $payment->id,
+                    'status' => $payment->status,
+                    'status_detail' => $payment->status_detail,
+                    'amount' => $payment->transaction_amount,
+                    'subscription_id' => $suscriptionResult['subscription_id'],
+                    'conversation_ids' => $conversationsIds,
+                ];
+            });
 
              return response()->json([
                 'success' => true,
-                'payment_id' => $payment->id,
-                'status' => $payment->status,
-                'status_detail' => $payment->status_detail,
-                'amount' => $payment->transaction_amount,
+                'payment_id' => $result['payment_id'],
+                'status' => $result['status'],
+                'status_detail' => $result['status_detail'],
+                'amount' => $result['amount'],
+                'subscription_id' => $result['subscription_id'],
+                'conversation_ids' => $result['conversation_ids'],
             ]);
         }
 
