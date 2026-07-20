@@ -36,6 +36,16 @@ class PagoController extends Controller
     public function payment(Request $request)
     {
         \Log::info($request->all());
+        $request->merge([
+            'plans' => array_values(array_filter($request->plans ?? []))
+        ]);
+
+        if (count($request->plans) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay planes seleccionados.'
+            ], 200);
+        }
 
         $request->validate([
             'package_id' => 'required|exists:packages,id',
@@ -104,7 +114,18 @@ class PagoController extends Controller
                     // ]
                 ], $request_options);
 
-                // Mapear estados de Mercado Pago a tu BD
+            // Log del estado del pago =================================================
+            Log::info('Mercado Pago - Estado del pago', [
+                'payment_id' => $payment->id ?? null,
+                'status' => $payment->status ?? null,
+                'status_detail' => $payment->status_detail ?? null,
+                'amount' => $payment->transaction_amount ?? null,
+                'payment_method' => $payment->payment_method_id ?? null,
+                'payer_email' => $payment->payer->email ?? null,
+            ]);
+            // =================================
+
+            // Mapear estados de Mercado Pago a tu BD
             $status = match ($payment->status) {
                 'approved' => 'completed',
                 'pending', 'in_process' => 'pending',
@@ -119,13 +140,15 @@ class PagoController extends Controller
                 $discountAmount = $request->discount_amount ?? 0 ;
                 // $originalPrice = $request->original_price;
                 $finalAmount = $request->final_amount  ?? $package->local_price;
+
+                    $suscriptionResult = null;
+                    $conversationsIds = [];
                
                 // Se crea la  Conversación + suscripción solo si el estado del pago es competado
-                if ($status === 'completed') {
+                if ($status === 'completed' || $status === 'pending' ) {
 
                     $suscriptionResult = $this->conversationService->registerUserSuscription( auth()->id(), $request['package_id'] );
 
-                    $conversationsIds = [];
 
                     foreach ($request->plans as $planId) {
                             // 🔹 Conversación
@@ -141,41 +164,43 @@ class PagoController extends Controller
 
                             $conversationsIds[] = $conversationResult['conversation_id'];
                     }
+
+                     Payments::create([
+                        'user_id' => auth()->id(), 
+                        'subscription_id' => $suscriptionResult['subscription_id'], 
+                        'amount' => $payment->transaction_amount, // revisar
+                        'currency' => $payment->currency_id, // Revisar 
+                        'payment_provider' => 'mercadopago',
+                        'provider_payment_id' => $payment->id,
+                        'status' => $status,
+                        'payment_type' => 'subscription', // Pendiente
+                        'coupon_id' => $coupon?->id ,
+                        'discount_amount' => $discountAmount,
+                        'final_amount' => $finalAmount,
+                    ]);
+
+                    // 🔹 Redención de cupón
+                    if ($coupon) {
+                        CouponRedemption::create([
+                            'coupon_id' => $coupon->id,
+                            'user_id' => auth()->id(),
+                            'payment_id' => $payment->id,
+                            'discount_amount' => $discountAmount,
+                            'used_at' => now(),
+                        ]);
+                    }
+
+                    return [
+                        'payment_id' => $payment->id,
+                        'status' => $payment->status,
+                        'status_detail' => $payment->status_detail,
+                        'amount' => $payment->transaction_amount,
+                        'subscription_id' => $suscriptionResult['subscription_id'],
+                        'conversation_ids' => $conversationsIds,
+                    ];
                 }
              
-                Payments::create([
-                    'user_id' => auth()->id(), 
-                    'subscription_id' => $suscriptionResult['subscription_id'], // <-- ajusta según tu lógica
-                    'amount' => $payment->transaction_amount, // revisar
-                    'currency' => $payment->currency_id, // Revisar 
-                    'payment_provider' => 'mercadopago',
-                    'provider_payment_id' => $payment->id,
-                    'status' => $status,
-                    'payment_type' => 'subscription', // Pendiente
-                    'coupon_id' => $coupon?->id ,
-                    'discount_amount' => $discountAmount,
-                    'final_amount' => $finalAmount,
-                ]);
-
-                // 🔹 Redención de cupón
-                if ($coupon) {
-                    CouponRedemption::create([
-                        'coupon_id' => $coupon->id,
-                        'user_id' => auth()->id(),
-                        'payment_id' => $payment->id,
-                        'discount_amount' => $discountAmount,
-                        'used_at' => now(),
-                    ]);
-                }
-
-                return [
-                    'payment_id' => $payment->id,
-                    'status' => $payment->status,
-                    'status_detail' => $payment->status_detail,
-                    'amount' => $payment->transaction_amount,
-                    'subscription_id' => $suscriptionResult['subscription_id'],
-                    'conversation_ids' => $conversationsIds,
-                ];
+               
             });
 
              return response()->json([

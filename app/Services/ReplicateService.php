@@ -8,7 +8,7 @@ class ReplicateService
 {
 
     protected string $url = 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions';
-        public function generateImage(string $prompt)
+    public function generateImage(string $prompt)
     {
         $response = Http::timeout(180)
                         ->connectTimeout(30)
@@ -28,7 +28,7 @@ class ReplicateService
 
                 'aspect_ratio' => '1:1',
 
-                'output_format' => 'webp',
+                'output_format' => 'png',
 
                 'output_quality' => 80
 

@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\SimpleType\Jc;
+use PhpParser\Node\Stmt\Catch_;
+
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class DocumentController extends Controller
 {
@@ -217,545 +222,611 @@ class DocumentController extends Controller
         return response()->download($tempFile)->deleteFileAfterSend(true);
     }
 
-    // SIN PLANTILLA 
+    // SIN PLANTILLA USANDO
     public function generarDocument(Request $request)
     {
-        $user = auth()->user();
+        try{
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+                $user = auth()->user();
 
-        $request->validate([
-            'idConversation' => 'required|integer'
-        ]);
+                if (!$user) {
+                    return response()->json(['message' => 'Unauthorized'], 401);
+                }
 
-        $idConversation = $request->idConversation;
+                $request->validate([
+                    'idConversation' => 'required|integer'
+                ]);
 
-        $subscription = UserSubscription::with([
-                        'plan.sections' => function ($q) {
-                            $q->where('is_active', true)
-                            ->orderBy('order_index');
-                        },
-                        'plan.sections.userAnswers.files',
-                        'plan.sections.userAnswers.tables',
-                    ])
-                    ->where('id', $idConversation)
-                    ->where('user_id', auth()->id())
-                    ->firstOrFail();
+                $idConversation = $request->idConversation;
 
+                $subscription = Conversation::with([
+                                                    // 'plan',
+                                                    // 'subscription.package',
+                                                    'plan.sections' => function ($q) {
+                                                        $q->where('is_active', true)
+                                                        ->orderBy('order_index');
+                                                    },
+                                                    // 'subscription.plan',
+                                                    'plan.sections.userAnswers.files',
+                                                    'plan.sections.userAnswers.tables',
+                                                    ])  
+                                                    ->where('id', $idConversation)
+                                                    ->where('user_id', auth()->id())
+                                                    ->firstOrFail();
 
-
-        // $answers = UserAnswers::with(['section', 'files', 'tables'])
-        //     ->where('conversation_id', $idConversation)
-        //     ->get()
-        //     ->map(function ($item) {
-
-        //         return [
-        //             'section_id' => $item->section_id,
-        //             'section_title' => $item->section?->title,
-        //             'section_description' => $item->section?->description,
-        //             'answer_text' => $item->answer_text,
-
-        //             'files' => $item->files->map(function ($file) {
-        //                 return [
-        //                     'id' => $file->id,
-        //                     'url' => $file->file_path,
-        //                     'name' => $file->description,
-        //                     'fuente' => $file->fuente,
-        //                 ];
-        //             })->toArray(),
-
-        //             'tables' => $item->tables->map(function ($table) {
-        //                 return [
-        //                     'id' => $table->id,
-        //                     'data' => $table->data,
-        //                     'name' => $table->nombre,
-        //                     'fuente' => $table->fuente,
-        //                 ];
-        //             })->toArray(),
-        //         ];
-        //     });
-
-        // if ($answers->isEmpty()) {
-        //     return response()->json([
-        //         'message' => 'No existen respuestas para esta conversación'
-        //     ], 404);
-        // }
-
-        $phpWord = new PhpWord();
-
-        $phpWord->setDefaultFontName('Arial');
-        $phpWord->setDefaultFontSize(12);
-
-        $section = $phpWord->addSection([
-            'marginTop'    => 1440,
-            'marginBottom' => 1440,
-            'marginLeft'   => 1440,
-            'marginRight'  => 1440,
-        ]);
-
-        // Encabezado de pagina
-        $header = $section->addHeader();
-
-        $header->addPreserveText(
-            '{PAGE}',
-            [
-                'name' => 'Times New Roman',
-                'size' => 12
-            ],
-            [
-                'alignment' => Jc::END
-            ]
-        ); 
-
-        /*
-        |--------------------------------------------------------------------------
-        | PIE DE PAGINA
-        |--------------------------------------------------------------------------
-        */
-
-        // $footer = $section->addFooter();
-
-        // $footer->addPreserveText(
-        //     'Página {PAGE}',
-        //     [
-        //         'name' => 'Arial',
-        //         'size' => 10
-        //     ],
-        //     [
-        //         'alignment' => Jc::CENTER
-        //     ]
-        // );
-
-        /*
-        |--------------------------------------------------------------------------
-        | ESTILOS
-        |--------------------------------------------------------------------------
-        */
-
-        $paragraphStyle = [
-            'alignment' => Jc::BOTH,
-            'lineHeight' => 2.0,
-            'spaceBefore' => 0,
-            'spaceAfter' => 0,
-            'indentation' => [
-                'firstLine' => 720
-            ]
-        ];
-
-        /*
-        |--------------------------------------------------------------------------
-        | TITULO
-        |--------------------------------------------------------------------------
-        */
-
-        // $section->addTitle('Reporte de Conversación', 1);
-        // $section->addTextBreak();
-
-        /*
-        |--------------------------------------------------------------------------
-        | CONTENIDO
-        |--------------------------------------------------------------------------
-        */
-
-        $contadorFigura = 1;
-        $contadorTabla = 1;
-
-        $phpWord->addTitleStyle(
-            2,
-            [
-                'bold' => true,
-                'size' => 14,
-                'name' => 'Arial',
-            ]
-        );
-
-        $firstSection = true;
-        foreach( $subscription->plan->sections as $sectionT ){
-
-            if (!$firstSection) {
-                $section->addPageBreak();
-            }
-
-            $firstSection = false;
-
-            $titulo = trim(
-                ($sectionT->title ?? '') .
-                ' : ' .
-                ($sectionT->description ?? '')
-            );
-
-            $section->addTitle(
-                $this->cleanText($titulo),
-                2
-            );
-
-            foreach ( $sectionT->userAnswers as $answer) {
+                // $subscription = UserSubscription::with([
+                //                 'plan.sections' => function ($q) {
+                //                     $q->where('is_active', true)
+                //                     ->orderBy('order_index');
+                //                 },
+                //                 'plan.sections.userAnswers.files',
+                //                 'plan.sections.userAnswers.tables',
+                //             ])
+                //             ->where('id', $idConversation)
+                //             ->where('user_id', auth()->id())
+                //             ->firstOrFail();
 
 
 
-                $section->addText(
-                    $this->cleanText($answer->answer_text ),
+                // $answers = UserAnswers::with(['section', 'files', 'tables'])
+                //     ->where('conversation_id', $idConversation)
+                //     ->get()
+                //     ->map(function ($item) {
+
+                //         return [
+                //             'section_id' => $item->section_id,
+                //             'section_title' => $item->section?->title,
+                //             'section_description' => $item->section?->description,
+                //             'answer_text' => $item->answer_text,
+
+                //             'files' => $item->files->map(function ($file) {
+                //                 return [
+                //                     'id' => $file->id,
+                //                     'url' => $file->file_path,
+                //                     'name' => $file->description,
+                //                     'fuente' => $file->fuente,
+                //                 ];
+                //             })->toArray(),
+
+                //             'tables' => $item->tables->map(function ($table) {
+                //                 return [
+                //                     'id' => $table->id,
+                //                     'data' => $table->data,
+                //                     'name' => $table->nombre,
+                //                     'fuente' => $table->fuente,
+                //                 ];
+                //             })->toArray(),
+                //         ];
+                //     });
+
+                // if ($answers->isEmpty()) {
+                //     return response()->json([
+                //         'message' => 'No existen respuestas para esta conversación'
+                //     ], 404);
+                // }
+
+                $phpWord = new PhpWord();
+
+                $phpWord->setDefaultFontName('Arial');
+                $phpWord->setDefaultFontSize(12);
+
+                $section = $phpWord->addSection([
+                    'marginTop'    => 1440,
+                    'marginBottom' => 1440,
+                    'marginLeft'   => 1440,
+                    'marginRight'  => 1440,
+                ]);
+
+                // Encabezado de pagina
+                $header = $section->addHeader();
+
+                $header->addPreserveText(
+                    '{PAGE}',
                     [
-                        'name' => 'Arial',
-                        'size' => 11,
+                        'name' => 'Times New Roman',
+                        'size' => 12
                     ],
-                    $paragraphStyle
+                    [
+                        'alignment' => Jc::END
+                    ]
+                ); 
+
+                /*
+                |--------------------------------------------------------------------------
+                | PIE DE PAGINA
+                |--------------------------------------------------------------------------
+                */
+
+                // $footer = $section->addFooter();
+
+                // $footer->addPreserveText(
+                //     'Página {PAGE}',
+                //     [
+                //         'name' => 'Arial',
+                //         'size' => 10
+                //     ],
+                //     [
+                //         'alignment' => Jc::CENTER
+                //     ]
+                // );
+
+                /*
+                |--------------------------------------------------------------------------
+                | ESTILOS
+                |--------------------------------------------------------------------------
+                */
+
+                $paragraphStyle = [
+                    'alignment' => Jc::BOTH,
+                    'lineHeight' => 2.0,
+                    'spaceBefore' => 0,
+                    'spaceAfter' => 0,
+                    'indentation' => [
+                        'firstLine' => 720
+                    ]
+                ];
+
+                /*
+                |--------------------------------------------------------------------------
+                | TITULO
+                |--------------------------------------------------------------------------
+                */
+
+                // $section->addTitle('Reporte de Conversación', 1);
+                // $section->addTextBreak();
+
+                /*
+                |--------------------------------------------------------------------------
+                | CONTENIDO
+                |--------------------------------------------------------------------------
+                */
+
+                $contadorFigura = 1;
+                $contadorTabla = 1;
+
+                $phpWord->addTitleStyle(
+                    2,
+                    [
+                        'bold' => true,
+                        'size' => 14,
+                        'name' => 'Arial',
+                    ]
                 );
 
-                /*
-                |--------------------------------------------------------------------------
-                | IMAGENES
-                |--------------------------------------------------------------------------
-                */
+                $firstSection = true;
+                foreach( $subscription->plan->sections as $sectionT ){
 
-                foreach ($answer->files as $file) {
-
-                    if (empty($file->file_path )) {
-                        continue;
+                    if (!$firstSection) {
+                        $section->addPageBreak();
                     }
 
-                    $fullPath = storage_path('app/public/' . $file->file_path );
+                    $firstSection = false;
 
-                    if (!file_exists($fullPath)) {
-                        continue;
-                    }
-
-                    $section->addTextBreak();
-
-                    $noBreakStyle = [
-                        'keepNext' => true,
-                        'keepLines' => true,
-                    ];
-
-                    // Figura X
-                    $section->addText(
-                        'Figura ' . $contadorFigura.'.',
-                        ['bold' => true],
-                        $noBreakStyle
+                    $titulo = trim(
+                        ($sectionT->title ?? '') .
+                        ' : ' .
+                        ($sectionT->description ?? '')
                     );
 
-                    if (!empty($file->description)) {
-                        $section->addText(
-                            $this->cleanText($file->description),
-                            ['bold' => false, 'size' => 10],
-                            ['alignment' => Jc::START],
-                            $noBreakStyle
-                        );
-                    }
-
-                    $section->addImage(
-                        $fullPath,
-                        [
-                            'width' => 350,
-                            'alignment' => Jc::CENTER,
-                            'wrappingStyle' => 'inline'
-                        ]
+                    $section->addTitle(
+                        $this->cleanText($titulo),
+                        2
                     );
 
-                    
-                    if (!empty($file->fuente )) {
+                    foreach ( $sectionT->userAnswers as $answer) {
+
+
+
                         $section->addText(
-                            'Fuente: ' . $this->cleanText($file->fuente ),
+                            $this->cleanText($answer->answer_text ),
                             [
-                                'italic' => true,
-                                'size' => 10
-                            ], ['alignment' => Jc::START]
+                                'name' => 'Arial',
+                                'size' => 11,
+                            ],
+                            $paragraphStyle
                         );
-                    }
 
-                    $contadorFigura++;
-                }
+                        /*
+                        |--------------------------------------------------------------------------
+                        | IMAGENES
+                        |--------------------------------------------------------------------------
+                        */
 
-                /*
-                |--------------------------------------------------------------------------
-                | TABLAS
-                |--------------------------------------------------------------------------
-                */
+                        foreach ($answer->files as $file) {
 
-                foreach ($answer->tables  as $tableInfo) {
+                            if (empty($file->file_path )) {
+                                continue;
+                            }
 
-                    if (empty($tableInfo->data )) {
-                        continue;
-                    }
+                            $fullPath = storage_path('app/public/' . $file->file_path );
 
-                    $tableData = json_decode($tableInfo->data , true);
+                            if (!file_exists($fullPath)) {
+                                continue;
+                            }
 
-                    if (
-                        !$tableData ||
-                        !isset($tableData['columns'] ) ||
-                        !isset($tableData['rows'] )
-                    ) {
-                        continue;
-                    }
+                            $section->addTextBreak();
 
-                    $section->addTextBreak();
+                            $noBreakStyle = [
+                                'keepNext' => true,
+                                'keepLines' => true,
+                            ];
 
-                    $section->addText(
-                        'Tabla ' . $contadorTabla. '.',
-                        ['bold' => true]
-                    );
-
-                    if (!empty($tableInfo->nombre )) {
-                        $section->addText(
-                            $this->cleanText($tableInfo->nombre ),
-                            ['bold' => false]
-                        );
-                    }
-
-                    $table = $section->addTable([
-                        'borderSize' => 6,
-                        'borderColor' => '000000',
-                        'cellMargin' => 80,
-                    ]);
-
-                    /*
-                    | Encabezado
-                    */
-
-                    $table->addRow();
-
-                    foreach ($tableData['columns'] as $column) {
-
-                        $table->addCell(2000)->addText(
-                            $this->cleanText($column),
-                            ['bold' => true, 'size' => 11]
-                        );
-                    }
-
-                    /*
-                    | Filas
-                    */
-
-                    foreach ($tableData['rows'] as $row) {
-
-                        $table->addRow();
-
-                        foreach ($row as $cell) {
-
-                            $table->addCell(2000)->addText(
-                                $this->cleanText((string) $cell)
+                            // Figura X
+                            $section->addText(
+                                'Figura ' . $contadorFigura.'.',
+                                ['bold' => true],
+                                $noBreakStyle
                             );
+
+                            if (!empty($file->description)) {
+                                $section->addText(
+                                    $this->cleanText($file->description),
+                                    ['bold' => false, 'size' => 10],
+                                    ['alignment' => Jc::START],
+                                    $noBreakStyle
+                                );
+                            }
+                            
+                            
+                            // ELIM
+                            \Log::info([
+                                'path' => $fullPath,
+                                'exists' => file_exists($fullPath),
+                                'is_file' => is_file($fullPath),
+                                'mime' => @mime_content_type($fullPath),
+                                'size' => @filesize($fullPath),
+                            ]);
+                            if (!@getimagesize($fullPath)) {
+                                throw new \Exception("La imagen no es válida: {$fullPath}");
+                            }
+                            // 
+
+                            $section->addImage(
+                                $fullPath,
+                                [
+                                    'width' => 350,
+                                    'alignment' => Jc::CENTER,
+                                    'wrappingStyle' => 'inline'
+                                ]
+                            );
+
+                            
+                            if (!empty($file->fuente )) {
+                                $section->addText(
+                                    'Fuente: ' . $this->cleanText($file->fuente ),
+                                    [
+                                        'italic' => true,
+                                        'size' => 10
+                                    ], ['alignment' => Jc::START]
+                                );
+                            }
+
+                            $contadorFigura++;
                         }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | TABLAS
+                        |--------------------------------------------------------------------------
+                        */
+
+                        foreach ($answer->tables  as $tableInfo) {
+
+                            if (empty($tableInfo->data )) {
+                                continue;
+                            }
+
+                            $tableData = json_decode($tableInfo->data , true);
+
+                            if (
+                                !$tableData ||
+                                !isset($tableData['columns'] ) ||
+                                !isset($tableData['rows'] )
+                            ) {
+                                continue;
+                            }
+
+                            $section->addTextBreak();
+
+                            $section->addText(
+                                'Tabla ' . $contadorTabla. '.',
+                                ['bold' => true]
+                            );
+
+                            if (!empty($tableInfo->nombre )) {
+                                $section->addText(
+                                    $this->cleanText($tableInfo->nombre ),
+                                    ['bold' => false]
+                                );
+                            }
+
+                            $table = $section->addTable([
+                                'borderSize' => 6,
+                                'borderColor' => '000000',
+                                'cellMargin' => 80,
+                            ]);
+
+                            /*
+                            | Encabezado
+                            */
+
+                            $table->addRow();
+                            // calculamos el ancho por numero de columnas
+                            $numColumns = count($tableData['columns']);
+
+                            $pageWidth = 9000; // ancho útil aproximado
+
+                            $cellWidth = intval($pageWidth / $numColumns);
+                            //
+
+                            foreach ($tableData['columns'] as $column) {
+
+                                $table->addCell( $cellWidth )->addText(
+                                    $this->cleanText($column),
+                                    ['bold' => true, 'size' => 11]
+                                );
+                            }
+
+                            /*
+                            | Filas
+                            */
+
+                            foreach ($tableData['rows'] as $row) {
+
+                                $table->addRow();
+
+                                foreach ($row as $cell) {
+
+                                    $table->addCell( $cellWidth )->addText(
+                                        $this->cleanText((string) $cell)
+                                    );
+                                }
+                            }
+
+                            if (!empty($tableInfo->fuente )) {
+
+                                $section->addText(
+                                    'Fuente: ' . $this->cleanText($tableInfo->fuente ),
+                                    [
+                                        'italic' => true,
+                                        'size' => 10
+                                    ]
+                                );
+                            }
+
+                            $contadorTabla++;
+                        }
+
+                        $section->addTextBreak(2);
                     }
-
-                    if (!empty($tableInfo->fuente )) {
-
-                        $section->addText(
-                            'Fuente: ' . $this->cleanText($tableInfo->fuente ),
-                            [
-                                'italic' => true,
-                                'size' => 10
-                            ]
-                        );
-                    }
-
-                    $contadorTabla++;
                 }
+                    
 
-                $section->addTextBreak(2);
-            }
-        }
-            
+                // foreach ($answers as $answer) {
 
-        // foreach ($answers as $answer) {
+                //     $titulo = trim(
+                //         ($answer['section_title'] ?? '') .
+                //         ' : ' .
+                //         ($answer['section_description'] ?? '')
+                //     );
 
-        //     $titulo = trim(
-        //         ($answer['section_title'] ?? '') .
-        //         ' : ' .
-        //         ($answer['section_description'] ?? '')
-        //     );
+                //     $section->addTitle(
+                //         $this->cleanText($titulo),
+                //         2
+                //     );
 
-        //     $section->addTitle(
-        //         $this->cleanText($titulo),
-        //         2
-        //     );
+                //     $section->addText(
+                //         $this->cleanText($answer['answer_text']),
+                //         [
+                //             'name' => 'Arial',
+                //             'size' => 11,
+                //         ],
+                //         $paragraphStyle
+                //     );
 
-        //     $section->addText(
-        //         $this->cleanText($answer['answer_text']),
-        //         [
-        //             'name' => 'Arial',
-        //             'size' => 11,
-        //         ],
-        //         $paragraphStyle
-        //     );
+                //     /*
+                //     |--------------------------------------------------------------------------
+                //     | IMAGENES
+                //     |--------------------------------------------------------------------------
+                //     */
 
-        //     /*
-        //     |--------------------------------------------------------------------------
-        //     | IMAGENES
-        //     |--------------------------------------------------------------------------
-        //     */
+                //     foreach ($answer['files'] as $file) {
 
-        //     foreach ($answer['files'] as $file) {
+                //         if (empty($file['url'])) {
+                //             continue;
+                //         }
 
-        //         if (empty($file['url'])) {
-        //             continue;
-        //         }
+                //         $fullPath = storage_path('app/public/' . $file['url']);
 
-        //         $fullPath = storage_path('app/public/' . $file['url']);
+                //         if (!file_exists($fullPath)) {
+                //             continue;
+                //         }
 
-        //         if (!file_exists($fullPath)) {
-        //             continue;
-        //         }
+                //         $section->addTextBreak();
 
-        //         $section->addTextBreak();
+                //         // Figura X
+                //         $section->addText(
+                //             'Figura ' . $contadorFigura,
+                //             ['bold' => true]
+                //         );
 
-        //         // Figura X
-        //         $section->addText(
-        //             'Figura ' . $contadorFigura,
-        //             ['bold' => true]
-        //         );
+                //         if (!empty($file['name'])) {
+                //             $section->addText(
+                //                 $this->cleanText($file['name']),
+                //                 ['bold' => true, 'size' => 10],
+                //                 ['alignment' => Jc::CENTER]
+                //             );
+                //         }
 
-        //         if (!empty($file['name'])) {
-        //             $section->addText(
-        //                 $this->cleanText($file['name']),
-        //                 ['bold' => true, 'size' => 10],
-        //                 ['alignment' => Jc::CENTER]
-        //             );
-        //         }
+                //         $section->addImage(
+                //             $fullPath,
+                //             [
+                //                 'width' => 350,
+                //                 'alignment' => Jc::CENTER
+                //             ]
+                //         );
 
-        //         $section->addImage(
-        //             $fullPath,
-        //             [
-        //                 'width' => 350,
-        //                 'alignment' => Jc::CENTER
-        //             ]
-        //         );
+                        
+                //         if (!empty($file['fuente'])) {
+                //             $section->addText(
+                //                 'Nota. ' . $this->cleanText($file['fuente']),
+                //                 [
+                //                     'italic' => true,
+                //                     'size' => 10
+                //                 ], ['alignment' => Jc::START]
+                //             );
+                //         }
+
+                //         $contadorFigura++;
+                //     }
+
+                //     /*
+                //     |--------------------------------------------------------------------------
+                //     | TABLAS
+                //     |--------------------------------------------------------------------------
+                //     */
+
+                //     foreach ($answer['tables'] as $tableInfo) {
+
+                //         if (empty($tableInfo['data'])) {
+                //             continue;
+                //         }
+
+                //         $tableData = json_decode($tableInfo['data'], true);
+
+                //         if (
+                //             !$tableData ||
+                //             !isset($tableData['columns']) ||
+                //             !isset($tableData['rows'])
+                //         ) {
+                //             continue;
+                //         }
+
+                //         $section->addTextBreak();
+
+                //         $section->addText(
+                //             'Tabla ' . $contadorTabla,
+                //             ['bold' => true]
+                //         );
+
+                //         if (!empty($tableInfo['name'])) {
+                //             $section->addText(
+                //                 $this->cleanText($tableInfo['name']),
+                //                 ['bold' => true]
+                //             );
+                //         }
+
+                //         $table = $section->addTable([
+                //             'borderSize' => 6,
+                //             'borderColor' => '000000',
+                //             'cellMargin' => 80,
+                //         ]);
+
+                //         /*
+                //         | Encabezado
+                //         */
+
+                //         $table->addRow();
+
+                //         foreach ($tableData['columns'] as $column) {
+
+                //             $table->addCell(2000, [
+                //                 'bgColor' => 'D9D9D9'
+                //             ])->addText(
+                //                 $this->cleanText($column),
+                //                 ['bold' => true]
+                //             );
+                //         }
+
+                //         /*
+                //         | Filas
+                //         */
+
+                //         foreach ($tableData['rows'] as $row) {
+
+                //             $table->addRow();
+
+                //             foreach ($row as $cell) {
+
+                //                 $table->addCell(2000)->addText(
+                //                     $this->cleanText((string) $cell)
+                //                 );
+                //             }
+                //         }
+
+                //         if (!empty($tableInfo['fuente'])) {
+
+                //             $section->addText(
+                //                 'Fuente: ' . $this->cleanText($tableInfo['fuente']),
+                //                 [
+                //                     'italic' => true,
+                //                     'size' => 10
+                //                 ]
+                //             );
+                //         }
+
+                //         $contadorTabla++;
+                //     }
+
+                //     $section->addTextBreak(2);
+                // }
+                
 
                 
-        //         if (!empty($file['fuente'])) {
-        //             $section->addText(
-        //                 'Nota. ' . $this->cleanText($file['fuente']),
-        //                 [
-        //                     'italic' => true,
-        //                     'size' => 10
-        //                 ], ['alignment' => Jc::START]
-        //             );
-        //         }
 
-        //         $contadorFigura++;
-        //     }
+                /*
+                |--------------------------------------------------------------------------
+                | GUARDAR
+                |--------------------------------------------------------------------------
+                */
 
-        //     /*
-        //     |--------------------------------------------------------------------------
-        //     | TABLAS
-        //     |--------------------------------------------------------------------------
-        //     */
+                $fileName = 'reporte_'. time() . '.docx';
 
-        //     foreach ($answer['tables'] as $tableInfo) {
+                $tempFile = storage_path('app/' . $fileName);
 
-        //         if (empty($tableInfo['data'])) {
-        //             continue;
-        //         }
+                $writer = IOFactory::createWriter($phpWord, 'Word2007');
 
-        //         $tableData = json_decode($tableInfo['data'], true);
+                $writer->save($tempFile);
 
-        //         if (
-        //             !$tableData ||
-        //             !isset($tableData['columns']) ||
-        //             !isset($tableData['rows'])
-        //         ) {
-        //             continue;
-        //         }
+                while (ob_get_level()) {
+                    ob_end_clean();
+                }
 
-        //         $section->addTextBreak();
+                return response()->download(
+                    $tempFile,
+                    $fileName,
+                    [
+                        'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    ]
+                )->deleteFileAfterSend(true);
 
-        //         $section->addText(
-        //             'Tabla ' . $contadorTabla,
-        //             ['bold' => true]
-        //         );
+    } catch (ValidationException $e) {
 
-        //         if (!empty($tableInfo['name'])) {
-        //             $section->addText(
-        //                 $this->cleanText($tableInfo['name']),
-        //                 ['bold' => true]
-        //             );
-        //         }
+        return response()->json([
+            'message' => 'Error de validación.',
+            'errors' => $e->errors()
+        ], 422);
 
-        //         $table = $section->addTable([
-        //             'borderSize' => 6,
-        //             'borderColor' => '000000',
-        //             'cellMargin' => 80,
-        //         ]);
+    } catch (ModelNotFoundException $e) {
 
-        //         /*
-        //         | Encabezado
-        //         */
+        return response()->json([
+            'message' => 'No se encontró la conversación.'
+        ], 404);
 
-        //         $table->addRow();
+    } catch (Throwable $e) {
 
-        //         foreach ($tableData['columns'] as $column) {
+        \Log::error('Error al generar documento', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+            'trace'   => $e->getTraceAsString(),
+        ]);
 
-        //             $table->addCell(2000, [
-        //                 'bgColor' => 'D9D9D9'
-        //             ])->addText(
-        //                 $this->cleanText($column),
-        //                 ['bold' => true]
-        //             );
-        //         }
-
-        //         /*
-        //         | Filas
-        //         */
-
-        //         foreach ($tableData['rows'] as $row) {
-
-        //             $table->addRow();
-
-        //             foreach ($row as $cell) {
-
-        //                 $table->addCell(2000)->addText(
-        //                     $this->cleanText((string) $cell)
-        //                 );
-        //             }
-        //         }
-
-        //         if (!empty($tableInfo['fuente'])) {
-
-        //             $section->addText(
-        //                 'Fuente: ' . $this->cleanText($tableInfo['fuente']),
-        //                 [
-        //                     'italic' => true,
-        //                     'size' => 10
-        //                 ]
-        //             );
-        //         }
-
-        //         $contadorTabla++;
-        //     }
-
-        //     $section->addTextBreak(2);
-        // }
-        
-
-        
-
-        /*
-        |--------------------------------------------------------------------------
-        | GUARDAR
-        |--------------------------------------------------------------------------
-        */
-
-        $fileName = 'reporte_'. time() . '.docx';
-
-        $tempFile = storage_path('app/' . $fileName);
-
-        $writer = IOFactory::createWriter($phpWord, 'Word2007');
-
-        $writer->save($tempFile);
-
-        while (ob_get_level()) {
-            ob_end_clean();
-        }
-
-        return response()->download(
-            $tempFile,
-            $fileName,
-            [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            ]
-        )->deleteFileAfterSend(true);
+        return response()->json([
+            'message' => 'Ocurrió un error al generar el documento.',
+            'error'   => $e->getMessage(), // Puedes quitar esto en producción
+        ], 500);
+    }
     }
 
     // FUNCIONA CON PLANTILLA

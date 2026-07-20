@@ -12,6 +12,7 @@ class FileTextExtractorService
         protected PdfService $pdf,
         protected WordService $word,
         protected ExcelService $excel,
+        protected PowerPointService $powerPoint,
     ) {}
     public function extract($file): ?string
     {
@@ -34,6 +35,10 @@ class FileTextExtractorService
             str_contains($mime, 'spreadsheet') ||
             str_contains($mime, 'excel') =>
                 $this->excel->extract($file),
+
+            str_contains($mime, 'presentationml') ||
+            str_contains($mime, 'powerpoint') =>
+            $this->powerPoint->extract($file),
 
             default => null
         };

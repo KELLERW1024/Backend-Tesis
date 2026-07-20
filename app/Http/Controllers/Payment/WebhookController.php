@@ -7,15 +7,51 @@ use Illuminate\Http\Request;
 
 class WebhookController extends Controller
 {
-     public function handle(Request $request)
+    public function webhook(Request $request)
     {
-        // Guardar todo lo que llega (debug inicial)
-        file_put_contents(
-            storage_path('logs/mp_webhook.log'),
-            json_encode($request->all()) . PHP_EOL,
-            FILE_APPEND
-        );
+        $paymentId = $request->input('data.id');
 
-        return response()->json(["ok" => true]);
+        $payment = $this->mercadoPagoClient->get($paymentId);
+
+        Log::info('Webhook Mercado Pago', [
+            'payment_id' => $payment->id,
+            'status' => $payment->status,
+            'status_detail' => $payment->status_detail,
+        ]);
+
+
+        if ($payment->status === 'approved') {
+
+            DB::transaction(function () use ($payment) {
+
+                $localPayment = Payments::where(
+                    'provider_payment_id',
+                    $payment->id
+                )->first();
+
+                if (!$localPayment) {
+                    return;
+                }
+
+                // Actualizar pago
+                $localPayment->update([
+                    'status' => 'completed'
+                ]);
+
+
+                // Crear suscripción
+                $subscription = $this->conversationService
+                    ->registerUserSuscription(
+                        $localPayment->user_id,
+                        $localPayment->package_id
+                    );
+
+
+                // Crear conversaciones...
+            });
+        }
+
+
+        return response()->json(['received' => true]);
     }
 }
