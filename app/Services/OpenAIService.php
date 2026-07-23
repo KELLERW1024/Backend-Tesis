@@ -249,4 +249,29 @@ class OpenAIService
 
         return $content;
     }
+
+    public function inputCadenaOutputString(string $content): string // Metodo que limpia lo obtenido en el archivo excel
+    {
+        $data = json_decode($content, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return trim($content);
+        }
+
+        $texts = [];
+
+        $extract = function ($item) use (&$extract, &$texts) {
+            if (is_array($item)) {
+                foreach ($item as $value) {
+                    $extract($value);
+                }
+            } elseif (is_string($item) && trim($item) !== '') {
+                $texts[] = trim($item);
+            }
+        };
+
+        $extract($data);
+
+        return implode("\n\n", $texts);
+    }
 }

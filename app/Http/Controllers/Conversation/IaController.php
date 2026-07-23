@@ -48,6 +48,10 @@ class IaController extends Controller
             'apa' => 'nullable|string',
         ]);
 
+        \Log::info('REQUEST VALIDATED DATA', [
+            'data' => $data,
+        ]);
+
         //$generateTable = $request->boolean('generate_table');
 
         $files = $request->file('files');
@@ -58,6 +62,7 @@ class IaController extends Controller
         $documentContent = '';
         $imageContent = '';
 
+        // VALIDAMOS LOS ACHIVOS Y EXTRAEMOS
         if ($files) {
 
             foreach ($files as $file) {
@@ -79,6 +84,7 @@ class IaController extends Controller
             }
         }
 
+        // ANALIZA LA IMAGEN Y OBTIENE SU DATA
         if ($imageBase64) {
             $imageDataUri = "data:$imageMime;base64,$imageBase64";
 
@@ -88,52 +94,72 @@ class IaController extends Controller
                     image: $imageDataUri
                 );
             } catch (\Throwable $e) {
-                \Log::error('OpenAI error: ' . $e->getMessage());
-            }
-            
-            
-            $prompt = $this->promptService->buildValidationPrompt([
-                ...$data,
-                'file_content' => $documentContent,
-                'image_content' => $imageContent,
-            ] ); 
-
-            $result = $this->openAIService->json($prompt);
-             if ( $result['is_valid'] == false ) {
-                
-                $result['response'] = '';
-                $result['images'] = [];
-
-                return response()->json($result);
-
-            }else{
-                return $this->responseIA( $request, $data, $documentContent, $imageContent );
-                
-            }
-
-        }else {
-            
-
-            $prompt = $this->promptService->buildValidationPrompt([
-                ...$data,
-                'file_content' => $documentContent,
-            ]);
-
-            $result = $this->openAIService->json($prompt);
-            if ( $result['is_valid'] == false ) {
-                
-                $result['response'] = '';
-                $result['images'] = [];
-
-                return response()->json($result);
-
-            }else{
-                // RESPUESTA ++++>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-                return $this->responseIA( $request, $data, $documentContent, $imageContent ); //$isApa);
-                
+                \Log::error('OpenAI error lectura: ' . $e->getMessage());
             }
         }
+        if( $documentContent != ''){
+             $documentContent = $this->openAIService->inputCadenaOutputString( $documentContent );
+        }
+
+        \Log::info('DATA IACONTROLLER', [
+            '$imageContent => ' => $imageContent ?? null,
+            '$documentContent => ' => $documentContent ?? null,
+        ]);
+
+        return $this->responseIA( $request, $data, $documentContent, $imageContent );
+        
+
+        // /////////////////////////////
+        // $prompt = $this->promptService->buildValidationPrompt([ // ESTE METODO SOLO ARMA LAS RESPUESTA ACORDE A LA PREGUNTA
+        //     ...$data,
+        //     'file_content' => $documentContent,
+        //     'image_content' => $imageContent,
+        // ] ); 
+
+        // \Log::info('PROMPT IACONTROLLER', [
+        //     '$prompt => ' => $prompt ?? null 
+        // ]);
+
+        // $result = $this->openAIService->json($prompt); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
+        // if ( $result['is_valid'] == false ) {
+            
+        //     $result['response'] = '';
+        //     $result['images'] = [];
+
+        //     return response()->json($result);
+
+        // }else{
+        //     return $this->responseIA( $request, $data, $documentContent, $imageContent );
+            
+        // }
+
+        
+        // ANALIZA LA TABLA 
+        // else {
+            
+
+        //     $prompt = $this->promptService->buildValidationPrompt([
+        //         ...$data,
+        //         'file_content' => $documentContent,
+        //     ]);
+
+        //     \Log::info('PROMT DATA TABLA : {}'. $prompt );
+
+        //     $result = $this->openAIService->json($prompt);
+        //     if ( $result['is_valid'] == false ) {
+                
+        //         $result['response'] = '';
+        //         $result['images'] = [];
+
+        //         return response()->json($result);
+
+        //     }else{
+        //         // RESPUESTA ++++>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+        //         return $this->responseIA( $request, $data, $documentContent, $imageContent ); //$isApa);
+                
+        //     }
+        // }
 
            
        
@@ -145,19 +171,70 @@ class IaController extends Controller
 
             $objective = Section::where('id', $data['idSection'] )->value('objective');
             \Log::info(' OBJECTIVE : ' . $objective );
-
+            
             $history = $this->conversationService->getConversation($data['idConversation']);
             \Log::info(' HISTORY : ' , $history );
 
+            // INICIO
+            $prompt = $this->promptService->buildValidationPrompt([ // ESTE METODO SOLO ARMA LAS RESPUESTA ACORDE A LA PREGUNTA
+                    ...$data,
+                    'file_content' => $documentContent,
+                    'image_content' => $imageContent,
+                    'objective' => $objective,
+                    'history' => $history,
+            ] ); 
 
-            $messages = $this->promptService->buildMessages( $data,  $history,  $documentContent,  $imageContent, false );
+            \Log::info('PROMPT IACONTROLLER', [
+                '$prompt => ' => $prompt ?? null 
+            ]);
+
+            $result = $this->openAIService->json($prompt); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
+            if ( $result['is_valid'] == false ) {
+                
+                $result['response'] = '';
+                $result['images'] = [];
+
+                return response()->json($result);
+            }
+
+        
+            // FIN
+
+            $messages = $this->promptService->buildMessagesBitacoraResponseCurrent( [  ...$data,    'file_content' => $documentContent,
+                                                                                                    'image_content' => $imageContent,
+                                                                                                    'objective' => $objective,
+                                                                                                    'history' => $history ],
+
+                                                                                                    $history,  
+                                                                                                    $documentContent,  
+                                                                                                    $imageContent, 
+                                                                                                    false );
             \Log::info(' MESSAGGES : ' , $messages );
 
             $reply = $this->openAIService->chat($messages);
            
-            $messageTable = $this->promptService->buildMessageTable(  $data['response'] );
+
+            // OPCION GENERAR TABLA 
             $replyTable = null; 
+            $studentInput = [];
+
+            if (!empty($data['response'])) {
+                $studentInput[] = "RESPUESTA TEXTUAL DEL TESISTA:\n" . $data['response'];
+            }
+
+            if (!empty($imageContent)) {
+                $studentInput[] = "EVIDENCIA VISUAL:\n" . $imageContent;
+            }
+
+            if (!empty($documentContent)) {
+                $studentInput[] = "DOCUMENTACIÓN:\n" . $documentContent;
+            }
+
+            $response = implode("\n\n", $studentInput);
             if($data['generate_table'] == true ){
+
+                $messageTable = $this->promptService->buildMessageTable(  $response  ); //vWFIFICAR QUE RESPOUESRTA PONER ACA  
+                
                 $tableResponse= $this->openAIService->chat( $messageTable );
 
                 $replyTable = json_decode($tableResponse, true);
@@ -165,6 +242,7 @@ class IaController extends Controller
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     $replyTable = null;
                 }
+
             }
 
             // CONDICIONAL PARA CREAR LA IMAGEN
@@ -174,12 +252,12 @@ class IaController extends Controller
 
             if( $data['is_visual'] && $count_ia_image < 20 ){
                  $image = $this->replicateService->generateImage(
-                    "la imagen tiene que ser lo mas realista posible sobre el tema : " .  $data['response']
+                    "la imagen tiene que ser lo mas realista posible sobre el tema : " .  $response
                 );
             }
 
             // ADD CONVERSATION A LA BITACORA
-            $this->saveBitacoraConversation($data, $reply);
+            $this->saveBitacoraConversation( $data, $documentContent , $imageContent ,  $reply);
             
            
             \Log::error('REPLY => {}' .  $reply );
@@ -206,11 +284,32 @@ class IaController extends Controller
         }
 
     }
-    private function saveBitacoraConversation(array $data, string $reply): void
+
+    private function saveBitacoraConversation(array $data, string $documentContent ,string $imageContent, string $reply): void
     {
+        $userMessageParts = [];
+
+        if (!empty($data['response'])) {
+            $userMessageParts[] = $data['response'];
+        }
+
+        if (!empty($imageContent)) {
+            $userMessageParts[] = $imageContent;
+        }
+
+        if (!empty( $documentContent  )) {
+            $userMessageParts[] = $documentContent  ;
+        }
+
+        $userMessage = implode("\n\n", $userMessageParts);
+
+        if (empty($userMessage)) {
+            $userMessage = '[El tesista no proporcionó información]';
+        }
+
         $this->conversationService->saveMessage(
             $data,
-            $data['response'],
+            $userMessage,
             'user'
         );
 
@@ -220,370 +319,19 @@ class IaController extends Controller
             'system'
         );
     }
-    // public function validateAnswer(  Request $request, FileTextExtractorService $fileProcessor ) {
 
-    //     $data = $request->validate([
-    //         'pregunta' => 'required|string',
-    //         'detail' => 'nullable|string',
-    //         'evidence' => 'nullable|string',
-    //         'respuesta' => 'nullable|string',
-    //         'files' => 'nullable|array',
-    //         'files.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
-    //     ]);
-
-    //     $files = $request->file('files');
-
-    //     $imageBase64 = null;
-    //     $imageMime = null;
-
-    //     $documentContent = '';
-    //     $imageContent = '';
-
-    //     if ($files) {
-
-    //         foreach ($files as $file) {
-    //             if (str_starts_with($file->getMimeType(), 'image')) {
-
-    //                 if (!$imageBase64) {
-
-    //                     $imageBase64 = base64_encode(
-    //                         file_get_contents($file->getRealPath())
-    //                     );
-
-    //                     $imageMime = $file->getMimeType();
-    //                 }
-    //             }
-    //             else {
-    //                 $extracted = $fileProcessor->extract($file);
-
-    //                 // \Log::info('FILE MIME: ' . $file->getMimeType());
-    //                 // \Log::info('EXTRACTED LENGTH: ' . strlen($extracted ?? ''));
-    //                 // \Log::info('EXTRACTED CONTENT: ' . ($extracted ?? 'NULL'));
-
-    //                 $documentContent .= $extracted . "\n\n";
-    //             }
-    //         }
-    //     }
-
-    //     if ($imageBase64) {
-    //         $imageDataUri = "data:$imageMime;base64,$imageBase64";
-
-    //         try {
-    //             $imageContent = $this->openAIService->imageInputStringOutput(
-    //                 prompt: 'Debes obtener la informacion exacta de esta imagen sin comentarios extras ',
-    //                 image: $imageDataUri
-    //             );
-    //         } catch (\Throwable $e) {
-    //             \Log::error('OpenAI error: ' . $e->getMessage());
-    //         }
-            
-            
-    //         $prompt = $this->promptService->buildValidationPrompt([
-    //             ...$data,
-    //             'file_content' => $documentContent,
-    //             'image_content' => $imageContent,
-    //         ]);
-    //         $result = $this->openAIService->json($prompt);
-           
-    //         return response()->json($result);
-    //     }
-
-    //     $prompt = $this->promptService->buildValidationPrompt([
-    //         ...$data,
-    //         'file_content' => $documentContent,
-    //     ]);
-
-    //     $result = $this->openAIService->json($prompt);
-           
-    //     return response()->json($result);
-    // }
-
-    //  public function conversation(Request $request, FileTextExtractorService $fileProcessor)
+    // private function saveBitacoraConversation(array $data, string $reply): void
     // {
-    //     $data = $request->validate([
-    //         'idPlan' => 'required|integer',
-    //         'idSection' => 'required|integer',
-    //         'idConversation' => 'required|integer',
-    //         'idQuestion' => 'required|integer',
-    //         'plan' => 'required|string',
-    //         'title' => 'required|string',
-    //         'description' => 'required|string',
-    //         'question' => 'required|string',
-    //         'response' => 'nullable|string',
-    //         'files' => 'nullable|array',
-    //         'files.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
-    //         'is_visual' => 'boolean',
-    //     ]);
+    //     $this->conversationService->saveMessage(
+    //         $data,
+    //         $data['response'],
+    //         'user'
+    //     );
 
-        
-
-    //     $files = $request->file('files');
-
-    //     $imageBase64 = null;
-    //     $imageMime = null;
-
-    //     $documentContent = '';
-    //     $imageContent = '';
-
-    //     if ($files) {
-
-    //         foreach ($files as $file) {
-    //             if (str_starts_with($file->getMimeType(), 'image')) {
-
-    //                 if (!$imageBase64) {
-
-    //                     $imageBase64 = base64_encode(
-    //                         file_get_contents($file->getRealPath())
-    //                     );
-
-    //                     $imageMime = $file->getMimeType();
-    //                 }
-    //             }
-    //             else {
-    //                 $extracted = $fileProcessor->extract($file);
-
-    //                 $documentContent .= $extracted . "\n\n";
-    //             }
-    //         }
-    //     }
-    //     if( $imageBase64){
-    //          $imageDataUri = "data:$imageMime;base64,$imageBase64";
-
-    //         try {
-    //             $imageContent = $this->openAIService->imageInputStringOutput(
-    //                 prompt: 'Debes obtener la informacion exacta de esta imagen sin comentarios extras.',
-    //                 image: $imageDataUri
-    //             );
-    //         } catch (\Throwable $e) {
-    //             \Log::error('OpenAI error: ' . $e->getMessage());
-    //         }
-    //     }
-        
-    //     $isVisual = $request->boolean('is_visual');
-
-    //     $objective = Section::where('id', $data['idSection'] )->value('objective');
-    //     \Log::info(' OBJECTIVE : ' . $objective );
-
-    //     $history = $this->conversationService->getConversation($data['idConversation']);
-    //     \Log::info(' HISTORY : ' , $history );
-
-
-    //     $messages = $this->promptService->buildMessages( $data,  $history,  $documentContent,  $imageContent);
-    //      \Log::info(' MESSAGGES : ' , $messages );
-
-    //     $reply = $this->openAIService->chat($messages);
-    //     $messagesString = collect($messages)
-    //             ->pluck('content')
-    //             ->implode("\n\n");
-    //     //$respuestaImage = $this->openAIService->generateImages( $imageContent );
-
-    //     // $this->conversationService->saveMessage(
-    //     //     $data,
-    //     //     $data['response'],
-    //     //     'user'
-    //     // );
-
-    //     // $this->conversationService->saveMessage(
-    //     //     $data,
-    //     //     $reply,
-    //     //     'system'
-    //     // );
-
-    //     return response()->json([
-    //         'response' => $reply ,
-    //         //'images' => $respuestaImage
-    //     ]);
-    // }
-
-    // public function AAvalidateAnswer(Request $request)
-    // {
-    //     $data = $request->validate([
-    //         'pregunta' => 'required|string',
-    //         'detail' => 'nullable|string',
-    //         'evidence' => 'nullable|string',
-    //         'respuesta' => 'required|string',
-    //     ]);
-
-    //     $prompt = "
-    //     Evalúa si la respuesta del usuario responde correctamente la pregunta y si es suficiente para redactar.
-
-    //     Pregunta:
-    //     {$data['pregunta']}
-
-    //     Detalle:
-    //     {$data['detail']}
-
-    //     Evidencia:
-    //     {$data['evidence']}
-
-    //     Respuesta del usuario:
-    //     {$data['respuesta']}
-
-    //     Devuelve únicamente un JSON válido con esta estructura:
-
-    //     {
-    //       \"is_valid\": true,
-    //       \"score\": 85,
-    //       \"feedback\": \"La respuesta responde correctamente la pregunta y considera la evidencia.\"
-    //     }
-
-    //     Reglas:
-    //     - is_valid debe ser boolean
-    //     - score debe ser un número entre 0 y 100
-    //     - feedback debe ser corto
-    //     ";
-
-    //    $response = Http::withHeaders([
-    //         'Authorization' => 'Bearer ' . config('services.openai.key'),
-    //         'Content-Type' => 'application/json',
-    //     ])->post('https://api.openai.com/v1/responses', [
-    //         'model' => 'gpt-4.1-mini',
-    //         'input' => $prompt
-    //     ]);
-
-    //     if ($response->failed()) {
-    //         return response()->json([
-    //             'status' => $response->status(),
-    //             'body' => $response->json()
-    //         ], 500);
-    //     }
-
-    //     $data = $response->json();
-
-    //     $content = $data['output'][0]['content'][0]['text'];
-
-    //     return response()->json(
-    //         json_decode($content, true)
+    //     $this->conversationService->saveMessage(
+    //         $data,
+    //         $reply,
+    //         'system'
     //     );
     // }
-
-    //    public function Conversatioresponse (Request $request, FileTextExtractorService $fileProcessor)
-    // {
-
-    //     $data = $request->validate([
-    //         'imageOutput' => 'required|boolean',
-    //         'pregunta' => 'required|string',
-    //         'detail' => 'nullable|string',
-    //         'evidence' => 'nullable|string',
-    //         'respuesta' => 'required|string',
-    //         'files' => 'nullable|array',
-    //         'files.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120', 
-    //     ]);
-
-    //     // 👇 obtener archivo
-    //     $files = $request->file('files');
-
-    //     $imageUrl = null;
-    //     $docUrl = null;
-    //     $documentContent = '';
-
-    //      // =========================
-    //     // 🔁 PROCESAR TODOS LOS ARCHIVOS
-    //     // =========================
-    //     if ($files) {
-
-    //         foreach ($files as $file) {
-
-    //             // 🖼️ IMAGEN
-    //             if (str_starts_with($file->getMimeType(), 'image')) {
-
-    //                 // solo una imagen (si quieres limitar)
-    //                 if (!$imageUrl) {
-    //                     $imageUrl = $this->uploadService->upload($file);
-    //                 }
-
-    //             } 
-    //             // 📄 DOCUMENTO
-    //             else {
-
-    //                 $documentContent .= $fileProcessor->extract($file) . "\n\n";
-
-    //                 // opcional: guardar archivo
-    //                 $docUrl = $this->uploadService->upload($file);
-    //             }
-    //         }
-    //     }
-    //      // =========================
-    //     // 🧠 CASO: IMAGEN + DOCUMENTO
-    //     // =========================
-    //     if ($imageUrl && $documentContent) {
-
-    //         $prompt = $this->promptService->buildValidationPrompt([
-    //             ...$data,
-    //             'file_type' => 'mixed',
-    //             'file_content' => $documentContent
-    //         ]);
-
-    //         $result = $this->openAIService->imageJson(
-    //             $prompt,
-    //             $imageUrl
-    //         );
-    //     }
-    //      // =========================
-    //     // 🖼️ SOLO IMAGEN
-    //     // =========================
-    //     elseif ($imageUrl) {
-
-    //         $prompt = $this->promptService->buildValidationPrompt([
-    //             ...$data,
-    //             'file_type' => 'image'
-    //         ]);
-
-    //         $result = $this->openAIService->imageJson(
-    //             $prompt,
-    //             $imageUrl
-    //         );
-    //     }
-    //         // =========================
-    //     // 📄 SOLO DOCUMENTO
-    //     // =========================
-    //     elseif ($documentContent) {
-
-    //         $prompt = $this->promptService->buildValidationPrompt([
-    //             ...$data,
-    //             'file_type' => 'document',
-    //             'file_content' => $documentContent
-    //         ]);
-
-    //         $result = $this->openAIService->json($prompt);
-    //     }
-    //     // =========================
-    //     // ❌ SIN ARCHIVOS
-    //     // =========================
-    //     else {
-
-    //         $prompt = $this->promptService->buildValidationPrompt([
-    //             ...$data,
-    //             'file_type' => 'none'
-    //         ]);
-
-           
-    //         $result = $this->openAIService->json($prompt);// Repuesta solo texto
-
-            
-
-           
-    //     }
-
-        
-
-       
-    //     return response()->json($result);
-    //     // $data = $request->validate([
-    //     //     'pregunta' => 'required|string',
-    //     //     'detail' => 'nullable|string',
-    //     //     'evidence' => 'nullable|string',
-    //     //     'respuesta' => 'required|string',
-    //     // ]);
-
-    //     // $prompt = $this->promptService
-    //     //     ->buildValidationPrompt($data);
-
-    //     // $result = $this->openAIService
-    //     //     ->json($prompt);
-
-    //     // return response()->json($result);
-    // }
-
-    
 }

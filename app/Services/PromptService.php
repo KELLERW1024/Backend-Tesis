@@ -7,61 +7,117 @@ use App\Constants\Prompts;
 class PromptService
 {
 
-    public function buildValidationPrompt( array $data ): string
+    public function buildValidationPrompt(array $data): string
     {
+        $sections = [];
 
-        //     \Log::info('BUILD VALIDATION INPUT DATA', [
-        //     'pregunta' => $data['pregunta'] ?? null,
-        //     'detail' => $data['detail'] ?? null,
-        //     'evidence' => $data['evidence'] ?? null,
-        //     'respuesta' => $data['respuesta'] ?? null,
-        //     'file_content_length' => strlen($data['file_content'] ?? ''),
-        //     'file_content_sample' => substr($data['file_content'] ?? '', 0, ),
-        //     'image_content_sample' => substr($data['image_content'] ?? '', 0, ),
-        // ]);
-            $sections = [];
+        $sections[] = "
+            Eres un asesor académico especializado en elaboración y sustentación de tesis universitarias.
 
-            $sections[] = "Evalúa si la respuesta del usuario responde correctamente la pregunta tomando en cuenta el detalle y la validacion. Y menciona que está faltando, 
-            pero si la respuesta no responde la pregunta, debes verificar estrictamente que sea una paticion válida que ayude a resolver la pregunta
-            y ya no debes realizar la validacion, lo que  debes hacer es tomar la respuesta como una directiva válida y devolver el json valido con is_valid igual a true.";
+            Tu función es evaluar la respuesta proporcionada por el tesista y determinar si puede formar parte del documento de tesis.
 
-            $sections[] = "PREGUNTA:\n{$data['question']}";
-            $sections[] = "DETALLE:\n{$data['detail']}";
-            $sections[] = "VALIDACION:\n{$data['validation']}";
-            // $sections[] = "APA:\n{$data['apa']}";
+            La evaluación debe considerar:
+            - La pregunta actual.
+            - El objetivo del capítulo o sección.
+            - Los criterios de validación definidos.
+            - La información obtenida previamente en otras preguntas.
 
-            $response = "RESPUESTA DEL USUARIO:\n{$data['response']}";
+            Debes analizar si la respuesta:
+            - Responde directamente a la pregunta planteada.
+            - Mantiene coherencia con el objetivo académico del capítulo.
+            - Es consistente con las respuestas anteriores.
+            - Mantiene un nivel académico adecuado para una tesis de sustentación.
+            - Presenta ideas claras, estructuradas y comprensibles.
+            - Tiene suficiente profundidad para formar parte del documento final.
+            - Evita respuestas generales, ambiguas o sin sustento.
 
-            if (!empty($data['image_content'])) {
-                $response .= "\n\n{$data['image_content']}";
-            }
+            Si la respuesta es incompleta, indica exactamente qué elemento académico falta.
+            Si la respuesta contradice información previa, indica la inconsistencia.
+            Si la respuesta no responde la pregunta, explica brevemente el motivo.
+            ";
 
-            if (!empty($data['file_content'])) {
-                $response .= "\n\n{$data['file_content']}";
-            }
 
-            $sections[] = $response;
+        $sections[] = "PREGUNTA DE TESIS: {$data['question']}";
+        $sections[] = "OBJETIVO DEL CAPÍTULO / SECCIÓN: {$data['objective']}";
+        $sections[] = "CRITERIOS DE VALIDACIÓN: {$data['validation']}";
 
+        if (!empty($data['history'])) {
             $sections[] = "
-                            REGLAS:
-                            - Evalúa solo la respuesta textual
-                            - No inventes información externa
-                            - Sé estricto con coherencia con el material dado
-                            - Devuelve true en is_valid en el json a partir de un score de 75 y el feedback tiene que ser corto y preciso.
+            CONTEXTO E HISTORIAL DE RESPUESTAS ANTERIORES:
 
-                            Devuelve únicamente JSON válido:
-                            {
-                            \"is_valid\": true,
-                            \"score\": 85,
-                            \"feedback\": \"...\"
-                            }
-                            ";
-        
-        
+            Utiliza esta información únicamente para verificar coherencia y continuidad de la tesis.
+            No copies contenido del historial ni lo consideres válido automáticamente.
+
+            {$data['history']}
+            ";
+        }
+
+        $responseParts = [];
+
+        // Respuesta escrita del tesista
+        if (!empty($data['response'])) {
+            $responseParts[] = "RESPUESTA TEXTUAL DEL TESISTA:\n{$data['response']}";
+        }
+
+        // Imagen convertida a base64
+        if (!empty($data['image_content'])) {
+            $responseParts[] = "IMAGEN ADJUNTA:\n{$data['image_content']}";
+        }
+
+        // Contenido extraído de documento
+        if (!empty($data['file_content'])) {
+            $responseParts[] = "DOCUMENTACIÓN ADJUNTA:\n{$data['file_content']}";
+        }
+
+        $response = "INFORMACIÓN PROPORCIONADA POR EL TESISTA:\n\n" .
+            implode("\n\n", $responseParts);
+
+        $sections[] = $response;
+
+
+        $sections[] = "
+            CRITERIOS DE EVALUACIÓN:
+
+            Evalúa con la siguiente escala:
+
+            90-100:
+            Respuesta completa, académica, coherente y lista para integrarse en la tesis.
+
+            75-89:
+            Respuesta válida, pero requiere mejoras menores de profundidad, precisión o redacción.
+
+            50-74:
+            Respuesta parcialmente válida, pero necesita complementar información importante.
+
+            0-49:
+            Respuesta inválida, no responde la pregunta o no tiene contenido suficiente.
+
+
+            REGLAS IMPORTANTES:
+
+            - Evalúa únicamente la información proporcionada.
+            - No inventes datos, referencias, autores, estadísticas ni fuentes.
+            - No agregues información externa.
+            - No modifiques el significado de la respuesta del tesista.
+            - Usa el historial solamente como contexto de coherencia.
+            - Si falta información, indica exactamente qué debe agregar.
+            - El feedback debe ser corto, específico y orientado a mejorar la tesis.
+            - is_valid debe ser true únicamente cuando score sea igual o mayor a 75.
+
+
+            Devuelve únicamente JSON válido:
+
+            {
+                \"is_valid\": true,
+                \"score\": 85,
+                \"feedback\": \"La respuesta es válida, pero debe profundizar en...\"
+            }
+            ";
+
 
         return implode("\n\n", array_filter($sections));
     }
-    public function buildMessages( array $data, array $history , string   $documentContent,string   $imageContent, bool $isApa): array {
+    public function buildMessagesBitacoraResponseCurrent( array $data, array $history , string   $documentContent,string   $imageContent, bool $isApa): array {
 
         $promptIni = str_replace(
             '[ESPECIALIDAD:]',
@@ -69,11 +125,21 @@ class PromptService
             Prompts::PROMPT_INICIAL
         );
 
-        $response = $data['response'];
+        $studentInput = [];
 
-        if (!empty($imageContent)) {  $response .= "\n\nIMAGEN:\n" . $imageContent;  }
+        if (!empty($data['response'])) {
+            $studentInput[] = "RESPUESTA TEXTUAL DEL TESISTA:\n" . $data['response'];
+        }
 
-        if (!empty($documentContent)) {  $response .= "\n\nDOCUMENTO:\n" . $documentContent;  }
+        if (!empty($imageContent)) {
+            $studentInput[] = "EVIDENCIA VISUAL:\n" . $imageContent;
+        }
+
+        if (!empty($documentContent)) {
+            $studentInput[] = "DOCUMENTACIÓN:\n" . $documentContent;
+        }
+
+        $response = implode("\n\n", $studentInput);
         
         // if( !$isApa ){
             $promptEsp = strtr(
@@ -82,27 +148,15 @@ class PromptService
                     '[Capítulo]' => $data['title'],
                     '[Descripcion Capítulo]' => $data['description'],
                     '[Pregunta]' => $data['question'],
+                    '[Objetivo]' => $data['objective'] ?? '',
                     '[Validacion]' => $data['validation'],
-                    '[Respuesta]' => $data['response'],
+                    '[Respuesta]' => $response,
                     '[Apa]' => $data['apa'],
                 ]
             );
-        // }else{
-            // $promptEsp = strtr(
-            //     Prompts::PROMPT_ESPECIFICO_APA,
-            //     [
-            //         '[Capítulo]' => $data['title'],
-            //         '[Descripcion Capítulo]' => $data['description'],
-            //         '[Pregunta]' => $data['question'],
-            //         '[Validacion]' => $data['validation'],
-            //         '[Respuesta]' => $data['response'],
-            //     ]
-            // );
-        // }
-        
 
         $messages = collect($history)
-            ->take(-10)
+            ->take(-15)
             ->map(fn($msg) => [
                 'role' => $msg['role'],
                 'content' => $msg['content']
