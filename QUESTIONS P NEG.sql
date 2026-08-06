@@ -1,786 +1,3 @@
-
--- ROLES
-INSERT INTO roles (name, description) VALUES
-('Administrador', 'Administrador del sistema'),
-('Usuario', 'Usuario');
-
-INSERT INTO packages ( name, description, duration_months, local_price, international_price, unit_price, benefits , num_plans) 
-VALUES
-                ( 'ValiPlan Junior', '', 1, 0, 0, 0, 'Acceso básico, a un proyecto, 3 capítulos básicos', 1 ),
-
-                ( 'Emprendedor', '', 3, 97, 26, 97, 'Acceso completo a 1 proyecto, con descarga de documento al completar.', 1 ),
-                ( 'Productivo', '', 3, 97, 26, 97, 'Acceso completo a 1 proyecto, con descarga de documento al completar.' , 2),
-
-                ( 'Profesional', '', 5, 349, 94, 349, 'Acceso completo a 1 proyecto tesis , con descarga de documento al completar.', 1 ),
-                ( 'Profesional Duo', '', 6, 497, 133, 248.5, 'Acceso completo a 2 proyectos tesis , con descarga de documento al completar.', 2 ),
-
-                ( 'Asesor senior', '', 6, 499, 134, 166, 'Acceso completo a 3 proyecto tesis , con descarga de documento al completar.', 3 ),
-                ( 'Asesor ejecutivo', '', 12, 997, 267, 166, 'Acceso completo a 6 proyecto tesis , con descarga de documento al completar.', 6 ),
-
-                ( 'Corporativo Emprende pro', '', 12, 69 , 18, 69, 'Acceso completo de 50 a 100 proyectos tesis , con descarga de documento al completar.', 50 ),
-                ( 'Corporativo pro', '', 12, 179 , 48, 179, 'Acceso completo de 50 a 100 proyectos tesis, 2 capacitaciones, reportes por docente,  con descarga de documento al completar.', 100 );
-
-
-
-
--- PLANES
-INSERT INTO plans (name, code,  price, is_active, description)
-VALUES
-('Tesis Plan de Negocio','PN',  0, TRUE, 'Servicio de elaboración de tesis enfocado en planes de negocio, con estructura académica completa, desarrollo metodológico y soporte de contenido basado en investigación.'),
-('Tesis Plan de Mejora','PN',  0, TRUE, 'Servicio de elaboración de tesis enfocado en planes de mejora, con estructura académica completa, desarrollo metodológico y soporte de contenido basado en investigación.'),
-('Tesis Plan de Suficiencia Profesional','SP',  0, TRUE, 'Desarrollo de tesis orientada a la experiencia profesional del usuario, incluyendo análisis de actividades laborales, sustento teórico y redacción académica formal.'),
-('Tesis Plan de Innovación','PI',  0, TRUE, 'Elaboración de tesis enfocada en proyectos innovadores, con enfoque creativo, tecnológico o de mejora de procesos dentro de una organización.'),
-('Plan Negocio Urbano', 'PNU',  0, TRUE, 'Desarrollo integral de planes de negocio orientados a entornos urbanos, considerando análisis de mercado, competencia, viabilidad financiera y estrategias de implementación.'),
-('Plan Negocio Rural','PNR', 0, TRUE, 'Elaboración de planes de negocio enfocados en zonas rurales, con análisis de recursos locales, sostenibilidad, impacto comunitario y viabilidad económica.');
-
-
-
-INSERT INTO package_plan (package_id, plan_id)
-VALUES
-    (1, 4),
-    (1, 5),
-    (2, 4),
-    (2, 5),
-    (3, 1),
-    (3, 2),
-    (3, 3),
-    (3, 4),
-    (3, 5),
-    (4, 1),
-    (4, 2),
-    (4, 3),
-    (4, 4),
-    (4, 5),
-    (5, 1),
-    (5, 2),
-    (5, 3),
-    (5, 4),
-    (5, 5),
-    (6, 1),
-    (6, 2),
-    (6, 3),
-    (6, 4),
-    (6, 5),
-    (7, 1),
-    (7, 2),
-    (7, 3),
-    (7, 4),
-    (7, 5),
-    (8, 1),
-    (8, 2),
-    (8, 3),
-    (8, 4),
-    (8, 5),
-    (9, 1),
-    (9, 2),
-    (9, 3),
-    (9, 4),
-    (9, 5);
--- CAPITULOS
--- INSERT INTO sections (title, description, type , is_active, order_index, objective)
--- VALUES ( 'Indice General', '', 'GE', TRUE, 0 , ''), 
---         ( 'Indice de Tablas', '', 'GE', TRUE, 0 , ''), 
---         ( 'Indice de Figuras', '', 'GE', TRUE , 0, ''), 
---         ( 'Resumen Ejecutivo', '', 'GE', TRUE, 0 , ''), 
---         ( 'Introducción', '', 'GE', TRUE , 0 , ''), 
-
---         -- Suficiencia profesional
---         ( 'Introducción', '', 'SP', FALSE, 1 , ''), 
---         ( 'Capítulo I', 'Trayectoria Profesional',  'SP', TRUE , 2 , ''), 
---         ( 'Capítulo II', 'Contexto de la Experiencia', 'SP', TRUE, 3 , ''), 
---         ( 'Capítulo III', 'Fundamentos Teóricos',  'SP', TRUE, 4 , ''), 
---         ( 'Capítulo IV', 'Aplicación Profesional', 'SP', TRUE, 5 , ''), 
---         ( 'Capítulo V', 'Análisis Crítico de la Experiencia', 'SP', TRUE , 6 , ''), 
---         ( 'Conlusiones', '', 'SP', FALSE , 7, ''), 
---         ( 'Recomendaciones', '', 'SP', FALSE , 8, ''),
-
---         -- Proyecto de Innovacion
---         ( 'Introducción', '', 'PI', FALSE, 1 , ''), 
---         ( 'Capítulo I', 'Problema u oportunidad e hipótesis',  'PI', TRUE , 2, 'Objetivo del capítulo: Precisar el problema/oportunidad y formular la hipótesis a validar.'), 
---         ( 'Capítulo II', 'Cliente, insights y validación inicial', 'PI', TRUE , 3, 'Objetivo del capítulo: Entender al usuario y convertir la evidencia en insights accionables.'), 
---         ( 'Capítulo III', 'Diseño de la solución innovadora',  'PI', TRUE , 4, 'Objetivo del capítulo: Desarrollar la propuesta mediante Design Thinking y criterios de deseabilidad.'), 
---         ( 'Capítulo IV', 'Modelo de negocio y prototipo', 'PI', TRUE , 5 , 'Objetivo del capítulo: Traducir la solución a un modelo operable y prototipo de lanzamiento.'), 
---         ( 'Capítulo V', 'Validación de mercado y aprendizaje', 'PI', TRUE, 6 , 'Objetivo del capítulo: Usar experimentos, métricas y Lean Startup para validar o pivotejar.'), 
---         ( 'Capítulo VI', 'Viabilidad operativa y económica', 'PI', TRUE, 7 , 'Objetivo del capítulo: Estimar recursos, costos, ingresos y umbral mínimo de rentabilidad.'), 
---         ( 'Capítulo VII', 'Cierre, decisión y anexos', 'PI', TRUE , 8, 'Objetivo del capítulo: Cerrar con decisión, hoja de ruta y respaldo documental.'),
---         ( 'Conlusiones', '', 'PI', FALSE, 9 , ''), 
---         ( 'Recomendaciones', '', 'PI', FALSE, 10 , ''),
-
---         -- PLAN de Negocio
---         ( 'Introducción', '', 'PN', FALSE , 1, ''), 
---         ( 'Capítulo I', 'Formulación de la idea y oportunidad de negocio',  'PN', TRUE, 2 , 'Objetivo del capítulo: Precisar la idea, el problema/oportunidad y el modelo inicial del negocio.'), 
---         ( 'Capítulo II', 'Plan estratégico y organizacional',  'PN', TRUE, 3 , 'Objetivo del capítulo: Definir identidad, objetivos, estructura y ventajas estratégicas. Campos esperados: descripcion_empresa, mision, vision, objetivos, foda. '), 
---         ( 'Capítulo III', 'Análisis del entorno, mercado y actores', 'PN', TRUE , 4, 'Objetivo del capítulo: Sustentar el mercado con datos externos y evidencia propia. Campos esperados: pesta, cliente_objetivo, competidores, proveedores, tamano_mercado.'), 
---         ( 'Capítulo IV', 'Plan de Marketing', 'PN', TRUE , 5, 'Objetivo del capítulo: Traducir la propuesta de valor en mezcla comercial y proyección de ventas.'), 
---         ( 'Capítulo V', 'Plan de operaciones','PN', TRUE, 6 , 'Objetivo del capítulo: Diseñar el proceso operativo, logística y capacidad instalada. Campos esperados: proceso, capacidad, logistica_entrada, logistica_salida, recursos.'), 
---         ( 'Capítulo VI', 'Organización legal y gestión del talento','PN', TRUE , 7, 'Objetivo del capítulo: Asegurar coherencia en estructura, personal y formalización. Campos esperados: estructura, talento, formalidad, permisos.'), 
---         ( 'Capítulo VII', 'Plan financiero y evaluación', 'PN', TRUE , 8, 'Objetivo del capítulo: Modelar inversión, resultados, flujo, sensibilidad y decisión de viabilidad.'), 
---         ( 'Conlusiones', '', 'PN', FALSE, 9 , ''), 
---         ( 'Recomendaciones', '', 'PN', FALSE , 10, ''),
-
---         -- PLAN de Negocio URBANO
---         ( 'Introducción', '', 'PNU', FALSE, 1 , ''), 
---         ( 'Capítulo I', 'Idea de negocio y oportunidad',  'PNU', TRUE, 2 , 'Objetivo del capítulo: Definir con precisión la idea, el problema que atiende y la propuesta de valor inicial.'), 
---         ( 'Capítulo II', 'Cliente, competencia y propuesta de valor',  'PNU', TRUE, 3 , 'Objetivo del capítulo: Delimitar el mercado objetivo, contrastar competidores y fijar la diferenciación real.'), 
---         ( 'Capítulo III', 'Modelo comercial y operación básica', 'PNU', TRUE, 4 , 'Objetivo del capítulo: Diseñar la forma de venta, atención y abastecimiento del negocio.'), 
---         ( 'Capítulo IV', 'Organización y formalización mínima', 'PNU', TRUE, 5 , 'Objetivo del capítulo: Precisar roles, permisos y estructura básica para iniciar de forma ordenada.'), 
---         ( 'Capítulo V', 'Inversión, costos y rentabilidad preliminar','PNU', TRUE, 6 , 'Objetivo del capítulo: Estimar la inversión, costos, punto de equilibrio y utilidad esperada.'), 
---         ( 'Capítulo VI', 'Riesgos, decisión y hoja de ruta','PNU', TRUE , 7, 'Objetivo del capítulo: Cerrar con riesgos, semáforo de viabilidad y plan de 90 días.'), 
---         ( 'Capítulo VII', 'Anexos y evidencias','PNU', TRUE, 8 , 'Objetivo del capítulo: Ordenar las evidencias que sostienen el perfil y su decisión.'), 
---         ( 'Conlusiones', '', 'PNU', FALSE, 9 , ''), 
---         ( 'Recomendaciones', '', 'PNU', FALSE , 10, ''),
-
---          -- PLAN de Negocio RURAL
---          ( 'Introducción', '', 'PNR', FALSE , 1, ''), 
---         ( 'Capítulo I', 'Idea de negocio y oportunidad territorial',  'PNR', TRUE, 2, 'Objetivo del capítulo: Definir el negocio desde el recurso, el territorio y la oportunidad comercial.'), 
---         ( 'Capítulo II', 'Recurso, oferta productiva y sostenibilidad',  'PNR', TRUE, 3 , 'Objetivo del capítulo: Comprobar disponibilidad, estacionalidad y sostenibilidad del recurso o producto.'), 
---         ( 'Capítulo III', 'Cliente, mercado y cadena comercial', 'PNR', TRUE, 4 , 'Objetivo del capítulo: Precisar quién compra, cómo circula el producto y dónde se captura el margen.'), 
---         ( 'Capítulo IV', 'Modelo de acopio, transformación y comercialización', 'PNR', TRUE, 5 , 'Objetivo del capítulo: Diseñar la ruta práctica desde el origen hasta la venta. Campos esperados: proceso_origen_destino, conservacion, logistica, transformacion.'), 
---         ( 'Capítulo V', 'Organización productiva y formalización','PNR', TRUE, 6 , 'Objetivo del capítulo: Clarificar roles, acuerdos, permisos y forma organizativa.'), 
---         ( 'Capítulo VI', 'Inversión, costos, rentabilidad y flujo preliminar','PNR', TRUE, 7 , 'Objetivo del capítulo: Estimar inversión, costos logísticos, margen y punto de equilibrio.'), 
---         ( 'Capítulo VII', 'Riesgos productivos, comerciales y territoriales','PNR', TRUE , 8, 'Objetivo del capítulo: Evaluar riesgos y cerrar con decisión y hoja de ruta.'), 
---         ( 'Capítulo VII', 'Anexos y evidencias','PNR', TRUE , 9, ''), 
---         ( 'Conlusiones', '', 'PNR', FALSE , 10, ''), 
---         ( 'Recomendaciones', '', 'PNR', FALSE , 11, ''),
-
---         -- Plan MEJORA
---         ( 'Introducción', '', 'PM', FALSE, 1 , ''), 
---         ( 'Capítulo I', 'Reseña de la empresa y contexto',  'PM', TRUE, 2 , 'Objetivo del capítulo: Entender la empresa actual, su situación y el alcance de la intervención.'), 
---         ( 'Capítulo II', 'Diagnóstico empresarial',  'PM', TRUE, 3, 'Objetivo del capítulo: Analizar entorno, cliente, proceso y desempeño actual.'), 
---         ( 'Capítulo III', 'Problema, causas y oportunidad de mejora',  'PM', TRUE , 4, 'Objetivo del capítulo: Priorizar el problema crítico y convertirlo en oportunidad de mejora.'), 
---         ( 'Capítulo IV', 'Propuesta de mejora',  'PM', TRUE, 5 , 'Objetivo del capítulo: Diseñar estrategias, alternativas y justificación técnica/económica.'), 
---         ( 'Capítulo V', 'Implementación',  'PM', TRUE, 6 , 'Objetivo del capítulo: Bajar la mejora a plan de acción, cronograma, responsables y recursos.'), 
---         ( 'Capítulo VI', 'Monitoreo, indicadores y control', 'PM', TRUE, 7 , 'Objetivo del capítulo: Definir seguimiento, KPIs, metas y puntos de ajuste.'), 
---         ( 'Capítulo VII', 'Cierre, conclusiones y anexos', 'PM', TRUE, 8 , 'Objetivo del capítulo: Cerrar con decisión, beneficios esperados y soporte documental.'),
---         ( 'Conlusiones', '', 'PM', FALSE, 9 , ''), 
---         ( 'Recomendaciones', '', 'PM', FALSE , 10, ''),
-
-
---         ( 'Conlusiones', '', 'GE', TRUE , 0, ''), 
---         ( 'Recomendaciones', '', 'GE', TRUE, 0 , '');
-
-INSERT INTO questions_masters (
-    question,
-    detail,
-    example,
-    advertencia,
-    order_index,
-    active
-) VALUES
-(
-    '¿Quién está solicitando el documento?',
-    'Seleccione persona emprendedora, estudiante, profesional, empresa, institución, comunidad, docente o asesor.',
-    'Soy estudiante y además participo en un negocio familiar.',
-    'Puede seleccionar más de un rol.',
-    1,
-    TRUE
-),
-(
-    '¿Para qué necesita el documento?',
-    'Indique si es para decidir, implementar, financiar, titularse, sustentar, mejorar, innovar o presentar a una institución.',
-    'Necesito sustentar un proyecto académico y evaluar si puede implementarse.',
-    'El propósito determina profundidad y formato.',
-    2,
-    TRUE
-),
-(
-    '¿Existe una idea nueva, una operación existente, un problema por mejorar, una innovación o una experiencia profesional?',
-    'Seleccione alguna de las situaciones de la pregunta y descríbala brevemente.',
-    'Existe un negocio en funcionamiento con un proceso que debe mejorarse.',
-    'No seleccione una idea nueva si el objetivo es corregir algo existente.',
-    3,
-    TRUE
-),
-(
-    '¿Qué desea lograr principalmente?',
-    'Crear un negocio, validar una idea, mejorar resultados, desarrollar innovación o demostrar experiencia profesional.',
-    'Quiero reducir pérdidas de un proceso ya existente.',
-    'El resultado principal orienta el producto recomendado.',
-    4,
-    TRUE
-),
-(
-    '¿La iniciativa ya funciona o genera resultados?',
-    'Indique si no existe, está en prueba, tiene primeras ventas, opera regularmente o cuenta con resultados medibles.',
-    'Opera desde hace dos años y existen registros de ventas.',
-    'No declare funcionamiento si solo existe una propuesta.',
-    5,
-    TRUE
-),
-(
-    '¿Qué evidencia o información tiene disponible?',
-    'Marque entrevistas, registros, ventas, costos, procesos, prototipos, documentos académicos o experiencia laboral.',
-    'Tengo registros de costos y evidencias de mi experiencia profesional.',
-    'Diferencie disponible, estimado y pendiente.',
-    6,
-    TRUE
-),
-(
-    '¿Qué nivel de profundidad necesita?',
-    'Seleccione perfil inicial, documento completo, tesis/proyecto académico, implementación o financiamiento.',
-    'Necesito un documento completo tipo tesis.',
-    'Un perfil no sustituye un plan completo.',
-    7,
-    TRUE
-),
-(
-    '¿Qué plazo, recursos y capacidad tiene para obtener información?',
-    'Indique tiempo, presupuesto, acceso a personas, datos, organización y apoyo técnico.',
-    'Dispongo de ocho semanas y acceso a registros internos.',
-    'La recomendación debe ser realizable.',
-    8,
-    TRUE
-),
-(
-    '¿El contexto principal es urbano, rural o mixto?',
-    'Considere territorio, acceso, actividad, mercado, logística y organización, no solo domicilio.',
-    'La producción es rural y la venta se realiza en una ciudad.',
-    'Un caso mixto puede activar rutas de ambos contextos.',
-    9,
-    TRUE
-),
-(
-    '¿Participan familias, comunidades, asociaciones o instituciones facilitadoras?',
-    'Indique actores, forma de decisión y acompañamiento.',
-    'Participan productores y una municipalidad facilita el proceso.',
-    'La participación comunitaria requiere validación colectiva.',
-    10,
-    TRUE
-),
-(
-    '¿La actividad implica producción, transformación, comercio, servicio, tecnología o combinación?',
-    'Seleccione todas las aplicables y señale la principal.',
-    'Transformación de fruta y comercialización.',
-    'Producción o transformación activa ruta productiva.',
-    11,
-    TRUE
-),
-(
-    '¿Se busca una solución nueva o significativamente mejorada que debe prototiparse y experimentarse?',
-    'Explique novedad, incertidumbre y necesidad de prototipo o MVP.',
-    'Se probará una plataforma nueva con usuarios antes de implementarla.',
-    'Esto orienta al Plan de Innovación.',
-    12,
-    TRUE
-),
-(
-    '¿Existe un problema o brecha concreta en algo que ya funciona?',
-    'Indique situación actual, resultado insatisfactorio y dato de línea base.',
-    'La merma actual es alta y se desea reducirla.',
-    'Esto orienta al Plan de Mejora.',
-    13,
-    TRUE
-),
-(
-    '¿Necesita demostrar competencias a partir de experiencia profesional documentada?',
-    'Indique institución, grado, experiencia, intervención y lineamientos.',
-    'Debo sustentar una mejora realizada durante mi experiencia laboral.',
-    'Esto orienta al Trabajo de Suficiencia Profesional.',
-    14,
-    TRUE
-),
-(
-    '¿Necesita evaluar integralmente la viabilidad de crear o ampliar un negocio?',
-    'Considere mercado, operación, organización, inversión y finanzas.',
-    'Necesito presentar un plan completo para buscar financiamiento.',
-    'Esto orienta al Plan de Negocio.',
-    15,
-    TRUE
-),
-(
-    '¿La idea necesita primero una validación sencilla antes de un plan completo?',
-    'Indique si aún faltan cliente, precio, costos, proceso o prueba inicial.',
-    'Tengo una idea, pero aún no sé si las personas comprarán.',
-    'Esto orienta a un Perfil Urbano o Rural.',
-    16,
-    TRUE
-),
-(
-    '¿Existen requisitos académicos o institucionales obligatorios?',
-    'Cargue o describa guía, capítulos, extensión, metodología, formato y fecha.',
-    'La institución exige formato APA y capítulos específicos.',
-    'La estructura debe respetar reglas confirmadas.',
-    17,
-    TRUE
-),
-(
-    '¿Hay riesgos o requisitos especiales?',
-    'Marque salud, seguridad, población vulnerable, datos, ambiente, permisos, propiedad intelectual o recursos naturales.',
-    'El producto requiere validación sanitaria.',
-    'Un riesgo bloqueante puede cambiar la ruta o secuencia.',
-    18,
-    TRUE
-),
-(
-    '¿Qué producto considera que necesita inicialmente?',
-    'Seleccione uno de los seis productos o "No estoy seguro".',
-    'Creo que necesito un Plan de Innovación, pero deseo que ValiPlan lo verifique.',
-    'La preferencia del usuario es una entrada, no la decisión automática.',
-    19,
-    TRUE
-),
-(
-    'Revise la recomendación de ValiPlan y confirme o corrija la ruta.',
-    'Compare producto recomendado, alternativa, razones, brechas y siguiente paso.',
-    'Confirmo el Perfil Rural con ruta productiva.',
-    'Ninguna ruta se activa sin confirmación del usuario.',
-    20,
-    TRUE
-);
-
-
-INSERT INTO plan_node  (id, plan_id, user_plan_id, codigo, nivel, parent_id,  titulo, orden, objective)
-VALUES
-                        -- PLAN DE NEGOCIO
-                        (1, 1, NULL, '1',     1, NULL, 'Capítulo I : Plan de Negocio', 1, NULL),
-
-                        (2, 1, NULL, '1.1',   2, 1, 'Formulación de la idea de negocio', 1, 'Definir qué se propone y su lógica básica'),
-                        (3, 1, NULL, '1.2',   2, 1, 'Problema o necesidad identificada.', 2, 'Definir el problema desde el cliente y su evidencia'),
-                        (4, 1, NULL, '1.3',   2, 1, 'Análisis de la oportunidad.', 3, 'Evaluar demanda, momento y posibilidad de aprovecharla'),
-                        (5, 1, NULL, '1.4',   2, 1, 'Descripción del producto o servicio.', 4, 'Precisar oferta, características, beneficios, calidad y requisitos'),
-                        (6, 1, NULL, '1.5',   2, 1, 'Propuesta de valor.', 5, 'Explicar por qué el cliente elegiría la oferta'),
-
-                        (7, 1, NULL, '1.6',   2, 1, 'Presentación del modelo de negocio.', 6, NULL),
-
-                        (8, 1, NULL, '1.6.1', 3, 7, 'Segmentos de clientes.', 1, 'Diferenciar grupos y priorizar cliente inicial'),
-                        (9, 1, NULL, '1.6.2', 3, 7, 'Propuesta de valor.', 2, NULL),
-                        (10,1, NULL, '1.6.3', 3, 7, 'Canales.', 3, 'Definir comunicación, venta, pago, entrega y posventa'),
-                        (11,1, NULL, '1.6.4', 3, 7, 'Relaciones con clientes.', 4, 'Definir atención, confianza, fidelización y reclamos'),
-                        (12,1, NULL, '1.6.5', 3, 7, 'Fuentes de ingresos.', 5, 'Definir qué se cobra y condiciones'),
-                        (13,1, NULL, '1.6.6', 3, 7, 'Recursos clave.', 6, 'Identificar recursos y capacidad'),
-                        (14,1, NULL, '1.6.7', 3, 7, 'Actividades clave.', 7, 'Identificar tareas que crean y entregan valor'),
-                        (15,1, NULL, '1.6.8', 3, 7, 'Socios clave.', 8, 'Definir proveedores y aliados necesarios'),
-                        (16,1, NULL, '1.6.9', 3, 7, 'Estructura de costos.', 9, 'Identificar categorías principales'),
-
-                        -- CAPÍTULO II
-                        (17, 1, NULL, '2',     1, NULL, 'Capítulo II. Plan Estratégico y Organizacional', 2, NULL),
-
-                        (18, 1, NULL, '2.1',   2, 17, 'Descripción de la empresa.', 1, 'Presentar identidad y alcance'),
-                        (19, 1, NULL, '2.2',   2, 17, 'Datos generales de la empresa.', 2, 'Registrar información formal o propuesta'),
-
-                        (20, 1, NULL, '2.3',   2, 17, 'Factores internos.', 3, NULL),
-                        (21, 1, NULL, '2.3.1', 3, 20, 'Fortalezas.', 1, 'Diagnosticar factores internos comprobables'),
-                        (22, 1, NULL, '2.3.2', 3, 20, 'Debilidades.', 2, 'Diagnosticar factores internos comprobables'),
-                        (23, 1, NULL, '2.3.3', 3, 20, 'Matriz MEFI.', 3, 'Ponderar factores internos'),
-
-                        (24, 1, NULL, '2.4',   2, 17, 'Direccionamiento estratégico.', 4, NULL),
-                        (25, 1, NULL, '2.4.1', 3, 24, 'Visión.', 1, 'Definir aspiración futura'),
-                        (26, 1, NULL, '2.4.2', 3, 24, 'Misión.', 2, 'Definir propósito actual'),
-                        (27, 1, NULL, '2.4.3', 3, 24, 'Valores.', 3, 'Convertir valores en conducta'),
-                        (28, 1, NULL, '2.4.4', 3, 24, 'Objetivo general.', 4, NULL),
-                        (29, 1, NULL, '2.4.5', 3, 24, 'Objetivos específicos.', 5, NULL),
-
-                        (30, 1, NULL, '2.5',   2, 17, 'Matriz FODA.', 5, NULL),
-                        (31, 1, NULL, '2.6',   2, 17, 'Matriz FODA cruzada.', 6, NULL),
-                        (32, 1, NULL, '2.7',   2, 17, 'Ventaja competitiva.', 7, NULL),
-                        (33, 1, NULL, '2.8',   2, 17, 'Estrategias e indicadores de desempeño.', 8, NULL),
-
-                        -- CAPÍTULO III
-                        (34, 1, NULL, '3',     1, NULL, 'Capítulo III. Análisis del Entorno y del Mercado', 3, NULL),
-
-                        (35, 1, NULL, '3.1',   2, 34, 'Análisis PESTEL.', 1, NULL),
-                        (36, 1, NULL, '3.1.1', 3, 35, 'Factores políticos y legales.', 1, NULL),
-                        (37, 1, NULL, '3.1.2', 3, 35, 'Factores económicos.', 2, NULL),
-                        (38, 1, NULL, '3.1.3', 3, 35, 'Factores sociales, culturales y demográficos.', 3, NULL),
-                        (39, 1, NULL, '3.1.4', 3, 35, 'Factores tecnológicos.', 4, NULL),
-                        (40, 1, NULL, '3.1.5', 3, 35, 'Factores ambientales.', 5, NULL),
-
-                        (41, 1, NULL, '3.2',   2, 34, 'Análisis competitivo.', 2, NULL),
-                        (42, 1, NULL, '3.2.1', 3, 41, 'Clientes.', 1, NULL),
-                        (43, 1, NULL, '3.2.2', 3, 41, 'Competidores.', 2, NULL),
-                        (44, 1, NULL, '3.2.3', 3, 41, 'Proveedores.', 3, NULL),
-                        (45, 1, NULL, '3.2.4', 3, 41, 'Productos sustitutos.', 4, NULL),
-                        (46, 1, NULL, '3.2.5', 3, 41, 'Nuevos competidores.', 5, NULL),
-                        (47, 1, NULL, '3.2.6', 3, 41, 'Cinco Fuerzas de Porter.', 6, NULL),
-                        (48, 1, NULL, '3.2.7', 3, 41, 'Matriz MEFE.', 7, NULL),
-
-                        (49, 1, NULL, '3.3',   2, 34, 'Investigación de mercado.', 3, NULL),
-                        (50, 1, NULL, '3.3.1', 3, 49, 'Mercado meta.', 1, NULL),
-                        (51, 1, NULL, '3.3.2', 3, 49, 'Segmentación.', 2, NULL),
-                        (52, 1, NULL, '3.3.3', 3, 49, 'Método de investigación.', 3, NULL),
-                        (53, 1, NULL, '3.3.4', 3, 49, 'Población y muestra.', 4, NULL),
-                        (54, 1, NULL, '3.3.5', 3, 49, 'Instrumento de recolección.', 5, NULL),
-                        (55, 1, NULL, '3.3.6', 3, 49, 'Resultados.', 6, NULL),
-                        (56, 1, NULL, '3.3.7', 3, 49, 'Tamaño de mercado.', 7, NULL),
-                        (57, 1, NULL, '3.3.8', 3, 49, 'Demanda potencial, disponible, efectiva y objetivo.', 8, NULL),
-                        (58, 1, NULL, '3.3.9', 3, 49, 'Proyección de demanda y ventas.', 9, NULL),
-
-                        -- CAPÍTULO IV
-                        (59, 1, NULL, '4',      1, NULL, 'Capítulo IV. Plan de Marketing', 4, NULL),
-
-                        (60, 1, NULL, '4.1',    2, 59, 'Producto o servicio.', 1, NULL),
-                        (61, 1, NULL, '4.2',    2, 59, 'Precio.', 2, NULL),
-                        (62, 1, NULL, '4.3',    2, 59, 'Plaza y canales.', 3, NULL),
-                        (63, 1, NULL, '4.4',    2, 59, 'Promoción.', 4, NULL),
-                        (64, 1, NULL, '4.5',    2, 59, 'Personas.', 5, NULL),
-                        (65, 1, NULL, '4.6',    2, 59, 'Procesos.', 6, NULL),
-                        (66, 1, NULL, '4.7',    2, 59, 'Evidencia física, cuando corresponda.', 7, NULL),
-                        (67, 1, NULL, '4.8',    2, 59, 'Experiencia del cliente.', 8, NULL),
-                        (68, 1, NULL, '4.9',    2, 59, 'Marketing mix integrado.', 9, NULL),
-                        (69, 1, NULL, '4.10',   2, 59, 'Programa de acciones tácticas.', 10, NULL),
-                        (70, 1, NULL, '4.11',   2, 59, 'Presupuesto de marketing.', 11, NULL),
-                        (71, 1, NULL, '4.12',   2, 59, 'Programa y pronóstico de ventas.', 12, NULL),
-
-                        -- CAPÍTULO V
-                        (72, 1, NULL, '5',      1, NULL, 'Capítulo V. Plan de Operaciones', 5, NULL),
-
-                        (73, 1, NULL, '5.1',    2, 72, 'Ubicación del negocio.', 1, NULL),
-                        (74, 1, NULL, '5.2',    2, 72, 'Producción de bienes o prestación de servicios.', 2, NULL),
-                        (75, 1, NULL, '5.3',    2, 72, 'Procesos operativos.', 3, NULL),
-                        (76, 1, NULL, '5.4',    2, 72, 'Capacidad instalada y utilizada.', 4, NULL),
-                        (77, 1, NULL, '5.5',    2, 72, 'Plan de producción o prestación.', 5, NULL),
-                        (78, 1, NULL, '5.6',    2, 72, 'Equipos, infraestructura y tecnología.', 6, NULL),
-                        (79, 1, NULL, '5.7',    2, 72, 'Gestión de calidad.', 7, NULL),
-
-                        (80, 1, NULL, '5.8',    2, 72, 'Logística de entrada.', 8, NULL),
-                        (81, 1, NULL, '5.8.1',  3, 80, 'Compras.', 1, NULL),
-                        (82, 1, NULL, '5.8.2',  3, 80, 'Proveedores.', 2, NULL),
-                        (83, 1, NULL, '5.8.3',  3, 80, 'Inventarios.', 3, NULL),
-                        (84, 1, NULL, '5.8.4',  3, 80, 'Almacenamiento.', 4, NULL),
-
-                        (85, 1, NULL, '5.9',    2, 72, 'Logística de salida.', 9, NULL),
-                        (86, 1, NULL, '5.9.1',  3, 85, 'Producto o servicio terminado.', 1, NULL),
-                        (87, 1, NULL, '5.9.2',  3, 85, 'Despacho.', 2, NULL),
-                        (88, 1, NULL, '5.9.3',  3, 85, 'Distribución.', 3, NULL),
-                        (89, 1, NULL, '5.9.4',  3, 85, 'Entrega al cliente.', 4, NULL),
-
-                        (90, 1, NULL, '5.10',   2, 72, 'Costos operativos y logísticos.', 10, NULL),
-
-                        -- CAPÍTULO VI
-                        (91, 1, NULL, '6',      1, NULL, 'Capítulo VI. Organización de la Empresa', 6, NULL),
-
-                        (92, 1, NULL, '6.1',    2, 91, 'Estructura organizacional.', 1, NULL),
-                        (93, 1, NULL, '6.2',    2, 91, 'Organigrama.', 2, NULL),
-                        (94, 1, NULL, '6.3',    2, 91, 'Puestos requeridos.', 3, NULL),
-                        (95, 1, NULL, '6.4',    2, 91, 'Perfiles, funciones y responsabilidades.', 4, NULL),
-                        (96, 1, NULL, '6.5',    2, 91, 'Reclutamiento y selección.', 5, NULL),
-                        (97, 1, NULL, '6.6',    2, 91, 'Contratación e inducción.', 6, NULL),
-                        (98, 1, NULL, '6.7',    2, 91, 'Capacitación y evaluación.', 7, NULL),
-                        (99, 1, NULL, '6.8',    2, 91, 'Motivación y retención.', 8, NULL),
-                        (100,1, NULL, '6.9',    2, 91, 'Planilla y presupuesto de remuneraciones.', 9, NULL),
-                        (101,1, NULL, '6.10',   2, 91, 'Constitución de la empresa.', 10, NULL),
-                        (102,1, NULL, '6.11',   2, 91, 'Aspectos legales.', 11, NULL),
-                        (103,1, NULL, '6.12',   2, 91, 'Aspectos laborales y tributarios.', 12, NULL),
-                        (104,1, NULL, '6.13',   2, 91, 'Permisos y licencias.', 13, NULL),
-
-                        -- CAPÍTULO VII
-                       (105,1, NULL, '7',      1, NULL, 'Capítulo VII. Plan Financiero', 7, NULL),
-
-                        (106,1, NULL, '7.1',    2, 105, 'Supuestos financieros.', 1, NULL),
-                        (107,1, NULL, '7.2',    2, 105, 'Plan de inversiones.', 2, NULL),
-                        (108,1, NULL, '7.3',    2, 105, 'Capital de trabajo.', 3, NULL),
-                        (109,1, NULL, '7.4',    2, 105, 'Fuentes de financiamiento.', 4, NULL),
-                        (110,1, NULL, '7.5',    2, 105, 'Estructura de costos.', 5, NULL),
-                        (111,1, NULL, '7.6',    2, 105, 'Costos fijos y variables.', 6, NULL),
-                        (112,1, NULL, '7.7',    2, 105, 'Costos unitarios.', 7, NULL),
-                        (113,1, NULL, '7.8',    2, 105, 'Presupuesto operativo.', 8, NULL),
-                        (114,1, NULL, '7.9',    2, 105, 'Proyección de ventas.', 9, NULL),
-                        (115,1, NULL, '7.10',   2, 105, 'Punto de equilibrio.', 10, NULL),
-                        (116,1, NULL, '7.11',   2, 105, 'Estado de resultados proyectado.', 11, NULL),
-                        (117,1, NULL, '7.12',   2, 105, 'Balance general proyectado.', 12, NULL),
-                        (118,1, NULL, '7.13',   2, 105, 'Flujo de caja.', 13, NULL),
-                        (119,1, NULL, '7.14',   2, 105, 'VAN, TIR y periodo de recuperación.', 14, NULL),
-                        (120,1, NULL, '7.15',   2, 105, 'Ratios financieros.', 15, NULL),
-                        (121,1, NULL, '7.16',   2, 105, 'Análisis de sensibilidad.', 16, NULL),
-                        (122,1, NULL, '7.17',   2, 105, 'Escenarios optimista, probable y pesimista.', 17, NULL),
-                        (123,1, NULL, '7.18',   2, 105, 'Evaluación de viabilidad.', 18, NULL),
-
-                        (124,1, NULL, '8',      1, NULL, 'Resumen ejecutivo', 8, NULL),
-                        (125,1, NULL, '9',      1, NULL, 'Introducción', 8, NULL),
-                        (126,1, NULL, '10',      1, NULL, 'Conclusiones', 8, NULL),
-                        (127,1, NULL, '11',      1, NULL, 'Recomendaciones', 8, NULL),
-
-                        (128,1, NULL, '0',      1, NULL, 'Diagnóstico inicial', 0, NULL),
-
-
-
-
-                        -- PLAN DE MEJORA===============================================================
-                        -- CAPÍTULO I
-
-                        (124, 2, NULL, '1',     1, NULL, 'Capítulo I : Presentación del Proyecto de Mejora', 1, NULL),
-
-                        (125, 2, NULL, '1.1',   2, 124, 'Situación inicial', 1, NULL),
-
-                        (126, 2, NULL, '1.1.1', 3, 125, 'Descripción breve de la situación observada', 1, NULL),
-                        (127, 2, NULL, '1.1.2', 3, 125, 'Empresa, área o proceso involucrado', 2, NULL),
-                        (128, 2, NULL, '1.1.3', 3, 125, 'Personas o grupos afectados', 3, NULL),
-                        (129, 2, NULL, '1.1.4', 3, 125, 'Consecuencias preliminares', 4, NULL),
-
-                        (130, 2, NULL, '1.2',   2, 124, 'Identificación preliminar del problema', 2, NULL),
-
-                        (131, 2, NULL, '1.2.1', 3, 130, 'Problema percibido', 1, NULL),
-                        (132, 2, NULL, '1.2.2', 3, 130, 'Evidencias iniciales', 2, NULL),
-                        (133, 2, NULL, '1.2.3', 3, 130, 'Frecuencia', 3, NULL),
-                        (134, 2, NULL, '1.2.4', 3, 130, 'Alcance', 4, NULL),
-                        (135, 2, NULL, '1.2.5', 3, 130, 'Impacto preliminar', 5, NULL),
-
-                        (136, 2, NULL, '1.3',   2, 124, 'Justificación del proyecto', 3, NULL),
-
-                        (137, 2, NULL, '1.3.1', 3, 136, 'Importancia empresarial', 1, NULL),
-                        (138, 2, NULL, '1.3.2', 3, 136, 'Beneficiarios', 2, NULL),
-                        (139, 2, NULL, '1.3.3', 3, 136, 'Urgencia', 3, NULL),
-                        (140, 2, NULL, '1.3.4', 3, 136, 'Consecuencias de no intervenir', 4, NULL),
-                        (141, 2, NULL, '1.3.5', 3, 136, 'Relación con los objetivos empresariales', 5, NULL),
-
-                        (142, 2, NULL, '1.4',   2, 124, 'Alcance y delimitación', 4, NULL),
-
-                        (143, 2, NULL, '1.4.1', 3, 142, 'Área', 1, NULL),
-                        (144, 2, NULL, '1.4.2', 3, 142, 'Proceso', 2, NULL),
-                        (145, 2, NULL, '1.4.3', 3, 142, 'Sede o ubicación', 3, NULL),
-                        (146, 2, NULL, '1.4.4', 3, 142, 'Periodo', 4, NULL),
-                        (147, 2, NULL, '1.4.5', 3, 142, 'Actividades comprendidas', 5, NULL),
-                        (148, 2, NULL, '1.4.6', 3, 142, 'Actividades excluidas', 6, NULL),
-                        (149, 2, NULL, '1.4.7', 3, 142, 'Restricciones', 7, NULL),
-
-                        (150, 2, NULL, '1.5',   2, 124, 'Objetivos preliminares del estudio', 5, NULL),
-
-                        (151, 2, NULL, '1.5.1', 3, 150, 'Objetivo del diagnóstico', 1, NULL),
-                        (152, 2, NULL, '1.5.2', 3, 150, 'Resultados esperados', 2, NULL),
-                        (153, 2, NULL, '1.5.3', 3, 150, 'Indicadores preliminares de impacto', 3, NULL),
-
-                        -- CAPÍTULO II
-
-                        (154, 2, NULL, '2',     1, NULL, 'Capítulo II. Reseña y Contexto de la Empresa', 2, NULL),
-
-                        (155, 2, NULL, '2.1',   2, 154, 'Identificación de la empresa', 1, NULL),
-                        (156, 2, NULL, '2.1.1', 3, 155, 'Razón social.', 1, NULL),
-                        (157, 2, NULL, '2.1.2', 3, 155, 'Nombre comercial.', 2, NULL),
-                        (158, 2, NULL, '2.1.3', 3, 155, 'RUC o registro equivalente.', 3, NULL),
-                        (159, 2, NULL, '2.1.4', 3, 155, 'Actividad económica.', 4, NULL),
-                        (160, 2, NULL, '2.1.5', 3, 155, 'Ubicación.', 5, NULL),
-                        (161, 2, NULL, '2.1.6', 3, 155, 'Forma jurídica.', 6, NULL),
-                        (162, 2, NULL, '2.1.7', 3, 155, 'Tamaño.', 7, NULL),
-                        (163, 2, NULL, '2.1.8', 3, 155, 'Antigüedad.', 8, NULL),
-
-                        (164, 2, NULL, '2.2',   2, 154, 'Descripción del negocio', 2, NULL),
-                        (165, 2, NULL, '2.2.1', 3, 164, 'Productos y servicios.', 1, NULL),
-                        (166, 2, NULL, '2.2.2', 3, 164, 'Clientes.', 2, NULL),
-                        (167, 2, NULL, '2.2.3', 3, 164, 'Canales.', 3, NULL),
-                        (168, 2, NULL, '2.2.4', 3, 164, 'Proveedores.', 4, NULL),
-                        (169, 2, NULL, '2.2.5', 3, 164, 'Modelo de negocio resumido.', 5, NULL),
-                        (170, 2, NULL, '2.2.6', 3, 164, 'Principales fuentes de ingresos.', 6, NULL),
-
-                        (171, 2, NULL, '2.3',   2, 154, 'Direccionamiento estratégico', 3, NULL),
-                        (172, 2, NULL, '2.3.1', 3, 171, 'Misión.', 1, NULL),
-                        (173, 2, NULL, '2.3.2', 3, 171, 'Visión.', 2, NULL),
-                        (174, 2, NULL, '2.3.3', 3, 171, 'Valores.', 3, NULL),
-                        (175, 2, NULL, '2.3.4', 3, 171, 'Objetivos estratégicos.', 4, NULL),
-                        (176, 2, NULL, '2.3.5', 3, 171, 'Indicadores empresariales.', 5, NULL),
-
-                        (177, 2, NULL, '2.4',   2, 154, 'Organización', 4, NULL),
-                        (178, 2, NULL, '2.4.1', 3, 177, 'Organigrama.', 1, NULL),
-                        (179, 2, NULL, '2.4.2', 3, 177, 'Áreas.', 2, NULL),
-                        (180, 2, NULL, '2.4.3', 3, 177, 'Puestos relacionados con el problema.', 3, NULL),
-                        (181, 2, NULL, '2.4.4', 3, 177, 'Funciones y responsabilidades.', 4, NULL),
-                        (182, 2, NULL, '2.4.5', 3, 177, 'Relaciones de coordinación.', 5, NULL),
-
-                        (183, 2, NULL, '2.5',   2, 154, 'Procesos de la empresa', 5, NULL),
-                        (184, 2, NULL, '2.5.1', 3, 183, 'Mapa general de procesos.', 1, NULL),
-                        (185, 2, NULL, '2.5.2', 3, 183, 'Procesos estratégicos.', 2, NULL),
-                        (186, 2, NULL, '2.5.3', 3, 183, 'Procesos operativos.', 3, NULL),
-                        (187, 2, NULL, '2.5.4', 3, 183, 'Procesos de apoyo.', 4, NULL),
-                        (188, 2, NULL, '2.5.5', 3, 183, 'Proceso o área objeto de mejora.', 5, NULL),
-
-                        (189, 2, NULL, '2.6',   2, 154, 'Trayectoria empresarial', 6, NULL),
-                        (190, 2, NULL, '2.6.1', 3, 189, 'Origen.', 1, NULL),
-                        (191, 2, NULL, '2.6.2', 3, 189, 'Principales hitos.', 2, NULL),
-                        (192, 2, NULL, '2.6.3', 3, 189, 'Cambios importantes.', 3, NULL),
-                        (193, 2, NULL, '2.6.4', 3, 189, 'Situación actual.', 4, NULL),
-
-                        -- CAPÍTULO III
-
-                        (194, 2, NULL, '3',      1, NULL, 'Capítulo III. Diagnóstico Empresarial', 3, NULL),
-
-                        (195, 2, NULL, '3.1',    2, 194, 'Metodología del diagnóstico', 1, NULL),
-                        (196, 2, NULL, '3.1.1',  3, 195, 'Objetivo del diagnóstico.', 1, NULL),
-                        (197, 2, NULL, '3.1.2',  3, 195, 'Enfoque.', 2, NULL),
-                        (198, 2, NULL, '3.1.3',  3, 195, 'Técnicas utilizadas.', 3, NULL),
-                        (199, 2, NULL, '3.1.4',  3, 195, 'Fuentes internas y externas.', 4, NULL),
-                        (200, 2, NULL, '3.1.5',  3, 195, 'Personas consultadas.', 5, NULL),
-                        (201, 2, NULL, '3.1.6',  3, 195, 'Instrumentos.', 6, NULL),
-                        (202, 2, NULL, '3.1.7',  3, 195, 'Periodo de recolección.', 7, NULL),
-                        (203, 2, NULL, '3.1.8',  3, 195, 'Limitaciones.', 8, NULL),
-                        (204, 2, NULL, '3.1.9',  3, 195, 'Criterios de confidencialidad.', 9, NULL),
-
-                        (205, 2, NULL, '3.2',    2, 194, 'Diagnóstico del entorno', 2, 'Aplicable solamente cuando el entorno influya materialmente'),
-                        (206, 2, NULL, '3.2.1',  3, 205, 'Factores políticos y legales.', 1, NULL),
-                        (207, 2, NULL, '3.2.2',  3, 205, 'Factores económicos.', 2, NULL),
-                        (208, 2, NULL, '3.2.3',  3, 205, 'Factores sociales.', 3, NULL),
-                        (209, 2, NULL, '3.2.4',  3, 205, 'Factores tecnológicos.', 4, NULL),
-                        (210, 2, NULL, '3.2.5',  3, 205, 'Factores ambientales.', 5, NULL),
-                        (211, 2, NULL, '3.2.6',  3, 205, 'Factores sectoriales.', 6, NULL),
-                        (212, 2, NULL, '3.2.7',  3, 205, 'PESTEL resumido.', 7, NULL),
-
-                        (213, 2, NULL, '3.3',    2, 194, 'Diagnóstico competitivo', 3, 'Aplicable a problemas comerciales, de posicionamiento o servicio'),
-                        (214, 2, NULL, '3.3.1',  3, 213, 'Competidores.', 1, NULL),
-                        (215, 2, NULL, '3.3.2',  3, 213, 'Alternativas o sustitutos.', 2, NULL),
-                        (216, 2, NULL, '3.3.3',  3, 213, 'Perfil competitivo.', 3, NULL),
-                        (217, 2, NULL, '3.3.4',  3, 213, 'Cinco Fuerzas de Porter.', 4, NULL),
-                        (218, 2, NULL, '3.3.5',  3, 213, 'Benchmarking.', 5, NULL),
-                        (219, 2, NULL, '3.3.6',  3, 213, 'Buenas prácticas del sector.', 6, NULL),
-
-                        (220, 2, NULL, '3.4',    2, 194, 'Diagnóstico interno', 4, NULL),
-
-                        (221, 2, NULL, '3.4.1',  3, 220, 'Perspectiva financiera', 1, NULL),
-                        (222, 2, NULL, '3.4.1.1',4, 221, 'Ventas.', 1, NULL),
-                        (223, 2, NULL, '3.4.1.2',4, 221, 'Costos.', 2, NULL),
-                        (224, 2, NULL, '3.4.1.3',4, 221, 'Rentabilidad.', 3, NULL),
-                        (225, 2, NULL, '3.4.1.4',4, 221, 'Liquidez.', 4, NULL),
-                        (226, 2, NULL, '3.4.1.5',4, 221, 'Pérdidas o sobrecostos vinculados al problema.', 5, NULL),
-
-                        (227, 2, NULL, '3.4.2',  3, 220, 'Perspectiva de clientes', 2, NULL),
-                        (228, 2, NULL, '3.4.2.1',4, 227, 'Satisfacción.', 1, NULL),
-                        (229, 2, NULL, '3.4.2.2',4, 227, 'Reclamos.', 2, NULL),
-                        (230, 2, NULL, '3.4.2.3',4, 227, 'Retención.', 3, NULL),
-                        (231, 2, NULL, '3.4.2.4',4, 227, 'Posicionamiento.', 4, NULL),
-                        (232, 2, NULL, '3.4.2.5',4, 227, 'Experiencia.', 5, NULL),
-                        (233, 2, NULL, '3.4.2.6',4, 227, 'Cumplimiento de servicio.', 6, NULL),
-
-                        (234, 2, NULL, '3.4.3',  3, 220, 'Perspectiva de procesos internos', 3, NULL),
-                        (235, 2, NULL, '3.4.3.1',4, 234, 'Proceso actual.', 1, NULL),
-                        (236, 2, NULL, '3.4.3.2',4, 234, 'Entradas y salidas.', 2, NULL),
-                        (237, 2, NULL, '3.4.3.3',4, 234, 'Tiempos.', 3, NULL),
-                        (238, 2, NULL, '3.4.3.4',4, 234, 'Errores.', 4, NULL),
-                        (239, 2, NULL, '3.4.3.5',4, 234, 'Mermas.', 5, NULL),
-                        (240, 2, NULL, '3.4.3.6',4, 234, 'Retrabajos.', 6, NULL),
-                        (241, 2, NULL, '3.4.3.7',4, 234, 'Cuellos de botella.', 7, NULL),
-                        (242, 2, NULL, '3.4.3.8',4, 234, 'Riesgos.', 8, NULL),
-                        (243, 2, NULL, '3.4.3.9',4, 234, 'Controles.', 9, NULL),
-
-                        (244, 2, NULL, '3.4.4',  3, 220, 'Perspectiva de capacidades', 4, NULL),
-                        (245, 2, NULL, '3.4.4.1',4, 244, 'Personal.', 1, NULL),
-                        (246, 2, NULL, '3.4.4.2',4, 244, 'Competencias.', 2, NULL),
-                        (247, 2, NULL, '3.4.4.3',4, 244, 'Tecnología.', 3, NULL),
-                        (248, 2, NULL, '3.4.4.4',4, 244, 'Infraestructura.', 4, NULL),
-                        (249, 2, NULL, '3.4.4.5',4, 244, 'Información.', 5, NULL),
-                        (250, 2, NULL, '3.4.4.6',4, 244, 'Cultura.', 6, NULL),
-                        (251, 2, NULL, '3.4.4.7',4, 244, 'Organización.', 7, NULL),
-
-                        (252, 2, NULL, '3.5',    2, 194, 'Herramientas de levantamiento y análisis', 5, 'Seleccionadas según la naturaleza del problema'),
-                        (253, 2, NULL, '3.5.1',  3, 252, 'Entrevistas.', 1, NULL),
-                        (254, 2, NULL, '3.5.2',  3, 252, 'Encuestas.', 2, NULL),
-                        (255, 2, NULL, '3.5.3',  3, 252, 'Observación.', 3, NULL),
-                        (256, 2, NULL, '3.5.4',  3, 252, 'Revisión documental.', 4, NULL),
-                        (257, 2, NULL, '3.5.5',  3, 252, 'Ficha de inspección.', 5, NULL),
-                        (258, 2, NULL, '3.5.6',  3, 252, 'Medición de tiempos.', 6, NULL),
-                        (259, 2, NULL, '3.5.7',  3, 252, 'SIPOC.', 7, NULL),
-                        (260, 2, NULL, '3.5.8',  3, 252, 'Flujograma.', 8, NULL),
-                        (261, 2, NULL, '3.5.9',  3, 252, 'Diagrama de funciones cruzadas.', 9, NULL),
-                        (262, 2, NULL, '3.5.10', 3, 252, 'Mapa de experiencia.', 10, NULL),
-                        (263, 2, NULL, '3.5.11', 3, 252, 'Análisis de datos históricos.', 11, NULL),
-                        (264, 2, NULL, '3.5.12', 3, 252, 'Benchmarking.', 12, NULL),
-                        (265, 2, NULL, '3.5.13', 3, 252, 'Matriz FODA.', 13, NULL),
-                        (266, 2, NULL, '3.5.14', 3, 252, 'MEFI y MEFE, cuando sean verdaderamente necesarias.', 14, NULL),
-
-                        (267, 2, NULL, '3.6',    2, 194, 'Línea base', 6, NULL),
-                        (268, 2, NULL, '3.6.1',  3, 267, 'Indicador.', 1, NULL),
-                        (269, 2, NULL, '3.6.2',  3, 267, 'Fórmula.', 2, NULL),
-                        (270, 2, NULL, '3.6.3',  3, 267, 'Unidad.', 3, NULL),
-                        (271, 2, NULL, '3.6.4',  3, 267, 'Fuente.', 4, NULL),
-                        (272, 2, NULL, '3.6.5',  3, 267, 'Periodo.', 5, NULL),
-                        (273, 2, NULL, '3.6.6',  3, 267, 'Valor actual.', 6, NULL),
-                        (274, 2, NULL, '3.6.7',  3, 267, 'Frecuencia.', 7, NULL),
-                        (275, 2, NULL, '3.6.8',  3, 267, 'Responsable.', 8, NULL),
-                        (276, 2, NULL, '3.6.9',  3, 267, 'Calidad del dato.', 9, NULL),
-
-                        -- CAPÍTULO IV
-
-                        (277, 2, NULL, '4',      1, NULL, 'Capítulo IV. Análisis del Problema y Oportunidad de Mejora', 4, NULL),
-
-                        (278, 2, NULL, '4.1',    2, 277, 'Identificación del área o proceso crítico', 1, NULL),
-                        (279, 2, NULL, '4.1.1',  3, 278, 'Área evaluada.', 1, NULL),
-                        (280, 2, NULL, '4.1.2',  3, 278, 'Proceso afectado.', 2, NULL),
-                        (281, 2, NULL, '4.1.3',  3, 278, 'Relación con otros procesos.', 3, NULL),
-                        (282, 2, NULL, '4.1.4',  3, 278, 'Personas involucradas.', 4, NULL),
-
-                        (283, 2, NULL, '4.2',    2, 277, 'Formulación del problema', 2, NULL),
-                        (284, 2, NULL, '4.2.1',  3, 283, 'Situación actual.', 1, NULL),
-                        (285, 2, NULL, '4.2.2',  3, 283, 'Situación esperada.', 2, NULL),
-                        (286, 2, NULL, '4.2.3',  3, 283, 'Brecha.', 3, NULL),
-                        (287, 2, NULL, '4.2.4',  3, 283, 'Magnitud.', 4, NULL),
-                        (288, 2, NULL, '4.2.5',  3, 283, 'Frecuencia.', 5, NULL),
-                        (289, 2, NULL, '4.2.6',  3, 283, 'Alcance.', 6, NULL),
-                        (290, 2, NULL, '4.2.7',  3, 283, 'Evidencia.', 7, NULL),
-
-                        (291, 2, NULL, '4.3',    2, 277, 'Efectos y consecuencias', 3, NULL),
-                        (292, 2, NULL, '4.3.1',  3, 291, 'Costos.', 1, NULL),
-                        (293, 2, NULL, '4.3.2',  3, 291, 'Pérdidas.', 2, NULL),
-                        (294, 2, NULL, '4.3.3',  3, 291, 'Tiempos.', 3, NULL),
-                        (295, 2, NULL, '4.3.4',  3, 291, 'Calidad.', 4, NULL),
-                        (296, 2, NULL, '4.3.5',  3, 291, 'Clientes.', 5, NULL),
-                        (297, 2, NULL, '4.3.6',  3, 291, 'Personal.', 6, NULL),
-                        (298, 2, NULL, '4.3.7',  3, 291, 'Riesgos.', 7, NULL),
-                        (299, 2, NULL, '4.3.8',  3, 291, 'Cumplimiento legal.', 8, NULL),
-                        (300, 2, NULL, '4.3.9',  3, 291, 'Imagen institucional.', 9, NULL),
-
-                        (301, 2, NULL, '4.4',    2, 277, 'Análisis de causas', 4, 'ValiPlan seleccionará las herramientas más pertinentes'),
-                        (302, 2, NULL, '4.4.1',  3, 301, 'Ishikawa.', 1, NULL),
-                        (303, 2, NULL, '4.4.2',  3, 301, 'Cinco porqués.', 2, NULL),
-                        (304, 2, NULL, '4.4.3',  3, 301, 'Árbol del problema.', 3, NULL),
-                        (305, 2, NULL, '4.4.4',  3, 301, 'Pareto.', 4, NULL),
-                        (306, 2, NULL, '4.4.5',  3, 301, 'Análisis de fallas.', 5, NULL),
-                        (307, 2, NULL, '4.4.6',  3, 301, 'Diagrama de dispersión.', 6, NULL),
-                        (308, 2, NULL, '4.4.7',  3, 301, 'Mapa causal.', 7, NULL),
-                        (309, 2, NULL, '4.4.8',  3, 301, 'Análisis de restricciones.', 8, NULL),
-                        (310, 2, NULL, '4.4.9',  3, 301, 'Análisis de riesgos.', 9, NULL),
-
-                        (311, 2, NULL, '4.5',    2, 277, 'Identificación de puntos críticos', 5, NULL),
-                        (312, 2, NULL, '4.5.1',  3, 311, 'Causas controlables.', 1, NULL),
-                        (313, 2, NULL, '4.5.2',  3, 311, 'Causas no controlables.', 2, NULL),
-                        (314, 2, NULL, '4.5.3',  3, 311, 'Causas directas.', 3, NULL),
-                        (315, 2, NULL, '4.5.4',  3, 311, 'Causas secundarias.', 4, NULL),
-                        (316, 2, NULL, '4.5.5',  3, 311, 'Puntos críticos de intervención.', 5, NULL),
-
-                        (317, 2, NULL, '4.6',    2, 277, 'Priorización', 6, 'Matriz con criterios como'),
-                        (318, 2, NULL, '4.6.1',  3, 317, 'Magnitud del impacto.', 1, NULL),
-                        (319, 2, NULL, '4.6.2',  3, 317, 'Urgencia.', 2, NULL),
-                        (320, 2, NULL, '4.6.3',  3, 317, 'Frecuencia.', 3, NULL),
-                        (321, 2, NULL, '4.6.4',  3, 317, 'Factibilidad.', 4, NULL),
-                        (322, 2, NULL, '4.6.5',  3, 317, 'Costo.', 5, NULL),
-                        (323, 2, NULL, '4.6.6',  3, 317, 'Tiempo.', 6, NULL),
-                        (324, 2, NULL, '4.6.7',  3, 317, 'Capacidad de medición.', 7, NULL),
-                        (325, 2, NULL, '4.6.8',  3, 317, 'Riesgo.', 8, NULL),
-                        (326, 2, NULL, '4.6.9',  3, 317, 'Alineamiento estratégico.', 9, NULL),
-
-                        (327, 2, NULL, '4.7',    2, 277, 'Formulación de la oportunidad de mejora', 7, NULL),
-                        (328, 2, NULL, '4.7.1',  3, 327, 'Brecha priorizada.', 1, NULL),
-                        (329, 2, NULL, '4.7.2',  3, 327, 'Resultado potencial.', 2, NULL),
-                        (330, 2, NULL, '4.7.3',  3, 327, 'Beneficiarios.', 3, NULL),
-                        (331, 2, NULL, '4.7.4',  3, 327, 'Límites.', 4, NULL),
-                        (332, 2, NULL, '4.7.5',  3, 327, 'Condiciones necesarias.', 5, NULL),
-                        (333, 2, NULL, '4.7.6',  3, 327, 'Hipótesis de mejora.', 6, NULL),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- PREGUNTAS DIAGNOSTICO PLAN NEGOCIO
 INSERT INTO 
 questions (
@@ -848,21 +65,21 @@ questions (
 
 -- Formulacion ide de negocio = 2 
 (
-    0,
+    2,
     '¿Qué nombre provisional tendrá el negocio y qué desea comunicar?',
     'Para responder qué nombre provisional tendrá el negocio y qué desea comunicar, mencione los elementos indispensables para formulación de la idea de negocio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Origen Vivo” como nombre provisional, porque comunica cercanía, identidad y productos naturales. En esta respuesta, el foco es: qué nombre provisional tendrá el negocio y qué desea comunicar.',
     'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué nombre provisional tendrá el negocio y qué desea comunicar y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    2,
     '¿Qué producto o servicio ofrecerá, a quién y qué resultado entregará?',
     'Para precisar qué producto o servicio ofrecerá, a quién y qué resultado entregará, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de formulación de la idea de negocio. Evite respuestas amplias como “todos” o “el público en general”.',
     '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: qué producto o servicio ofrecerá, a quién y qué resultado entregará.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué producto o servicio ofrecerá, a quién y qué resultado entregará y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    2,
     '¿Cómo funcionará el negocio y cómo generará ingresos?',
     'Para explicar cómo funcionará el negocio y cómo generará ingresos, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para formulación de la idea de negocio.',
     '“Consulta, validación de necesidad, cotización, confirmación, preparación, control, entrega y seguimiento.” En esta respuesta, el foco es: cómo funcionará el negocio y cómo generará ingresos.',
@@ -870,87 +87,109 @@ questions (
 ),
 -- Problema o necesidad = 3
 (
-    0,
+    3,
     '¿Qué problema, necesidad o deseo concreto atenderá el negocio?',
     'Para explicar qué problema, necesidad o deseo concreto atenderá el negocio, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para problema o necesidad identificada.',
     '“Los clientes pierden tiempo porque las alternativas actuales no ofrecen información clara ni entrega dentro del plazo acordado.” En esta respuesta, el foco es: qué problema, necesidad o deseo concreto atenderá el negocio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué problema, necesidad o deseo concreto atenderá el negocio y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    3,
     '¿Quiénes lo experimentan, con qué frecuencia y qué consecuencias produce?',
     'Para responder sobre quiénes lo experimentan, con qué frecuencia y qué consecuencias produce, registre una cifra, unidad y período. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en problema o necesidad identificada.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: quiénes lo experimentan, con qué frecuencia y qué consecuencias produce.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate quiénes lo experimentan, con qué frecuencia y qué consecuencias produce y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    3,
     '¿Qué evidencias demuestran que la necesidad existe?',
     'Para responder qué evidencias demuestran que la necesidad existe, mencione los elementos indispensables para problema o necesidad identificada y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Los clientes pierden tiempo porque las alternativas actuales no ofrecen información clara ni entrega dentro del plazo acordado.” En esta respuesta, el foco es: qué evidencias demuestran que la necesidad existe.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué evidencias demuestran que la necesidad existe y no sustituya este dato con información de otro apartado.'
 ),
--- analisi de oprpotunidad
+-- analisi de oprpotunidad = 4
 (
-    0,
+    4,
     '¿Qué condiciones actuales hacen oportuno desarrollar este negocio?',
     'Para fundamentar qué condiciones actuales hacen oportuno desarrollar este negocio, explique la causa y vincúlela con un beneficio, problema o evidencia del proyecto. Si es una opinión, márquela como hipótesis pendiente de validación.',
     '“Para análisis de la oportunidad, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué condiciones actuales hacen oportuno desarrollar este negocio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué condiciones actuales hacen oportuno desarrollar este negocio y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    4,
     '¿Qué señales muestran interés y capacidad de pago?',
     'Para responder qué señales muestran interés y capacidad de pago, mencione los elementos indispensables para análisis de la oportunidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“En una prueba de dos semanas, 20 personas solicitaron información, 8 pidieron cotización y 4 realizaron una compra.” En esta respuesta, el foco es: qué señales muestran interés y capacidad de pago.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué señales muestran interés y capacidad de pago y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    4,
     '¿Qué espacio no cubren las alternativas y qué barreras debe superar?',
     'Para responder qué espacio no cubren las alternativas y qué barreras debe superar, mencione los elementos indispensables para análisis de la oportunidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué espacio no cubren las alternativas y qué barreras debe superar.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué espacio no cubren las alternativas y qué barreras debe superar y no sustituya este dato con información de otro apartado.'
 ),
--- descripcion del producto os ervicio 
+-- descripcion del producto os ervicio = 5
 (
-    0,
+    5,
     '¿Qué recibirá exactamente el cliente y en qué presentaciones o modalidades?',
     'Para precisar qué recibirá exactamente el cliente y en qué presentaciones o modalidades, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de descripción del producto o servicio. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: qué recibirá exactamente el cliente y en qué presentaciones o modalidades.',
     'Solicite solo datos necesarios y evite estereotipos o características que no influyan en la compra. Proteja información personal. Control específico: verifique que la respuesta trate qué recibirá exactamente el cliente y en qué presentaciones o modalidades y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    5,
     '¿Qué características y beneficios tendrá la oferta?',
     'Para responder qué características y beneficios tendrá la oferta, mencione los elementos indispensables para descripción del producto o servicio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Para descripción del producto o servicio, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué características y beneficios tendrá la oferta.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué características y beneficios tendrá la oferta y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    5,
     '¿Qué requisitos de calidad, garantía, seguridad o legalidad cumplirá?',
     'Para responder qué requisitos de calidad, garantía, seguridad o legalidad cumplirá, mencione los elementos indispensables para descripción del producto o servicio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“La calidad se comprobará mediante especificaciones, entrega puntual, tasa de reclamos y satisfacción del cliente.” En esta respuesta, el foco es: qué requisitos de calidad, garantía, seguridad o legalidad cumplirá.',
     'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué requisitos de calidad, garantía, seguridad o legalidad cumplirá y no sustituya este dato con información de otro apartado.'
 ),
+-- Propuesta de valor 
+(
+    6,
+    '¿Qué resultado valioso obtendrá el cliente?',
+    'Para precisar qué resultado valioso obtendrá el cliente, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de propuesta de valor. Evite respuestas amplias como “todos” o “el público en general”.',
+    '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: qué resultado valioso obtendrá el cliente.',
+    'Solicite solo datos necesarios y evite estereotipos o características que no influyan en la compra. Proteja información personal. Control específico: verifique que la respuesta trate qué resultado valioso obtendrá el cliente y no sustituya este dato con información de otro apartado.'
+),
+(
+    6,
+    '¿Qué diferencia relevante ofrecerá frente a las alternativas?',
+    'Para responder qué diferencia relevante ofrecerá frente a las alternativas, mencione los elementos indispensables para propuesta de valor y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: qué diferencia relevante ofrecerá frente a las alternativas.',
+    'Evite afirmaciones absolutas o promocionales sin comparación y evidencia. Explique cómo se demostrará la diferencia. Control específico: verifique que la respuesta trate qué diferencia relevante ofrecerá frente a las alternativas y no sustituya este dato con información de otro apartado.'
+),
+(
+    6,
+    '¿Qué capacidades respaldan la promesa y cómo se medirá?',
+    'Para explicar qué capacidades respaldan la promesa y cómo se medirá, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para propuesta de valor.',
+    '“Puntualidad: confirmar plazos realistas, comunicar cambios y cumplir la fecha acordada.” En esta respuesta, el foco es: qué capacidades respaldan la promesa y cómo se medirá.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué capacidades respaldan la promesa y cómo se medirá y no sustituya este dato con información de otro apartado.'
+),
 -- Segmentos de clientes 
 (
-    0,
+    8,
     '¿Qué grupos podrían comprar y cuál será prioritario al inicio?',
     'Para responder qué grupos podrían comprar y cuál será prioritario al inicio, mencione los elementos indispensables para segmentos de clientes y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Para segmentos de clientes, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué grupos podrían comprar y cuál será prioritario al inicio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué grupos podrían comprar y cuál será prioritario al inicio y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    8,
     '¿Cómo son, dónde están y cómo deciden una compra?',
     'Para explicar cómo son, dónde están y cómo deciden una compra, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para segmentos de clientes.',
     '“El negocio funcionará en mi ciudad y atenderá inicialmente las zonas cercanas mediante recojo y entrega programada.” En esta respuesta, el foco es: cómo son, dónde están y cómo deciden una compra.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cómo son, dónde están y cómo deciden una compra y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    8,
     '¿Qué valoran, con qué frecuencia compran y qué puede impedir la compra?',
     'Para responder sobre qué valoran, con qué frecuencia compran y qué puede impedir la compra, registre una cifra, unidad y período. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en segmentos de clientes.',
     '“Para segmentos de clientes, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué valoran, con qué frecuencia compran y qué puede impedir la compra.',
@@ -959,21 +198,21 @@ questions (
 
 -- Canales  
 (
-    0,
+    10,
     '¿Por qué medios conocerá y contactará el negocio el cliente?',
     'Para precisar por qué medios conocerá y contactará el negocio el cliente, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de canales. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: por qué medios conocerá y contactará el negocio el cliente.',
     'Solicite solo datos necesarios y evite estereotipos o características que no influyan en la compra. Proteja información personal. Control específico: verifique que la respuesta trate por qué medios conocerá y contactará el negocio el cliente y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    10,
     '¿Cómo realizará, confirmará y pagará la compra?',
     'Para explicar cómo realizará, confirmará y pagará la compra, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para canales.',
     '“El precio preliminar será de S/ 80 por unidad, sujeto a costo, personalización y validación con clientes.” En esta respuesta, el foco es: cómo realizará, confirmará y pagará la compra.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cómo realizará, confirmará y pagará la compra y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    10,
     '¿Cómo se entregará, se dará seguimiento y se atenderá después?',
     'Para explicar cómo se entregará, se dará seguimiento y se atenderá después, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para canales.',
     '“Para canales, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cómo se entregará, se dará seguimiento y se atenderá después.',
@@ -981,21 +220,21 @@ questions (
 ),
 -- Relacion con clientes 
 (
-    0,
+    11,
     '¿Cómo será la atención antes, durante y después de la compra?',
     'Para explicar cómo será la atención antes, durante y después de la compra, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para relaciones con clientes.',
     '“Para relaciones con clientes, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cómo será la atención antes, durante y después de la compra.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cómo será la atención antes, durante y después de la compra y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    11,
     '¿Qué generará confianza y cómo se manejarán cambios o reclamos?',
     'Para explicar qué generará confianza y cómo se manejarán cambios o reclamos, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para relaciones con clientes.',
     '“Para relaciones con clientes, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué generará confianza y cómo se manejarán cambios o reclamos.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué generará confianza y cómo se manejarán cambios o reclamos y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    11,
     '¿Cómo se medirá satisfacción, recompra y recomendación?',
     'Para explicar cómo se medirá satisfacción, recompra y recomendación, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para relaciones con clientes.',
     '“Para relaciones con clientes, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cómo se medirá satisfacción, recompra y recomendación.',
@@ -1004,21 +243,21 @@ questions (
 
 -- Fuentes de ingreso
 (
-    0,
+    12,
     '¿Por qué pagará el cliente y cómo se calculará el cobro?',
     'Para precisar por qué pagará el cliente y cómo se calculará el cobro, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de fuentes de ingresos. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: por qué pagará el cliente y cómo se calculará el cobro.',
     'Solicite solo datos necesarios y evite estereotipos o características que no influyan en la compra. Proteja información personal. Control específico: verifique que la respuesta trate por qué pagará el cliente y cómo se calculará el cobro y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    12,
     '¿Cuándo y por qué medios pagará, y habrá adelantos, crédito o descuentos?',
     'Para fundamentar cuándo y por qué medios pagará, y habrá adelantos, crédito o descuentos, explique la causa y vínculela con un beneficio, problema o evidencia del proyecto. Si es una opinión, márquela como hipótesis pendiente de validación.',
     '“El precio preliminar será de S/ 80 por unidad, sujeto a costo, personalización y validación con clientes.” En esta respuesta, el foco es: cuándo y por qué medios pagará, y habrá adelantos, crédito o descuentos.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cuándo y por qué medios pagará, y habrá adelantos, crédito o descuentos y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    12,
     '¿Qué ingresos complementarios, comisiones y temporadas deben considerarse?',
     'Para responder qué ingresos complementarios, comisiones y temporadas deben considerarse, mencione los elementos indispensables para fuentes de ingresos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Para fuentes de ingresos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué ingresos complementarios, comisiones y temporadas deben considerarse.',
@@ -1026,21 +265,21 @@ questions (
 ),
 -- recursos clave 
 (
-    0,
+    13,
     '¿Qué personas, conocimientos, espacios, equipos y dinero son indispensables?',
     'Para precisar qué personas, conocimientos, espacios, equipos y dinero son indispensables, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de recursos clave. Evite respuestas amplias como “todos” o “el público en general”.',
     '“Se cuenta con conocimientos técnicos y una computadora; faltan equipos operativos y capital de trabajo.” En esta respuesta, el foco es: qué personas, conocimientos, espacios, equipos y dinero son indispensables.',
     'Solicite solo datos necesarios y evite estereotipos o características que no influyan en la compra. Proteja información personal. Control específico: verifique que la respuesta trate qué personas, conocimientos, espacios, equipos y dinero son indispensables y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    13,
     '¿Qué recursos ya posee y cuáles debe conseguir?',
     'Para responder qué recursos ya posee y cuáles debe conseguir, mencione los elementos indispensables para recursos clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Se cuenta con conocimientos técnicos y una computadora; faltan equipos operativos y capital de trabajo.” En esta respuesta, el foco es: qué recursos ya posee y cuáles debe conseguir.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué recursos ya posee y cuáles debe conseguir y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    13,
     '¿Qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan?',
     'Para responder qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan, mencione los elementos indispensables para recursos clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan.',
@@ -1048,21 +287,21 @@ questions (
 ),
 -- Actividades clave 
 (
-    0,
+    14,
     '¿Qué actividades debe realizar desde captar hasta atender al cliente?',
     'Para precisar qué actividades debe realizar desde captar hasta atender al cliente, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de actividades clave. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: qué actividades debe realizar desde captar hasta atender al cliente.',
     'Solicite solo datos necesarios y evite estereotipos o características que no influyan en la compra. Proteja información personal. Control específico: verifique que la respuesta trate qué actividades debe realizar desde captar hasta atender al cliente y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    14,
     '¿Cuáles son críticas, en qué orden se ejecutan y quién responde?',
     'Para precisar cuáles son críticas, en qué orden se ejecutan y quién responde, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de actividades clave. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: cuáles son críticas, en qué orden se ejecutan y quién responde.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cuáles son críticas, en qué orden se ejecutan y quién responde y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    14,
     '¿Qué controles, tiempos, riesgos y actividades tercerizadas existen?',
     'Para responder sobre qué controles, tiempos, riesgos y actividades tercerizadas existen, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en actividades clave.',
     '“El principal riesgo es depender de un solo proveedor; se mitigará homologando una segunda alternativa.” En esta respuesta, el foco es: qué controles, tiempos, riesgos y actividades tercerizadas existen.',
@@ -1070,21 +309,21 @@ questions (
 ),
 -- Socios clave 
 (
-    0,
+    15,
     '¿Qué proveedores, aliados o instituciones necesita y qué aportará cada uno?',
     'Para precisar qué proveedores, aliados o instituciones necesita y qué aportará cada uno, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de socios clave. Evite respuestas amplias como “todos” o “el público en general”.',
     '“Un proveedor local abastecerá el insumo principal y un servicio externo realizará entregas en horas de alta demanda.” En esta respuesta, el foco es: qué proveedores, aliados o instituciones necesita y qué aportará cada uno.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué proveedores, aliados o instituciones necesita y qué aportará cada uno y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    15,
     '¿Bajo qué condiciones trabajarán y qué obtendrán a cambio?',
     'Para responder bajo qué condiciones trabajarán y qué obtendrán a cambio, mencione los elementos indispensables para socios clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Para socios clave, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: bajo qué condiciones trabajarán y qué obtendrán a cambio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate bajo qué condiciones trabajarán y qué obtendrán a cambio y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    15,
     '¿Qué dependencia o riesgo existe y qué alternativa tendrá?',
     'Para responder qué dependencia o riesgo existe y qué alternativa tendrá, mencione los elementos indispensables para socios clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué dependencia o riesgo existe y qué alternativa tendrá.',
@@ -1093,21 +332,21 @@ questions (
 
 -- Estructura de costos 
 (
-    0,
+    16,
     '¿Qué costos fijos, variables, directos e indirectos tendrá el negocio?',
     'Para responder sobre qué costos fijos, variables, directos e indirectos tendrá el negocio, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en estructura de costos.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué costos fijos, variables, directos e indirectos tendrá el negocio.',
     'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué costos fijos, variables, directos e indirectos tendrá el negocio y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    16,
     '¿Qué inversiones y gastos iniciales se requieren?',
     'Para responder qué inversiones y gastos iniciales se requieren, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué inversiones y gastos iniciales se requieren.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué inversiones y gastos iniciales se requieren y no sustituya este dato con información de otro apartado.'
 ),
 (
-    0,
+    16,
     '¿Qué costos suelen olvidarse y cómo cambiarán al crecer?',
     'Para responder sobre qué costos suelen olvidarse y cómo cambiarán al crecer, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en estructura de costos.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué costos suelen olvidarse y cómo cambiarán al crecer.',
@@ -3023,248 +2262,7 @@ questions (
     'Para responder qué indicador verificará su cumplimiento, mencione los elementos indispensables para recomendaciones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: qué indicador verificará su cumplimiento.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué indicador verificará su cumplimiento y no sustituya este dato con información de otro apartado.'
-),
-           
-           
-           
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-           -- ==================== ELIMIJNAR 
-           
-            (        2,       '¿En qué empresa o institución trabajaste y durante qué periodo?', 'Debe incluir nombre de entidad y rango temporal claro.' , 'Certificado de trabajo', 'Debe contener nombre y periodo.', 'Dato primario: no cita.', 1, 1, 1), 
-            
-            ( 7,  '¿Cuál fue tu cargo o rol más relevante?', 'Identifica el puesto que mejor demuestra competencias de tu carrera.', 'Contrato o constancia opcional', 'Mínimo 5 caracteres.', 'Dato primario: no cita.', 1, 1, 1), 
-            ( 7,  'Describe tus funciones principales (máximo 5).', 'Resume responsabilidades medulares y repetidas del puesto.'  , 'MOF o descripción de puesto', 'Mínimo 3 funciones.', 'Dato primario: no cita.', 1, 0, 0), 
-            ( 7,  '¿Qué logros concretos obtuviste?', 'Prioriza resultados con cifras o mejoras observables.'  , 'Reportes, indicadores', 'Al menos 1 logro verificable.', 'Dato primario: no cita.', 1, 0, 1), 
-            ( 7,  '¿Qué competencias desarrollaste o fortaleciste?', 'Incluye técnicas y blandas.'  , 'Certificados opcionales', 'Mínimo 3 competencias.', 'Dato primario: no cita.', 1, 1, 1), 
-            ( 7,  '¿Cómo conecta esta experiencia con tu TSP?', 'Explica por qué esta vivencia permite abordar el problema elegido', 'No aplica', 'Mínimo 20 caracteres.', 'Dato primario: no cita.', 1, 0, 0 ), 
-
-            ( 8,  'Nombre de la empresa o institución.', 'Identificación exacta de la entidad '  , 'RUC/ficha empresa', 'Mínimo 5 caracteres.', 'Dato primario; si se completa con Sunat, citar fuente.', 1, 1, 1), 
-            ( 8,  '¿A qué rubro pertenece?', 'Sector económico o actividad principal.'  , 'No aplica', 'Mínimo 3 caracteres.', 'Dato primario.', 1, 0, 0), 
-            ( 8,  'Describe la empresa: ubicación, tamaño, servicios y posicionamiento.', 'Construye el contexto operativo de la experiencia.', 'Web, Google Maps, brochure', 'Mínimo 40 caracteres.', 'Si se toman datos públicos, citar fuente.' , 1, 0, 0  ), 
-            ( 8,  '¿Cuál era tu rol específico dentro de la entidad?', 'Vincula puesto con área y alcance.'  , 'Carta de funciones', 'Mínimo 5 caracteres.', 'Dato primario.' , 1, 1, 1), 
-            ( 8,  '¿A quién reportabas y qué decisiones podías tomar?', 'Aclara jerarquía y nivel de autonomía.'  , 'Organigrama opcional', 'Debe mencionar superior o área.', 'Dato primario.' , 1, 1, 1), 
-            ( 8,  'Describe la situación problemática que enfrentaste.', 'Debe identificar qué ocurrió, cuándo y a quién afectó.' , 'Fotos, correos, reportes', 'Mínimo 60 caracteres.', 'Dato primario; si usa evidencia externa, citar.' , 1, 1, 1), 
-            ( 8,  'Formula el objetivo general de tu intervención.', 'Debe iniciar con verbo de acción y apuntar al problema principal.' , 'No aplica', 'Mínimo 15 caracteres.', 'Dato primario.' , 1, 0, 0), 
-            ( 8,  'Enumera tres objetivos específicos.', 'Descompón el objetivo general en acciones medibles.' , 'No aplica', 'Mínimo 3 objetivos.', 'Dato primario.' , 1, 0, 0), 
-            ( 8,  '¿Qué metas cuantitativas te propusiste?', 'Define indicadores esperados.' , 'Línea base o reportes', 'Al menos una meta cuantificable.', 'Dato primario.' , 1, 1, 1), 
-            ( 8,  '¿Qué limitaciones aparecieron?', 'Registra barreras internas o externas que condicionaron el proceso.' , 'No aplica', 'Mínimo 20 caracteres.', 'Dato primario.' , 1, 0, 0), 
-
-            ( 9,  'Menciona al menos dos antecedentes relacionados con tu problema.', 'Pueden ser tesis, artículos, informes o casos comparables.' , 'PDF, enlace o ficha bibliográfica', 'Mínimo 2 antecedentes.', 'Fuente externa: requiere cita y referencia.' , 1, 1, 0 ), 
-            ( 9,  '¿Qué teorías, modelos o autores respaldan tu enfoque?', 'Selecciona marcos realmente útiles para interpretar tu caso.' , 'Libros, artículos', 'Mínimo 2 autores/modelos.', 'Fuente externa: requiere cita y referencia.' , 1, 1, 0), 
-            ( 9,  '¿Qué elementos del entorno son relevantes?', 'Incluye factores económicos, sociales, tecnológicos o legales.' , 'Informes sectoriales, leyes', 'Mínimo 2 fuentes externas.', 'Fuente externa: requiere cita y referencia.' , 1, 1, 0 ), 
-
-            ( 10,  '¿Cómo se organizó el equipo de trabajo?', 'Describe roles, coordinación y dependencia funcional.' , 'Diagrama o esquema', 'Mínimo 3 roles si aplica.', 'Si se presenta como organigrama, tratar como figura.', 1, 1, 0 ), 
-            ( 10,  'Presenta el cronograma de actividades.', 'Ordena las acciones por semanas o meses.' , 'Cronograma en Excel o imagen', 'Mínimo 3 actividades.', 'Tabla APA con nota si corresponde.' , 1, 1, 0), 
-            ( 10,  'Describe cómo ejecutaste cada actividad.', 'Explica método, procedimiento y alcance.'  , 'Registros, actas', 'Mínimo 100 caracteres por actividad principal.', 'Dato primario.', 1, 1, 0), 
-            ( 10,  'Adjunta evidencias de ejecución.', 'Sube fotos, capturas, actas o soportes.' , 'Imágenes, PDF', 'Al menos 1 evidencia si el TSP lo requiere.', 'Anexos no van a referencias salvo cita expresa.' , 1, 1, 0), 
-            ( 10,  '¿Qué resultados obtuviste en cada actividad?', 'Relaciona actividad con resultado o indicador.' , 'Reportes de resultados', 'Mínimo 1 resultado por actividad clave.', 'Si se tabula, aplicar formato APA.' , 1, 1, 0), 
-            ( 10,  '¿Hubo ajustes o reprocesos?', 'Documenta correcciones sobre la marcha.' , 'No aplica', 'Responder "No" si no hubo.', 'Dato primario.' , 1, 0, 0), 
-
-
-            ( 11,  '¿En qué medida se alcanzaron los objetivos y metas?', 'Compara lo logrado con lo planificado.' , 'No aplica', 'Mínimo 30 caracteres.', 'Dato primario; puede apoyarse en tablas propias.'  , 1, 0, 0), 
-            ( 11,  '¿Por qué se superaron o no los resultados esperados?', 'Analiza factores internos y externos.' , 'No aplica', 'Mínimo 50 caracteres.', 'Dato primario.'  , 1, 0, 0), 
-            ( 11,  '¿Qué aspectos de la cultura u organización influyeron?', 'Profundiza en causas institucionales.' , 'No aplica', 'Mínimo 30 caracteres.', 'Dato primario.'  , 1, 0, 0), 
-            ( 11,  '¿Qué lecciones aprendiste?', 'Extrae aprendizajes transferibles.' , 'No aplica', 'Mínimo 3 lecciones.', 'Dato primario.'   , 1, 0, 0), 
-
-            -- proyecto de innovacion
-            ( 15,  '¿Cuál es el problema o la oportunidad que da origen al proyecto?', 'Definir el punto de partida innovador.', 'Problema observado, oportunidad emergente o vacío en el mercado.', 'Debe ser específico y verificable.', 'Citar toda afirmación externa.'  , 1, 0, 0 ), 
-            ( 15,  '¿Qué hipótesis principal quieres validar?', 'Forzar una afirmación comprobable.', 'Hipótesis cliente-problema o solución-valor.', 'Una hipótesis clara y medible.', 'Sin cita salvo soporte teórico.'  , 1, 0, 0 ), 
-            ( 15,  '¿Qué segmento de cliente presenta con mayor fuerza este problema?', 'Delimitar el foco de validación.', 'Segmento y contexto de uso.', 'Debe ser específico.', 'Sin cita.'  , 1, 0, 0 ), 
-
-            ( 16,  '¿Qué evidencias iniciales tienes del problema del usuario?', 'Evitar innovación sin usuario.', 'Entrevistas, observación, encuesta, quejas, comentarios, shadowing.', 'Debe incluir evidencia directa.', 'Dato primario del usuario; presentarlo con tabla o figura APA cuando corresponda.'  , 1, 1, 0 ), 
-            ( 16,  '¿Cómo describirías al usuario objetivo?', 'Construir persona o arquetipo.', 'Datos, metas, frustraciones, motivaciones, comportamientos.', 'Debe incluir dolor y expectativa.', 'Sin cita salvo apoyo externo.'  , 1, 1, 0 ), 
-            ( 16,  '¿Qué insight clave surge del análisis del usuario?', 'Convertir evidencia en aprendizaje.', 'Insight redactado en lenguaje claro.', '1 a 3 insights potentes.', 'Sin cita.'  , 1, 1, 0 ), 
-
-            ( 17,  '¿Cómo formularás el reto creativo?', 'Traducir el problema a desafío de diseño.', '¿Cómo podríamos...?', 'Debe enfocarse en una solución deseable.', 'Sin cita.'   , 1, 0, 0), 
-            ( 17,  '¿Qué ideas de solución generaste y por qué una fue priorizada?', 'Mostrar pensamiento divergente y convergente.', 'Lista de ideas y criterio de selección.', 'Mínimo 3 ideas si aplica.', 'Sin cita.'   , 1, 0, 0), 
-            ( 17,  '¿Cómo es la solución innovadora elegida?', 'Definir atributos innovadores.', 'Producto, servicio, experiencia o proceso innovador.', 'Debe explicar novedad y valor.', 'Si usa autor/modelo de innovación, citarlo.'  , 1, 0, 0 ),
-
-            ( 18,  '¿Cómo se expresa la solución en un modelo de negocio?', 'Pasar de idea a modelo sostenible.', 'Segmentos, propuesta de valor, canales, ingresos, socios, costos.', 'Debe estar completo.', 'Sin cita salvo modelo teórico usado.' , 1, 0, 0  ), 
-            ( 18,  '¿Qué prototipo mínimo construirás o simularás?', 'Aterrizar la solución.', 'Mockup, landing, demo, video, piloto, muestra, servicio simulado.', 'Debe ser rápido de probar.', 'Sin cita.'   , 1, 1, 1), 
-            ( 18,  '¿En qué contexto real será probado el prototipo?', 'Asegurar realismo de validación.', 'Lugar, usuario, momento, canal.', 'Debe ser ejecutable.', 'Sin cita.'  , 1, 0, 0 ),
-
-            ( 19,  '¿Qué experimento de validación ejecutarás?', 'Aplicar lógica Lean Startup.', 'Prueba, métrica, duración, tamaño de muestra.', 'Debe incluir criterio de éxito.', 'Sin cita salvo marco teórico Lean Startup.'  , 1, 0, 0 ), 
-            ( 19,  '¿Qué métricas indicarían validación o rechazo?', 'Evitar validación subjetiva.', 'Conversión, intención de compra, repetición, tiempo, satisfacción, adopción, etc.', '2 a 5 métricas clave.', 'Sin cita.'  , 1, 0, 0 ), 
-            ( 19,  '¿Qué harás si la hipótesis no se confirma?', 'Abrir espacio a pivoteo.', 'Perseverar, ajustar, cambiar segmento, cambiar canal, pausar.', 'Una decisión contingente clara.', 'Sin cita.'  , 1, 0, 0 ), 
-
-            ( 20,  '¿Qué recursos y costos mínimos exige la solución?', 'Cuantificar viabilidad inicial.', 'Equipo, insumos, software, marketing, prueba piloto, talento.', 'Debe cubrir el MVP.', 'Anexos de soporte; sin cita bibliográfica estándar.'  , 1, 1, 0 ), 
-            ( 20,  '¿Cómo capturarías ingresos si el experimento funciona?', 'Explorar monetización.', 'Precio, suscripción, comisión, paquete, licencia, etc.', 'Modelo de ingreso coherente.', 'Sin cita.'  , 1, 1, 0 ), 
-            ( 20,  '¿Qué mínimo resultado económico o de tracción justificaría avanzar?', 'Fijar criterio de decisión.', 'Ventas mínimas, usuarios, margen, retención o interés.', 'Medible y temporal.', 'Sin cita.'  , 1, 1, 0 ), 
-
-            ( 21,  '¿La solución debe avanzar, ajustarse o detenerse?', 'Cerrar con una decisión explícita.', 'Semáforo y razones.', 'Una decisión y 3 razones.', 'Sin cita.'  , 1, 1, 0 ), 
-            ( 21,  '¿Cuál es la hoja de ruta de 30, 60 y 90 días?', 'Conectar el proyecto con ejecución.', 'Hitos, responsables y entregables.', 'Tres tramos temporales.', 'Sin cita.'  , 1, 1, 0 ), 
-            ( 21,  '¿Qué anexos respaldan el proyecto?', 'Reunir evidencia de diseño y validación.', 'Entrevistas, encuesta, storyboard, prototipo, métricas, capturas, cotizaciones.', 'Mínimo 4 anexos.', 'Cada anexo con título y nota de origen; citar solo cuando corresponda.'  , 1, 1, 1 ), 
-
-            -- PLAN NEGOCIO  =======>>>>>>>> section_index , question_text, question_detail,  evidencia_detail , validation_detail , apa_detail
-            (25, '¿Cuál es la idea de negocio y qué necesidad concreta atiende?' ,'Definir el negocio en términos claros y defendibles.', 'Descripción de la idea y problema/oportunidad.' , 'Sin generalidades.', 'Sin cita salvo que el problema se apoye en fuente externa.' , 1, 0, 0), 
-            (25, '¿Cómo funcionará el negocio en términos simples?' ,'Esbozar el modelo de negocio preliminar.', 'Cliente, oferta, ingreso, canal, recurso clave.' , 'Debe cubrir cliente, propuesta, ingreso y canal.', 'Sin cita; construcción estratégica.' , 1, 0, 0), 
-            (25, '¿Qué evidencia muestra que existe oportunidad de mercado?' ,'Evitar un negocio basado solo en intuición.', 'Demanda insatisfecha, tendencia, brecha local, observación, encuesta.' , 'Debe apoyarse en evidencia mínima.', 'Toda afirmación externa requiere cita; lo propio va como dato del usuario.' , 1, 0, 0), 
-            (25, '¿Qué problema del cliente o del mercado resuelve el negocio?' ,'Conectar el negocio con dolor real del cliente.', 'Problema principal, consecuencias, urgencia.' , 'Debe ser específico.', 'Si se apoya en fuente, citarla.' , 1, 0, 0), 
-
-            (26, '¿Cómo se describirá la empresa y su alcance?' ,'Definir rubro, escala, ubicación y foco.', 'Nombre tentativo, ubicación, rubro, tamaño, modalidad.' , 'Debe ser consistente con la idea.', 'Sin cita.' , 1, 0, 0), 
-            (26, '¿Cuál será la misión de la empresa?' ,'Expresar propósito y servicio.', 'Propuesta breve.' , 'Máx. 40 palabras.', 'Sin cita.' , 1, 0, 0), 
-            (26, '¿Cuál será la visión?' ,'Expresar aspiración futura.', 'Propuesta breve.' , 'Debe ser aspiracional y realista.', 'Sin cita.' , 1, 0, 0), 
-            (26, '¿Qué objetivos generales y específicos tendrá el negocio?' ,'Traducir la estrategia en metas.', 'Objetivos medibles y cronológicos.' , 'Al menos 1 general y 3 específicos.', 'Sin cita.' , 1, 0, 0), 
-            (26, '¿Cuáles son tus fortalezas, oportunidades, debilidades y amenazas?' ,'Construir la base estratégica.', 'Matriz FODA y lectura cruzada.' , 'Debe incluir 4 componentes completos.', 'Si las oportunidades/amenazas usan fuente externa, citarla en el análisis.' , 1, 1, 1), 
-
-            (27, '¿Qué factores PESTA influyen en tu negocio?' ,'Analizar el entorno macro.', 'Político, económico, social, tecnológico y ambiental.' , 'Al menos 1 hallazgo útil por factor.', 'Todo dato externo con cita APA.'  , 1, 0, 0), 
-            (27, '¿Quién es tu cliente objetivo y cómo se comporta?' ,'Perfilar al mercado meta.', 'Datos demográficos, psicográficos y de compra.' , 'Debe incluir segmentación accionable.', 'Citar fuente externa cuando se cuantifique mercado.' , 1, 0, 0), 
-            (27, '¿Quiénes son tus competidores y cómo se comparan contigo?' ,'Ubicar competencia directa e indirecta.', 'Nombre, precio, propuesta, ubicación, ventaja/desventaja.' , 'Mínimo 3 competidores si existen.', 'Si se usa Google Maps o páginas web, consignar nota de fuente/captura.' , 1, 0, 0), 
-            (27, '¿Quiénes serán tus proveedores y qué riesgo implica depender de ellos?' ,'Entender abastecimiento.', 'Proveedor, condiciones, tiempos, sustitutos.' , 'Mínimo 2 proveedores si aplica.', 'Sin referencia bibliográfica salvo fuente pública especial.' , 1, 0, 0), 
-            (27, '¿Cómo estimarás el tamaño de mercado?' ,'Cuantificar mercado potencial, objetivo y meta de captación.', 'Población base, segmento, supuestos y cálculo.' , 'Debe separar dato oficial de supuestos.', 'Cita obligatoria para bases poblacionales y económicas; supuestos del usuario declarados por separado.' , 1, 0, 0), 
-
-            (28, '¿Cómo será el producto o servicio y qué atributos lo diferencian?' ,'Definir la oferta concreta.', 'Características, presentación, beneficios, empaque, garantía.' , 'Debe vincularse a cliente y competencia.', 'Sin cita salvo norma técnica o regulación.' , 1, 0, 0), 
-            (28, '¿Cómo fijarás el precio?' ,'Sustentar la lógica de monetización.', 'Precio, margen, referencia competitiva y percepción del cliente.' , 'Debe explicar criterio usado.', 'Si usa precios observados externos, nota metodológica; si usa boletines públicos, cita.' , 1, 0, 0), 
-            (28, '¿Cómo llegará el producto al cliente?' ,'Definir canales y cobertura.', 'Canal, frecuencia, reparto, delivery, presencia física.' , 'Debe ser coherente con operaciones.', 'Sin cita.' , 1, 0, 0), 
-            (28, '¿Qué acciones promocionales ejecutarás?' ,'Traducir estrategia a tácticas.', 'Redes, pauta, activación, volanteo, convenios, degustación.' , 'Debe incluir acción, costo y objetivo.', 'Sin cita.' , 1, 0, 0), 
-            (28, '¿Cómo proyectarás tus ventas?' ,'Construir el ingreso esperado.', 'Supuesto de demanda, frecuencia, ticket, días y estacionalidad.' , 'Supuestos explícitos.', 'Sin cita; proyección del usuario.' , 1, 0, 0), 
-
-            (29, '¿Cuál es el proceso operativo de principio a fin?' ,'Diseñar la operación real.', 'Secuencia de actividades.' , 'Mínimo 5 etapas si aplica.', 'Sin cita; puede presentarse como figura elaborada por la plataforma.' , 1, 0, 0), 
-            (29, '¿Cuál es la capacidad instalada o de atención?' ,'Medir el techo operativo.', 'Unidades/hora, día o mes.' , 'Consistente con recursos.', 'Sin cita.' , 1, 0, 0), 
-            (29, '¿Cómo comprarás, recibirás y almacenarás?' ,'Definir logística de entrada.', 'Frecuencia, proveedor, almacenamiento, reposición.' , 'Debe incluir control básico.', 'Sin cita.' , 1, 0, 0), 
-            (29, '¿Cómo despacharás o entregarás?' ,'Definir logística de salida.', 'Despacho, entrega, tiempos, devoluciones, mermas.' , 'Debe ser coherente con canal.', 'Sin cita.' , 1, 0, 0), 
-            (29, '¿Qué equipos, mobiliario y tecnología necesitas?' ,'Cuantificar requerimientos operativos.', 'Lista de activos y herramientas.' , 'Debe vincularse con inversión.', 'Anexar cotizaciones; no requieren cita bibliográfica salvo fuente externa especial.' , 1, 0, 0), 
-
-            (30, '¿Qué estructura organizacional tendrá la empresa?' ,'Definir forma de trabajo.', 'Roles, jerarquía y funciones.' , 'Mínimo roles clave.', 'Sin cita.' , 1, 1, 0), 
-            (30, '¿Qué perfiles de puesto necesitas?' ,'Alinear talento con operación.', 'Puesto, funciones, horario, remuneración.' , 'Debe cubrir personal clave.', 'Sin cita.' , 1, 1, 0), 
-            (30, '¿Qué forma legal y tributaria usarás y por qué?' ,'Asegurar viabilidad formal.', 'Persona natural, EIRL, SRL, MYPE, etc.' , 'Debe ser congruente con escala.', 'Citar fuente oficial si se explica requisito o régimen.' , 1, 1, 0), 
-            (30, '¿Qué permisos y registros necesitas?' ,'Evitar bloqueo normativo.', 'Municipal, sanitario, sectorial, marca, laboral, etc.' , 'Estado actual y pendiente.', 'Cita oficial cuando se mencione la exigencia.' , 1, 1, 0), 
-
-            (31, '¿Cuál es la inversión total del proyecto?' ,'Construir el punto de partida financiero.', 'Activos, intangibles y capital de trabajo.' , 'Debe sumar total y fuente de financiamiento.', 'Anexos de cotización; sin cita bibliográfica salvo fuente pública.' , 1, 0, 0), 
-            (31, '¿Cómo quedaría el estado de resultados proyectado?' ,'Medir rentabilidad operativa.', 'Ingresos, costos, gastos, utilidad.' , 'Escenario mínimo anual.', 'Sin cita; es modelo del proyecto.' , 1, 0, 0), 
-            (31, '¿Cómo se comportará el flujo de caja?' ,'Medir liquidez y recuperación.', 'Entradas, salidas, saldo.' , 'Horizonte definido (mensual o anual).', 'Sin cita.' , 1, 1, 1), 
-            (31, '¿Qué muestran VAN, TIR, B/C o indicadores elegidos?' ,'Cerrar la evaluación financiera.', 'Indicadores y lectura ejecutiva.' , 'Aplicar cuando el nivel del trabajo lo exija.', 'Sin cita; cálculo propio del proyecto.' , 1, 1, 0), 
-            (31, '¿Qué pasa si venden menos o suben los costos?' ,'Evaluar robustez del negocio.', 'Escenarios pobre/base/mejor.' , 'Mínimo 2 escenarios si aplica.', 'Sin cita.' , 1, 0, 0), 
-
-            -- ============>>>>>>>>>>>>>>> PLAN NEGOCIO URBANO
-            (35, '¿Qué producto o servicio ofrecerás en una frase clara?', 'Definir el núcleo del negocio.', 'Descripción breve del negocio.' ,'1 oración, sin ambigüedad.' , 'Sin cita; rotular como dato del usuario.', 1, 0, 0), 
-            (35, '¿Qué problema resuelve o qué necesidad atiende?', 'Justificar la existencia del negocio.', 'Problema u oportunidad concreta.' ,'Debe ser específico y observable.' , 'Si se apoya en fuente externa, citarla; si no, tratar como dato primario.', 1, 0, 0), 
-            (35, '¿Quién sería tu cliente principal?', 'Delimitar el segmento inicial.', 'Edad, estilo de vida, ubicación, capacidad de pago.' ,'Debe incluir segmento, zona y criterio de compra.' , 'Si se usan datos poblacionales, citar INEI/APEIM.', 1, 0, 0), 
-            (35, '¿Cómo surgió la idea de negocio?', 'Capturar el origen y el insight inicial.', 'Historia breve, observación o experiencia.' ,'Máx. 120 palabras.' , 'Sin cita salvo que mencione estudio externo.', 1, 0, 0), 
-            (35, '¿Cuál es tu propuesta de valor en una frase?', 'Fijar la promesa central del negocio.', 'Beneficio diferencial resumido.' ,'Una frase concreta y orientada al cliente.' , 'Sin cita; dato de construcción estratégica.', 1, 0, 0), 
-
-            (36, '¿Qué características demográficas y de comportamiento tiene tu cliente objetivo?', 'Perfilar al consumidor con mayor detalle.', 'Edad, frecuencia de compra, sensibilidad al precio, canal preferido.' ,'Debe incluir al menos 4 rasgos accionables.' , 'Si se cuantifica tamaño de segmento, citar fuente externa y separar supuestos del usuario.', 1, 0, 0), 
-            (36, '¿Quiénes son tus 3 competidores directos y dónde están ubicados?', 'Aterrizar la competencia real de proximidad.', 'Nombre comercial, dirección o referencia.' ,'Tres competidores como mínimo.' , 'Competidores observados por el usuario: sin cita; si se usa Google Maps, consignar nota de fuente/cartografía.', 1, 1, 0), 
-            (36, '¿Qué hacen mejor que tú tus competidores?', 'Reconocer ventajas ajenas y evitar sesgo.', 'Precio, rapidez, ubicación, reputación, experiencia.' ,'Mínimo 2 fortalezas comparativas.' , 'Sin cita; dato primario del usuario.', 1, 0, 0), 
-            (36, '¿Qué vacíos dejan tus competidores que tu negocio puede aprovechar?', 'Encontrar la brecha competitiva.', 'Problemas del competidor observables por el cliente.' ,'Mínimo 2 brechas concretas.' , 'Sin cita; dato primario.', 1, 0, 0), 
-            (36, '¿Qué atributo será el principal motivo de elección del cliente?', 'Definir el eje de posicionamiento.', 'Precio, sabor, rapidez, limpieza, experiencia, cercanía, etc.' ,'Elegir 1 atributo dominante y justificarlo.' , 'Si la justificación usa encuesta, tratar como dato primario y presentar tabla/figura APA.', 1, 0, 0), 
-
-            (37, '¿Dónde venderás y por qué ese punto es conveniente?', 'Evaluar la localización del negocio.', 'Dirección, tránsito, cercanía de clientes, alquiler.' ,'Debe incluir ubicación y argumento comercial.' , 'Si se inserta mapa o captura, tratar como figura con nota de elaboración propia o fuente.', 1, 0, 0), 
-            (37, '¿Por qué canales venderás?', 'Diseñar el modelo comercial.', 'Local, WhatsApp, delivery, redes, marketplaces.' ,'Mínimo un canal principal y uno complementario.' , 'Sin cita.', 1, 0, 0), 
-            (37, '¿Cuánto tiempo toma atender un pedido?', 'Medir la velocidad operativa.', 'Minutos por pedido o servicio.' ,'Valor numérico razonable.' , 'Sin cita; dato primario del usuario.', 1, 0, 0), 
-            (37, '¿Cuál es tu capacidad máxima de atención o producción por día?', 'Dimensionar la operación.', 'Unidades por día y horas pico.' ,'Debe ser consistente con recursos y tiempo de atención.' , 'Sin cita.', 1, 0, 0), 
-            (37, '¿Qué insumos o suministros necesitas comprar con frecuencia?', 'Definir compras recurrentes y estructura variable.', 'Lista de insumos, frecuencia y proveedor tentativo.' ,'Mínimo 5 insumos si aplica.' , 'Si se anexan cotizaciones, presentarlas como anexos o figuras con nota.', 1, 1, 1), 
-
-            (38, '¿Cuántas personas trabajarán al inicio?', 'Dimensionar la estructura inicial.', 'Cantidad y modalidad (propietario, familiar, contratado).' ,'Debe incluir roles básicos.' , 'Sin cita.', 1, 0, 0), 
-            (38, '¿Qué hará cada persona?', 'Evitar duplicidad y vacíos operativos.', 'Funciones por rol.' ,'Cada rol con 3 a 5 funciones.' , 'Sin cita.', 1, 0, 0), 
-            (38, '¿Qué nivel de formalización tienes o necesitas?', 'Definir la ruta mínima de cumplimiento.', 'RUC, licencia, permiso sanitario, libros, POS, etc.' ,'Indicar estado: tiene/no tiene/tramitará.' , 'Cuando se cite requisito legal o administrativo, citar norma o entidad oficial.', 1, 1, 0), 
-            (38, '¿Qué requisito no atendido podría frenarte?', 'Prevenir contingencias de apertura.', 'Permiso, local, manipulación de alimentos, marca, etc.' ,'Un riesgo principal.' , 'Si se apoya en requisito externo, citar entidad.', 1, 1, 0),
-
-            (39, '¿Cuánto necesitas invertir al inicio y en qué conceptos?', 'Cuantificar la inversión total.', 'Equipos, adecuación, garantía, stock inicial, publicidad, capital de trabajo.' ,'Debe sumar el total.' , 'Si se incorporan precios de mercado, usar nota ‘cotización del usuario’ o fuente comercial fechada.', 1, 1, 0), 
-            (39, '¿Cuáles serán tus costos fijos mensuales?', 'Identificar el umbral mínimo de operación.', 'Alquiler, servicios, personal, internet, software, transporte fijo.' ,'Montos mensuales y total.' , 'Sin cita salvo referencia externa de tarifa normativa.', 1, 2, 0), 
-            (39, '¿Cuánto te cuesta producir o atender una unidad?', 'Estimar margen unitario.', 'Ingredientes, materiales, comisión, empaque, delivery variable.' ,'Costo por unidad claro.' , 'Sin cita.', 1, 0, 0), 
-            (39, '¿A qué precio venderás y por qué ese precio es razonable?', 'Definir el precio objetivo.', 'Precio por unidad o ticket promedio y justificación.' ,'Debe ser consistente con cliente y competencia.' , 'Si compara precios observados, usar tabla con nota metodológica.', 1, 0, 0), 
-            (39, '¿Cuántas unidades esperas vender al mes?', 'Construir el escenario base de ingresos.', 'Proyección mensual inicial.' ,'Debe indicar supuesto de ventas por día y días de operación.' , 'Sin cita; explicitar que es proyección del usuario.', 1, 0, 0), 
-            (39, '¿Qué resultado esperarías considerar aceptable en el mes 3 o 4?', 'Ajustar criterio de viabilidad.', 'Meta mínima de ventas o utilidad.' ,'Indicador cuantificable.' , 'Sin cita.', 1, 0, 0), 
-
-            (40, '¿Qué es lo peor que podría pasar si el negocio no funciona?', 'Identificar el riesgo dominante.', 'Pérdida de inversión, deuda, inventario, reputación, etc.' ,'Un riesgo principal y su impacto.' , 'Sin cita.', 1, 0, 0), 
-            (40, '¿Qué harías si vendes solo la mitad de lo esperado durante 3 meses?', 'Diseñar una reacción temprana.', 'Medidas correctivas concretas.' ,'Mínimo 3 acciones.' , 'Sin cita.', 1, 0, 0), 
-            (40, '¿Qué indicador te obligaría a cambiar o cerrar?', 'Forzar criterio de decisión.', 'Venta mínima, margen, rotación, flujo de caja.' ,'Debe ser medible.' , 'Sin cita.', 1, 0, 0), 
-
-            (41, '¿Qué evidencias anexarás al perfil?', 'Sostener la decisión con soporte real.', 'Encuesta, cotizaciones, fotos, mapa, lista de precios.' ,'Mínimo 4 anexos.' , 'Cada anexo con título y nota; citar solo si proviene de fuente externa.', 1, 1, 1), 
-
-
-
-            -- ==============================================================================================================================>>>>>>>>>>>>>>> PLAN NEGOCIO RURAL
-            (45, '¿Qué producto, recurso o servicio rural ofrecerás?', 'Definir el núcleo productivo o comercial.', 'Nombre del producto y forma de venta.' ,'1 frase clara.' , 'Sin cita.', 1, 0, 0), 
-            (45, '¿Dónde produces, recolectas, acopias o transformas el recurso?', 'Ubicar territorialmente el negocio.', 'Comunidad, chacra, río, carretera, distrito, coordenada referencial.' ,'Debe identificar lugar real.' , 'Si se inserta mapa, tratar como figura con nota de elaboración propia o fuente cartográfica.', 1, 0, 0), 
-            (45, '¿Qué problema del territorio o de la cadena comercial quieres resolver?', 'Justificar la idea en función del contexto.', 'Bajo precio en chacra, pérdida por merma, falta de compradores, etc.' ,'Problema concreto y verificable.' , 'Si se respalda con fuente externa o institucional, citarla.', 1, 0, 0), 
-            (45, '¿Qué oportunidad comercial o de mejora viste en este recurso?', 'Explicar la oportunidad de mercado.', 'Brecha de precio, demanda insatisfecha, diferenciación orgánica, etc.' ,'Máx. 120 palabras.' , 'Sin cita salvo apoyo externo.', 1, 0, 0), 
-
-            (46, '¿El recurso está disponible todo el año o tiene meses críticos?', 'Medir continuidad de oferta.', 'Meses de alta, media y baja disponibilidad.' ,'Debe identificar al menos 12 meses o periodos clave.' , 'Si usa calendario institucional, citar entidad; si es experiencia propia, rotular como dato del productor.', 1, 1, 0), 
-            (46, '¿Cuánto puedes producir o acopiar por mes?', 'Cuantificar la oferta real.', 'Kilos, sacos, racimos, cajas, litros, unidades.' ,'Debe incluir unidad de medida.' , 'Sin cita; dato primario.', 1, 0, 0), 
-            (46, '¿Qué prácticas aplicas para asegurar sostenibilidad del recurso?', 'Evaluar sostenibilidad y trazabilidad.', 'Rotación, recolección selectiva, no tala, manejo de residuos, etc.' ,'Mínimo 2 prácticas si aplica.' , 'Sin cita.', 1, 0, 0), 
-            (46, '¿Necesitas permiso comunal, sectorial o ambiental para operar?', 'Prevenir riesgos de legalidad y acceso al recurso.', 'Acuerdo comunal, SERFOR, pesca, sanidad, transporte, etc.' ,'Indicar estado actual.' , 'Cuando se mencione permiso o requisito, citar la entidad/norma oficial si se usa como sustento.', 1, 1, 0), 
-            (46, '¿Qué porcentaje se pierde por manejo, clima, transporte o almacenamiento?', 'Hacer visible la pérdida económica.', '% de merma y causa principal.' ,'Valor porcentual y explicación.' , 'Sin cita; dato primario.', 1, 0, 0), 
-
-            (47, '¿A quién le vendes primero?', 'Ubicar el primer eslabón comercial.', 'Intermediario, feria, acopiador, restaurante, consumidor final.' ,'Debe identificar el primer comprador.' , 'Sin cita.', 1, 0, 0), 
-            (47, '¿Cuál es tu precio de venta en origen o chacra?', 'Fijar el ingreso inicial por unidad.', 'Precio y unidad.' ,'Debe incluir unidad y moneda.' , 'Sin cita.', 1, 0, 0), 
-            (47, '¿Cuál es el precio en mercado o destino final?', 'Medir la brecha de valor en la cadena.', 'Precio observado en destino.' ,'Debe indicar dónde se observó el precio.' , 'Si usa boletines o base pública, citar fuente; si es observación propia, dejar nota metodológica.', 1, 1, 0), 
-            (47, '¿Cuánto gana o agrega valor cada eslabón?', 'Mostrar dónde se queda el margen.', 'Intermediario, transporte, mayorista, minorista.' ,'Cadena mínima de 3 eslabones si aplica.' , 'Citar fuente externa cuando no sea dato primario.', 1, 0, 0), 
-            (47, '¿Quién es el cliente final que más valora tu producto?', 'Conectar con el mercado de destino.', 'Perfil de cliente final o institucional.' ,'Debe indicar uso o preferencia.' , 'Sin cita salvo respaldo externo.', 1, 0, 0),
-
-            (48, '¿Cómo va el producto desde el origen hasta la venta?', 'Diseñar el flujo del negocio.', 'Cosecha, selección, acopio, transporte, venta.' ,'Debe describir 4 etapas mínimas.' , 'Sin cita; puede presentarse como flujograma.', 1, 0, 0), 
-            (48, '¿Cómo conservas el producto para evitar pérdidas?', 'Definir manejo poscosecha o almacenamiento.', 'Sombra, hielo, cajas, sacos, secado, frío, empaque, etc.' ,'Debe reflejar la realidad operativa.' , 'Sin cita.', 1, 0, 0), 
-            (48, '¿Cómo lo transportas y cuánto cuesta?', 'Cuantificar la logística del negocio.', 'Medio, ruta, frecuencia, costo por viaje.' ,'Debe incluir costo y frecuencia.' , 'Si se usa cotización externa, citar o anotar origen del documento en anexos.', 1, 1, 0), 
-            (48, '¿Necesitas transformar, clasificar o empacar para vender mejor?', 'Explorar valor agregado.', 'Lavado, selección, pelado, fileteado, secado, marca, empaque.' ,'Explicar si aplica o no.' , 'Sin cita.', 1, 0, 0), 
-
-            (49, '¿Eres productor individual, familia, asociación o comunidad?', 'Precisar forma organizativa.', 'Tipo y nombre si existe.' ,'Debe indicar modalidad real.' , 'Sin cita.', 1, 0, 0), 
-            (49, '¿Quién hace qué dentro del proceso?', 'Aclarar responsabilidades.', 'Producción, selección, acopio, transporte, venta, administración.' ,'Cada rol con su responsable.' , 'Sin cita.', 1, 0, 0), 
-            (49, '¿Existen acuerdos escritos o verbales que sostengan el negocio?', 'Evaluar gobernanza mínima.', 'Acta, acuerdo comunal, reparto de utilidades, préstamo, etc.' ,'Debe indicar si existe o no evidencia.' , 'Si se adjunta acta o documento, presentar como anexo sin necesidad de citar como referencia bibliográfica.', 1, 1, 0), 
-            (49, '¿Qué formalización comercial te conviene en esta etapa?', 'Definir paso siguiente de formalidad.', 'RUC, asociación, cooperativa, permiso local, etc.' ,'Debe ser viable para su escala.' , 'Cuando se cite requisito, citar fuente oficial.', 1, 0, 0), 
-
-            (50, '¿Cuánto debes invertir para arrancar o mejorar el negocio?', 'Cuantificar inversión inicial.', 'Herramientas, cajas, semillas, acopio, transporte, empaque, adecuación.' ,'Debe sumar total.' , 'Cotizaciones como anexo o nota, no necesariamente referencia bibliográfica.', 1, 1, 0), 
-            (50, '¿Qué costos fijos mensuales tendrás?', 'Definir umbral mínimo de operación.', 'Transporte fijo, alquiler, almacén, sueldo fijo, crédito.' ,'Montos mensuales y total.' , 'Sin cita.', 1, 0, 0), 
-            (50, '¿Cuánto cuesta cada kilo, saco o unidad vendida?', 'Calcular margen real por unidad.', 'Mano de obra, empaque, comisión, merma, combustible variable.' ,'Debe incluir unidad comercial.' , 'Sin cita.', 1, 0, 0), 
-            (50, '¿A qué precio venderás y cuál sería el mejor canal?', 'Comparar rentabilidad por canal.', 'Precio en origen vs. precio directo.' ,'Mínimo dos canales si aplica.' , 'Si usa boletines o precios públicos, citar fuente.', 1, 0, 0), 
-            (50, '¿Cuánto venderás al mes en el escenario base?', 'Armar el ingreso esperado.', 'Volumen y periodicidad.' ,'Debe explicar el supuesto.' , 'Sin cita; proyección del usuario.', 1, 0, 0), 
-
-            (51, '¿Qué riesgo climático afecta tu producción o logística?', 'Hacer visible el riesgo territorial.', 'Lluvias, crecida, sequía, plagas, bloqueo de ruta, etc.' ,'Un riesgo principal y su efecto.' , 'Si se usa fuente meteorológica o institucional, citarla.', 1, 0, 0), 
-            (51, '¿Dependes de un solo comprador, transportista o ruta?', 'Evaluar vulnerabilidad comercial y logística.', 'Sí/no y explicación.' ,'Debe identificar dependencia crítica.' , 'Sin cita.', 1, 0, 0), 
-            (51, '¿Qué pasa si el precio baja 20% o la merma sube?', 'Medir sensibilidad del negocio.', 'Impacto en utilidad o decisión.' ,'Explicar si sigue siendo viable.' , 'Sin cita.', 1, 0, 0), 
-            (51, '¿Qué decisión tomarás con este perfil: avanzar, ajustar o pausar?', 'Cerrar con una decisión operativa.', 'Semáforo de viabilidad y razones.' ,'Una decisión y 3 razones.' , 'Sin cita.', 1, 0, 0), 
-
-            (52, '¿Qué evidencias adjuntarás para sostener el perfil?', 'Reunir la base documental mínima.', 'Fotos, mapa, cotizaciones, precios observados, actas, entrevistas.' ,'Mínimo 4 anexos.' , 'Cada anexo con título; citar solo si corresponde a fuente externa.', 1, 1, 0);
-
-
-
-
--- RELACION PLAN SECTION
--- INSERT INTO plan_sections ( plan_id, section_id)
--- VALUES                      ( 1 , 24 ),( 1 , 25 ),( 1 , 26 ),( 1 , 27 ),( 1 , 28 ),( 1 , 29 ),( 1 , 30 ),( 1 , 31 ),( 1 , 32 ),( 1 , 33 ),
---                             ( 2 , 6 ),( 2 , 7 ),( 2 , 8 ),( 2 , 9 ),( 2 , 10 ),( 2 ,11 ),( 2 , 12 ),( 2 , 13 ),
---                             ( 3 , 14 ),( 3 , 15 ),( 3 , 16 ),( 3 , 17 ),( 3 , 18 ),( 3 , 19 ),( 3 , 20 ),( 3 , 21 ),( 3 , 22 ),( 3 , 23 ),
---                             ( 4, 34 ), ( 4, 35 ),( 4, 36 ),( 4, 37 ),( 4, 38 ),( 4, 39 ),( 4, 40 ),( 4, 41 ),( 4, 42 ),( 4, 43 ),
---                             ( 5 , 44 ), ( 5 , 45 ), ( 5 , 46 ), ( 5 , 47 ), ( 5 , 48 ), ( 5 , 49 ), ( 5 , 50 ), ( 5 , 51 ), ( 5 , 52 ),( 5 , 53 ), ( 5 , 54 ); 
-
-
-
-           
-            
-
+);
 
 
 

@@ -93,33 +93,76 @@ CREATE TABLE sections (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+-- ADD PARA ESTRUCTURA
+
+-- ============================================
+-- USER_PLANS
+-- ============================================
+CREATE TABLE user_plan(
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    plan_id BIGINT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE (user_id, plan_id),
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE 
+) ENGINE=InnoDB;
+
+
+-- ============================================
+-- PLAN_NODES
+-- ============================================
+CREATE TABLE plan_node(
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_plan_id BIGINT NOT NULL,
+    plan_id BIGINT NOT NULL,
+    parent_id INT NULL,
+    titulo VARCHAR(200) NULL,
+    orden INT NULL,
+    objective TEXT NULL,
+    nivel TINYINT NOT NULL,
+    codigo VARCHAR(20) NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE (user_plan_id, plan_id),
+
+    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE, 
+    FOREIGN KEY (user_plan_id) REFERENCES user_plan(id) ON DELETE CASCADE
+
+) ENGINE=InnoDB;
+
 -- ============================================
 -- QUESTIONS
 -- ============================================
 
 CREATE TABLE questions (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    section_id BIGINT NOT NULL,
-    question_text TEXT NOT NULL,
-    question_detail TEXT  NULL,
-    evidencia_detail TEXT  NULL,
+    plan_node_id BIGINT NOT NULL,
+    question_text TEXT NOT NULL, --
+    question_detail TEXT  NULL, --
+    question_example TEXT  NULL, --
+    -- evidencia_detail TEXT  NULL,     
     validation_detail TEXT  NULL,
     apa_detail TEXT  NULL,
-    question_type ENUM('text','boolean','multiple_choice') DEFAULT 'text',
+    question_variables JSON, --
+    question_warning TEXT NULL,
      -- Tipo de respuesta permitida
-    allow_text BOOLEAN DEFAULT TRUE,
     allow_image BOOLEAN DEFAULT FALSE,
-    allow_document BOOLEAN DEFAULT FALSE,
+   
 
     type_section VARCHAR(20) NULL,
     order_index INT NULL,
-    is_required BOOLEAN DEFAULT TRUE,
+    is_required BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
-
-    INDEX idx_section_order (section_id, order_index)
+    FOREIGN KEY (plan_node_id) REFERENCES plan_node(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+-- FIN ESTRUCTURE
 
 -- ============================================
 -- CONVERSATIONS (MÚLTIPLES POR USUARIO) => El estado se guarda
@@ -127,16 +170,16 @@ CREATE TABLE questions (
 
 CREATE TABLE conversations (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
+    user_plan_id BIGINT NOT NULL, -- X ESTRUCTURE (user_id)
     title VARCHAR(255) DEFAULT 'Proyecto de Tesis',
     summary LONGTEXT,
     status ENUM('active','completed','archived') DEFAULT 'active',
     started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_activity_at DATETIME,
 
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_plan_id) REFERENCES user_plan(id) ON DELETE CASCADE,
 
-    INDEX (user_id),
+    INDEX (user_plan_id),
     INDEX (status)
 ) ENGINE=InnoDB;
 
@@ -171,7 +214,7 @@ CREATE TABLE conversation_messages (
 CREATE TABLE user_answers (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
-    section_id BIGINT NOT NULL,
+    section_id BIGINT  NULL,
     question_id BIGINT  NULL,
     conversation_id BIGINT NOT NULL,
     answer_text LONGTEXT,
@@ -181,7 +224,7 @@ CREATE TABLE user_answers (
     UNIQUE (conversation_id, question_id),
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
+    -- FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
     FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
 
     INDEX (conversation_id)
@@ -576,3 +619,40 @@ ALTER TABLE conversations
     ADD CONSTRAINT fk_conversations_plan
         FOREIGN KEY (plan_id) REFERENCES plans(id),
     ADD INDEX idx_conversations_plan (plan_id);
+
+
+-- ============================================
+-- QUESTIONS MASTERS
+-- ============================================
+
+CREATE TABLE questions_masters (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+
+    question TEXT NOT NULL, 
+    detail TEXT  NULL, 
+    example TEXT  NULL, 
+    advertencia TEXT  NULL,
+    order_index INT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE user_answers_diagnostic (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    question_master_id BIGINT NOT NULL,
+    answer_text LONGTEXT,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_master_id) REFERENCES questions_masters(id) ON DELETE CASCADE,
+
+    UNIQUE(user_id, question_master_id)
+) ENGINE=InnoDB;
+
+
+
+
+

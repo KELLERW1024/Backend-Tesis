@@ -72,4 +72,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Conversation::class);
     }
+
+    public function diagnosticAnswers()
+    {
+        return $this->hasMany(
+            UserAnswerDiagnostic::class,
+            'user_id'
+        );
+    }
+
 }

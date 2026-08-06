@@ -79,6 +79,9 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::get('/download',[DocumentController::class,'generarDocument']);
 
+
+    Route::get('/diagnostic/nextquestion',[DocumentController::class,'nextQuestion']);
+
     
 
     
