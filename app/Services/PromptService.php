@@ -210,4 +210,136 @@ class PromptService
         null
         PROMPT;
     }
+
+    public function diagnosticRubroPlan( String $questionsAnswers ){
+        $prompt = <<<PROMPT
+Eres un experto en clasificación de modelos de negocio.
+
+Debes analizar las preguntas y respuestas proporcionadas por una persona
+y determinar cuál es el RUBRO PRINCIPAL de su plan de negocio.
+
+Solo puedes seleccionar uno de estos rubros:
+
+- produccion
+- comercio
+- servicio
+- intermediacion
+- mixto
+
+Definiciones:
+
+PRODUCCION:
+El negocio transforma, fabrica, cultiva, procesa o elabora productos.
+Ejemplos: fabricación de muebles, panadería, agricultura, elaboración de alimentos,
+fabricación de ropa.
+
+COMERCIO:
+El negocio compra productos terminados para venderlos nuevamente.
+No fabrica ni transforma significativamente el producto.
+Ejemplos: tienda de ropa, minimarket, venta de electrodomésticos.
+
+SERVICIO:
+El negocio principalmente ofrece conocimientos, trabajo, atención o una actividad
+a sus clientes, sin que la venta de productos sea la actividad principal.
+Ejemplos: consultoría, peluquería, reparación, transporte, diseño gráfico.
+
+INTERMEDIACION:
+El negocio conecta compradores con vendedores o proveedores y obtiene ingresos
+por comisión, margen o intermediación, sin que la actividad principal sea fabricar
+el producto o prestar directamente el servicio.
+Ejemplos: marketplace, corredor, agente comercial, plataforma que conecta clientes
+con proveedores.
+
+MIXTO:
+El negocio combina de manera significativa dos o más de los rubros anteriores
+y no existe uno claramente predominante.
+Ejemplos: fabrica productos y además presta servicios relacionados; vende productos
+y ofrece servicios como actividad importante.
+
+REGLAS IMPORTANTES:
+
+1. Analiza TODAS las preguntas y respuestas.
+2. No te bases únicamente en una respuesta.
+3. Identifica cuál es la actividad económica principal del negocio.
+4. Si fabrica o transforma productos, normalmente corresponde a "produccion".
+5. Si compra productos terminados y los revende, normalmente corresponde a "comercio".
+6. Si vende principalmente trabajo, conocimiento o atención, corresponde a "servicio".
+7. Si principalmente conecta compradores y vendedores, corresponde a "intermediacion".
+8. Usa "mixto" solamente cuando exista una combinación significativa de actividades
+   y no sea posible identificar una actividad principal claramente dominante.
+9. No inventes información que no aparezca en las respuestas.
+10. La respuesta debe contener únicamente información basada en el diagnóstico.
+
+PREGUNTAS Y RESPUESTAS DEL DIAGNÓSTICO:
+
+{$questionsAnswers}
+
+Devuelve el resultado en formato JSON con esta estructura:
+
+{
+    "rubro": "produccion|comercio|servicio|intermediacion|mixto",
+    
+}
+PROMPT;
+
+    return $prompt;
+
+    }
+
+    public function promptFiltroNode( string $rubro,  array $nodesForAI ){
+        $nodesJson = json_encode(
+    $nodesForAI,
+    JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+);
+
+$prompt = <<<PROMPT
+Eres un experto en estructuración de planes de negocio y proyectos de tesis.
+
+Tu tarea es seleccionar, de una lista de capítulos, títulos y subtítulos
+existentes, únicamente los contenidos que son necesarios para construir
+un plan de negocio cuyo rubro principal es:
+
+RUBRO: {$rubro}
+
+IMPORTANTE:
+
+1. NO debes crear nuevos capítulos.
+2. NO debes modificar los títulos.
+3. NO debes cambiar los IDs.
+4. NO debes inventar contenidos.
+5. Solo puedes seleccionar elementos que aparezcan en la lista proporcionada.
+6. Debes mantener la estructura jerárquica existente.
+7. Debes seleccionar los capítulos y sus respectivos títulos/subtítulos
+   que sean pertinentes para el rubro.
+8. Los contenidos generales y fundamentales del plan de negocio deben
+   conservarse cuando sean aplicables.
+9. Debes excluir únicamente los contenidos que claramente no correspondan
+   al rubro.
+10. Si un capítulo es necesario, debes incluir también los subtítulos
+    necesarios para desarrollar ese capítulo.
+11. La respuesta debe contener únicamente los IDs seleccionados.
+12. Mantén el orden original de los IDs.
+
+LISTA DE PLAN NODES:
+
+{$nodesJson}
+
+Devuelve exclusivamente este JSON:
+
+{
+    "rubro": "{$rubro}",
+    "nodes": [
+        {
+            "id": 1
+        },
+        {
+            "id": 2
+        }
+    ]
+}
+PROMPT;
+
+return $prompt;
+
+    }
 }

@@ -11,8 +11,7 @@ class Conversation extends Model
     protected $table = 'conversations';
 
     protected $fillable = [
-        'user_id',
-        'plan_id',
+        'user_plan_id',
         'subscription_id',
         'title',
         'summary',
@@ -20,10 +19,15 @@ class Conversation extends Model
         'last_activity_at'
     ];
 
-    public function user()
+    public function userPlan()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(UserPlan::class, 'user_plan_id');
     }
+
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class);
+    // }
 
     public function answers()
     {
@@ -40,8 +44,8 @@ class Conversation extends Model
         return $this->belongsTo(UserSubscription::class, 'subscription_id');
     }
 
-    public function plan()
-    {
-        return $this->belongsTo(Plan::class);
-    }
+    // public function plan()
+    // {
+    //     return $this->belongsTo(Plan::class);
+    // }
 }

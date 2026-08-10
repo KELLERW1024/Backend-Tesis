@@ -56,11 +56,15 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::post('/conversation/updatetitleconversation',[ConversationController::class,'updateTitleConversation']);
 
     Route::post('/conversation/savereply',[ConversationController::class,'conversationSaveReply']);
+    Route::post('/conversation/saveanswerdiagnostic',[ConversationController::class,'saveAnswerDiagnostic']);
 
     //Route::get('/conversation/conversationprogress',[ConversationController::class,'conversationProgress']);
     Route::get('/conversation/conversationsUser',[ConversationController::class,'conversationsUser']);
     Route::get('/conversation/conversationplanuser',[ConversationController::class,'getConversationPlanUser']);
 
+    Route::get('conversation/verficationdiagnosticexist',[ConversationController::class,'getVerficationDiagnosticExist']);
+
+    Route::get('conversation/diagnosticplan',[ConversationController::class,'getDiagnosticoPlan']);
     Route::get('conversation/conversationPlan',[ConversationController::class,'getConversationPlan']);
 
     Route::post('coupon/savecoupon',[CouponController::class,'saveCoupon']);

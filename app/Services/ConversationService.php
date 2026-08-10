@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\UserPlan;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserSubscription;
 use App\Models\Conversation; 
@@ -41,14 +42,30 @@ class ConversationService
         });
 
     }
-    public function startConversation($userId, $planId, $suscriptionId )
+    public function registerUserPlan( $userId, $planId ){
+
+        return DB::transaction(function () use ($userId, $planId) {
+
+            $plan_user = UserPlan::create([
+                'user_id' => $userId,
+                'plan_id' => $planId
+            ]);
+
+            return [
+                'status' => 200,
+                'plan_user_id' => $plan_user->id
+            ];
+        });
+
+    }
+    public function startConversation($userId, $userPlanId, $suscriptionId )
     {
-         return DB::transaction(function () use ($userId,  $planId, $suscriptionId) {
+         return DB::transaction(function () use ($userId,  $userPlanId, $suscriptionId) {
 
             // ✔ Crear conversación asociada a esa suscripción
             $conversation = Conversation::create([
-                'user_id' => $userId,
-                'plan_id' => $planId,
+                // 'user_id' => $userId,
+                'user_plan_id' => $userPlanId,
                 'subscription_id' => $suscriptionId ,
                 'status' => 'active',
                 'title' => 'Nuevo plan',

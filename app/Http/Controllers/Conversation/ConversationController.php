@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Conversation;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserAnswers;
+use App\Models\PlanNode;
+use App\Models\UserPlan;
 use App\Models\UserSubscription;
 use App\Models\Conversation;
+use App\Models\Question;
 use App\Models\ConversationSectionProgress;
 use App\Services\ConversationService;
+use App\Services\PromptService;
+use App\Services\OpenAIService;
 use Illuminate\Http\Request;
 use App\Http\Resources\SubscriptionResource;
 
@@ -16,9 +21,11 @@ class ConversationController extends Controller
     //
     private ConversationService $conversationService;
 
-    public function __construct(ConversationService $conversationService)
+    public function __construct(ConversationService $conversationService, 
+    protected PromptService $promptService, protected OpenAIService $openAIService )
     {
         $this->conversationService = $conversationService;
+        
     }
     
 
@@ -34,6 +41,129 @@ class ConversationController extends Controller
         );
 
         return response()->json($result);
+    }
+    public function saveAnswerDiagnostic(Request $request )
+    {
+        $validated = $request->validate([
+            'id_subscription_conversation' => 'required|integer',
+            'questions' => 'required|array|min:1',
+            'questions.*.id_question' => 'required|integer',
+            'questions.*.answer' => 'required|string|min:5',
+
+        ]);
+         \Log::info('DEBUG save diaganosti', [
+             'id_subscription_conversation' => $validated['id_subscription_conversation'],
+             'questions' => $validated['questions'],
+            ]);
+
+            $conversation = Conversation::find($validated['id_subscription_conversation']);
+
+            $userPlanId = $conversation?->user_plan_id;
+
+            $userPlan = UserPlan::find( $userPlanId );
+
+            $planId= $userPlan->plan_id;
+
+        
+        try {
+            $user = auth()->user();
+
+            // Consultar con la IA
+            $diagnosticText = '';
+
+            foreach ($validated['questions'] as $question) {
+                $diagnosticText .= "Pregunta ID: {$question['id_question']}\n";
+                $diagnosticText .= "Respuesta: {$question['answer']}\n\n";
+            }
+
+            $prompt = $this->promptService->diagnosticRubroPlan( $diagnosticText ); 
+
+            $result = $this->openAIService->json($prompt);
+
+            \Log::info('RESULTdiaganostic: ', $result);
+
+            $rubro = $result['rubro'];
+
+            $plansNode = PlanNode::whereNull('user_plan_id')
+                                ->where('plan_id', $planId)
+                                ->where('id', '<=', 123)
+                                ->oldest('id')
+                                ->get();
+
+            foreach ($plansNode as $planNode) {
+
+                \Log::info('Plan Node', [
+                    'id' => $planNode->id,
+                    'titulo' => $planNode->titulo,
+                ]);
+
+            }
+            $nodesForAI = $plansNode->map(function ($node) {
+                return [
+                    'id' => $node->id,
+                    'titulo' => $node->titulo,
+                ];
+            })->values()->toArray();
+
+            $promptFiltroNodes = $this->promptService->promptFiltroNode( $rubro, $nodesForAI ); 
+
+            $resultFiltro = $this->openAIService->json($promptFiltroNodes);
+
+            \Log::info('RESULTADO FILTRO NODES IA:', [
+                'result' => $resultFiltro
+            ]);
+            $nodeIdsFiltrados = collect($resultFiltro['nodes'] ?? [])
+            ->pluck('id')
+            ->toArray();
+
+            $planNodes = PlanNode::whereIn('id', $nodeIdsFiltrados)
+                ->orderBy('id', 'asc')
+                ->get();
+
+            $questions = Question::whereIn('plan_node_id', $planNodes->pluck('id'))
+                ->orderBy('plan_node_id', 'asc')
+                ->orderBy('order_index', 'asc')
+                ->get();
+                // Hasta aca tengo los nodos filtrados y susu respuestas 
+
+
+
+
+
+
+            // foreach ($validated['questions'] as $question) {
+
+            //     \Log::info('Pregunta y respuesta', [
+            //         'id_question' => $question['id_question'],
+            //         'answer' => $question['answer'],
+            //     ]);
+
+            //     UserAnswers::create([
+            //         'conversation_id' => $validated['id_subscription_conversation'],
+            //         'user_id' => $user->id,
+            //         'question_id' => $question['id_question'],
+            //         'answer' => trim($question['answer']),
+            //     ]);
+            // }
+
+            return response()->json([
+                'success' => true,
+                'message' => ' Respuestas se guardaron correctamente ',
+                'errors' => null
+            ], 200);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving reply',
+                'errors' => [
+                    'exception' => $e->getMessage()
+                ]
+            ], 500);
+        }
+
+        
     }
 
     
@@ -104,29 +234,32 @@ class ConversationController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-       $conversations = Conversation::with([
-                                            'plan',
-                                            'subscription.package',
-                                            // 'subscription.plan',
-                                            'subscription.payments',
-                                            'sectionProgress.section'
-                                            ]) ->where('user_id', $user->id)->get();
+        $conversations = Conversation::with([
+                            'subscription.package',
+                            'subscription.payments',
+                            'sectionProgress.section',
+                            'userPlan'
+                        ])->whereHas('userPlan', function ($query) use ($user) {
+                            $query->where('user_id', $user->id);
+                        })
+                        ->get();
+
 
         $data = [
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
             ],
-
             'conversations' => $conversations->map(function ($conversation) {
 
                 $packageName = $conversation->subscription?->package?->name;
-                $planName = $conversation -> plan?->name; 
+
+                $planName = $conversation->plan?->name;
 
                 $paymentStatus = $conversation->subscription?->payments
-                                                                ?->sortByDesc('created_at')
-                                                                ->first()
-                                                                ?->status;
+                    ?->sortByDesc('created_at')
+                    ->first()
+                    ?->status;
 
                 return [
                     'id' => $conversation->id,
@@ -137,9 +270,108 @@ class ConversationController extends Controller
                     'payment_status' => $paymentStatus,
                 ];
             }),
+
+
+            // 'conversations' => $conversations->map(function ($conversation) {
+
+            //     $packageName = $conversation->subscription?->package?->name;
+            //     $planName = $conversation -> plan?->name; 
+
+            //     $paymentStatus = $conversation->subscription?->payments
+            //                                                     ?->sortByDesc('created_at')
+            //                                                     ->first()
+            //                                                     ?->status;
+
+            //     return [
+            //         'id' => $conversation->id,
+            //         'status' => $conversation->status,
+            //         'title' => $conversation->title,
+            //         'plan_name' => $planName,
+            //         'package_name' => $packageName,
+            //         'payment_status' => $paymentStatus,
+            //     ];
+            // }),
         ];
 
         return response()->json($data);
+    }
+
+    public function getVerficationDiagnosticExist( Request $request ){
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $userId = auth()->id();
+        $idConversation = $request->get('idConversation');
+
+         $conversation = Conversation::where('id', $idConversation)
+            ->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'exists' => false,
+                'message' => 'Conversation not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'exists' => true,
+            'has_summary' => !empty($conversation->summary),
+            'summary' => $conversation->summary,
+        ]);
+
+    }
+
+     public function getDiagnosticoPlan( Request $request ){
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        
+        $userId = auth()->id();
+        $idConversation = $request->get('idConversation');
+
+        $conversation = Conversation::findOrFail($idConversation);
+
+        $userPlanId = $conversation->user_plan_id;
+
+        $userPlan= UserPlan::findOrFail($userPlanId);
+
+        $planId = $userPlan->plan_id;
+
+        $planNode = PlanNode::whereNull('user_plan_id')
+                                        ->where('plan_id', $planId )
+                                        ->latest('id')
+                                        ->first();
+
+        if (!$planNode) {
+            return response()->json([
+                'message' => 'No existe estructura para este PLAN'
+            ], 404);
+        }
+
+        $questions = Question::where('plan_node_id', $planNode->id)
+                                                                ->orderBy('order_index')
+                                                                ->get();
+
+
+        return response()->json([
+            'status' => 200,
+            // 'plan_node' => [
+            //     'id' => $planNode->id,
+            //     'titulo' => $planNode->titulo,
+            //     'objective' => $planNode->objective,
+            //     'nivel' => $planNode->nivel,
+            //     'codigo' => $planNode->codigo,
+            // ],
+            'questions' => $questions
+        ]);
+
+
     }
 
     public function getConversationPlan( Request $request ){

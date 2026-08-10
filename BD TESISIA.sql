@@ -117,7 +117,7 @@ CREATE TABLE user_plan(
 -- ============================================
 CREATE TABLE plan_node(
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_plan_id BIGINT NOT NULL,
+    user_plan_id BIGINT  NULL,
     plan_id BIGINT NOT NULL,
     parent_id INT NULL,
     titulo VARCHAR(200) NULL,
@@ -128,10 +128,9 @@ CREATE TABLE plan_node(
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    UNIQUE (user_plan_id, plan_id),
 
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE, 
-    FOREIGN KEY (user_plan_id) REFERENCES user_plan(id) ON DELETE CASCADE
+    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+    -- FOREIGN KEY (user_plan_id) REFERENCES user_plan(id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB;
 
@@ -614,11 +613,11 @@ ADD COLUMN num_plans INT NOT NULL DEFAULT 0;
 ALTER TABLE packages
 ADD COLUMN is_active INT NOT NULL DEFAULT 1;
 
-ALTER TABLE conversations
-    ADD COLUMN plan_id BIGINT NOT NULL,
-    ADD CONSTRAINT fk_conversations_plan
-        FOREIGN KEY (plan_id) REFERENCES plans(id),
-    ADD INDEX idx_conversations_plan (plan_id);
+-- ALTER TABLE conversations
+--     ADD COLUMN plan_id BIGINT NOT NULL,
+--     ADD CONSTRAINT fk_conversations_plan
+--         FOREIGN KEY (plan_id) REFERENCES plans(id),
+--     ADD INDEX idx_conversations_plan (plan_id);
 
 
 -- ============================================

@@ -353,15 +353,19 @@ class PagoController extends Controller
                 $conversationsIds = [];
 
                 $suscriptionResult = $this->conversationService->registerUserSuscription( auth()->id(), $packageId );
+                
+                
 
                 // 🔹 Plan
                 $package = Package::findOrFail($packageId);
 
                 foreach ($request->plans as $planId) {
+
+                    $userPlanResult = $this->conversationService->registerUserPlan( auth()->id(), $planId );
                     // 🔹 Conversación
                     $conversationResult = $this->conversationService->startConversation(
                         auth()->id(), 
-                        $planId ,
+                        $userPlanResult['plan_user_id'] ,
                         $suscriptionResult['subscription_id'],
                     );
 
