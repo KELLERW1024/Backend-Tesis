@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\PlanesController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\IaController;
+use App\Http\Controllers\Conversation\StructureController;
 use App\Http\Controllers\Coupon\CouponController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Package\PackageController;
@@ -38,7 +39,7 @@ Route::prefix('auth')->group(function ($router) {
 Route::middleware('auth:api')->group(function ($router) {
 
     // Users
-    Route::post("users/{id}",[UsersController::class,"update"]);
+    // Route::post("users/{id}",[UsersController::class,"update"]);
     Route::get('/plans', [PlanesController::class, "index"]);
     Route::get('/plans/getplanid', [PlanesController::class, "getPlanId"]);
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
@@ -85,6 +86,39 @@ Route::middleware('auth:api')->group(function ($router) {
 
 
     Route::get('/diagnostic/nextquestion',[DocumentController::class,'nextQuestion']);
+
+    // ============================================
+    // STRUCTURE
+    // ============================================
+    
+    Route::prefix('structure')->group(function () {
+
+        Route::get('/plan/{planId}', [StructureController::class, 'index']);
+
+        Route::get('/{id}', [StructureController::class, 'show']);
+
+        Route::post('/', [StructureController::class, 'store']);
+
+        Route::patch('/{id}', [StructureController::class, 'update']);
+
+        Route::delete('/{id}', [StructureController::class, 'destroy']);
+
+        Route::patch('/{id}/position', [StructureController::class, 'position']);
+
+    });
+
+
+    Route::get('/plan/{planId}', [StructureController::class, 'index']);
+
+    Route::post('/', [StructureController::class, 'store']);
+
+    Route::get('/{id}', [StructureController::class, 'show']);
+
+    Route::patch('/{id}', [StructureController::class, 'update']);
+
+    Route::delete('/{id}', [StructureController::class, 'destroy']);
+
+    Route::patch('/{id}/position', [StructureController::class, 'position']);
 
     
 

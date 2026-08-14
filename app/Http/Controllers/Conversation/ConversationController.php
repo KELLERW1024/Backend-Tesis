@@ -42,7 +42,7 @@ class ConversationController extends Controller
 
         return response()->json($result);
     }
-    public function saveAnswerDiagnostic(Request $request )
+    public function saveAnswerDiagnostic(Request $request , ConversationService $conversationService)
     {
         $validated = $request->validate([
             'id_subscription_conversation' => 'required|integer',
@@ -125,26 +125,29 @@ class ConversationController extends Controller
                 ->orderBy('order_index', 'asc')
                 ->get();
                 // Hasta aca tengo los nodos filtrados y susu respuestas 
+             
+            $conversationService->registerPlanNodesUser( $planNodes, $questions , $planId, $userPlanId);
+            
 
+            foreach ($validated['questions'] as $question) {
 
+                \Log::info('Pregunta y respuesta', [
+                    'id_question' => $question['id_question'],
+                    'answer' => $question['answer'],
+                ]);
 
+                UserAnswers::create([
+                    'conversation_id' => $validated['id_subscription_conversation'],
+                    'user_id' => $user->id,
+                    'question_id' => $question['id_question'],
+                    'answer' => trim($question['answer']),
+                ]);
+            }
 
-
-
-            // foreach ($validated['questions'] as $question) {
-
-            //     \Log::info('Pregunta y respuesta', [
-            //         'id_question' => $question['id_question'],
-            //         'answer' => $question['answer'],
-            //     ]);
-
-            //     UserAnswers::create([
-            //         'conversation_id' => $validated['id_subscription_conversation'],
-            //         'user_id' => $user->id,
-            //         'question_id' => $question['id_question'],
-            //         'answer' => trim($question['answer']),
-            //     ]);
-            // }
+            Conversation::where('id', $conversation->id )
+                ->update([
+                    'summary' => $rubro,
+                ]);
 
             return response()->json([
                 'success' => true,
@@ -461,114 +464,113 @@ class ConversationController extends Controller
     {
             $user = auth()->user();
 
-    if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401);
-    }
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-    $userId = auth()->id();
-    $idConversation = $request->get('idConversation');
-    
+        $userId = auth()->id();
+        $idConversation = $request->get('idConversation');
 
-    // $subscription = UserSubscription::with([
-    //     'plan.sections' => function ($q) {
-    //         $q->where('is_active', true)
-    //         ->orderBy('order_index');
-    //     },
-    //     'plan.sections.questions',
-    // ])
-    // ->where('id', $idSuscriptionConversation)
-    // ->where('user_id', auth()->id())
-    // ->firstOrFail();
-     $conversation = Conversation::with([  
-            'plan.sections'=> function ($q) {
-                $q->where('is_active', true)
-                ->orderBy('order_index');
-            },
-            'plan.sections.questions',
-         ])
-        ->where('id', $idConversation)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
+        $conversation = Conversation::find( $idConversation );
 
-    
+        $userPlanId = $conversation?->user_plan_id;
 
-    // $answers = UserAnswers::where('conversation_id', $idSuscriptionConversation)
+        $planNodes = PlanNode::where('user_plan_id', $userPlanId )
+                ->orderBy('id', 'asc')
+                ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $planNodes,
+        ]);
+
+       
+
+    //     $conversation = Conversation::with([  
+    //         'plan.sections'=> function ($q) {
+    //             $q->where('is_active', true)
+    //             ->orderBy('order_index');
+    //         },
+    //         'plan.sections.questions',
+    //      ])
+    //     ->where('id', $idConversation)
+    //     ->where('user_id', auth()->id())
+    //     ->firstOrFail();
+
+    //     $answers = UserAnswers::with('files')
+    //     ->where('conversation_id', $idConversation)
     //     ->where('user_id', auth()->id())
     //     ->get();
-    $answers = UserAnswers::with('files')
-    ->where('conversation_id', $idConversation)
-    ->where('user_id', auth()->id())
-    ->get();
 
-    $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idConversation)
-        ->where('user_id', auth()->id())
-        ->get()
-        ->keyBy('section_id');
+    //     $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idConversation)
+    //         ->where('user_id', auth()->id())
+    //         ->get()
+    //         ->keyBy('section_id');
 
-    $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
+    //     $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
 
-    $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
+    //     $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
 
-    $conversation->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
+    //     $conversation->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
 
-        // answer de section
-        $section->setAttribute(
-            'answer',
-            $answersSections[$section->id]->answer_text ?? null
-        );
-        //progress de section
-        $section->setAttribute(
-            'progress',
-            $progressSectionConversation[$section->id]->status ?? null
-        );
+    //     // answer de section
+    //     $section->setAttribute(
+    //         'answer',
+    //         $answersSections[$section->id]->answer_text ?? null
+    //     );
+    //     //progress de section
+    //     $section->setAttribute(
+    //         'progress',
+    //         $progressSectionConversation[$section->id]->status ?? null
+    //     );
 
 
-        // answers de questions
-        $section->questions->each(function ($question) use ($answersQuestions) {
+    //     // answers de questions
+    //     $section->questions->each(function ($question) use ($answersQuestions) {
 
-            $answer = $answersQuestions->get($question->id);
+    //         $answer = $answersQuestions->get($question->id);
 
-            $question->setAttribute(
-                'answer',
-                $answer->answer_text ?? null
-            );
+    //         $question->setAttribute(
+    //             'answer',
+    //             $answer->answer_text ?? null
+    //         );
 
-            $question->setAttribute(
-                'files',
-                $answer ? $answer->files
-                ->whereIn('file_type', 'image')
-                ->map(function ($file) {
-                    return [
-                        'id' => $file->id,
-                        'file_type' => $file->file_type,
-                        'file_url' => asset('storage/' . $file->file_path),
-                        'description' =>  $file->description,
-                        'fuente' =>  $file->fuente,
-                    ];
-                }) : []
-            );      
+    //         $question->setAttribute(
+    //             'files',
+    //             $answer ? $answer->files
+    //             ->whereIn('file_type', 'image')
+    //             ->map(function ($file) {
+    //                 return [
+    //                     'id' => $file->id,
+    //                     'file_type' => $file->file_type,
+    //                     'file_url' => asset('storage/' . $file->file_path),
+    //                     'description' =>  $file->description,
+    //                     'fuente' =>  $file->fuente,
+    //                 ];
+    //             }) : []
+    //         );      
 
-            $question->setAttribute(
-                    'tables',
-                    $answer
-                        ? $answer->tables->map(function ($table) {
-                            return [
-                                'id' => $table->id,
-                                'title' => $table->nombre,
-                                'data' => json_decode($table->data, true),
-                                'created_at' => $table->created_at,
-                            ];
-                        })
-                        : []
-            );
+    //         $question->setAttribute(
+    //                 'tables',
+    //                 $answer
+    //                     ? $answer->tables->map(function ($table) {
+    //                         return [
+    //                             'id' => $table->id,
+    //                             'title' => $table->nombre,
+    //                             'data' => json_decode($table->data, true),
+    //                             'created_at' => $table->created_at,
+    //                         ];
+    //                     })
+    //                     : []
+    //         );
 
-        });
+    //     });
 
-    });
+    // });
 
         
 
-    return new SubscriptionResource($conversation);
+    // return new SubscriptionResource($conversation);
     }
 
     public function updateTitleConversation(Request $request)

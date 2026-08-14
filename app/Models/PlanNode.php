@@ -35,6 +35,17 @@ class PlanNode extends Model
     {
         return $this->hasMany(Conversation::class, 'user_plan_id');
     }
+
+    public function parent()
+    {
+        return $this->belongsTo(PlanNode::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(PlanNode::class, 'parent_id')
+            ->orderBy('orden');
+    }
     
 
 }

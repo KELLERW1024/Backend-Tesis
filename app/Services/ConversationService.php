@@ -10,12 +10,14 @@ use App\Models\UserAnswers;
 use App\Models\Question; 
 use App\Models\ConversationSectionProgress; 
 use App\Models\Tabla; 
+use App\Models\PlanNode;
 use App\Models\TablaColumna; 
 use App\Models\TablaFila; 
 use App\Models\TablaCelda; 
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Collection;
 
 class ConversationService
 {
@@ -55,6 +57,83 @@ class ConversationService
                 'status' => 200,
                 'plan_user_id' => $plan_user->id
             ];
+        });
+
+    }
+
+    public function registerPlanNodesUser(    
+                Collection $planNodes, Collection $questions,  int $nuevoPlanId , int $userPlanId ){
+       
+        DB::transaction(function () use (
+            $planNodes,
+            $questions,
+            $nuevoPlanId, $userPlanId
+        ) {
+            $nodeIdMap = [];
+
+            foreach ($planNodes as $planNode) {
+
+                $newPlanNode = $planNode->replicate();
+
+                // Asociar al nuevo Plan
+                $newPlanNode->plan_id = $nuevoPlanId;
+                $newPlanNode->user_plan_id = $userPlanId;
+
+                // Temporalmente no importa el parent_id
+                $newPlanNode->parent_id = null;
+
+                $newPlanNode->save();
+
+                // Guardar relación original -> nuevo
+                $nodeIdMap[$planNode->id] = $newPlanNode->id;
+            }
+            foreach ($planNodes as $planNode) {
+
+                $newPlanNodeId = $nodeIdMap[$planNode->id];
+
+                $newParentId = null;
+
+                if ($planNode->parent_id !== null) {
+
+                    $newParentId = $nodeIdMap[$planNode->parent_id] ?? null;
+                }
+
+                PlanNode::where('id', $newPlanNodeId)
+                    ->update([
+                        'parent_id' => $newParentId
+                    ]);
+            }
+
+            $newQuestions = [];
+
+            foreach ($questions as $question) {
+
+                // Obtener el nuevo PlanNode correspondiente
+                $newPlanNodeId = $nodeIdMap[$question->plan_node_id] ?? null;
+
+                // Por seguridad, ignoramos preguntas cuyo PlanNode
+                // no haya sido clonado.
+                if (!$newPlanNodeId) {
+                    continue;
+                }
+
+                $newQuestions[] = [
+                    'plan_node_id' => $newPlanNodeId,
+
+                    'question_text'     => $question->question_text,
+                    'question_detail'     => $question->question_detail,
+                    'question_example'     => $question->question_example,
+                    'validation_detail'     => $question->validation_detail,
+                    'order_index'  => $question->order_index,
+
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ];
+            }
+
+            if (!empty($newQuestions)) {
+                Question::insert($newQuestions);
+            }
         });
 
     }

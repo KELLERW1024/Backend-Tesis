@@ -651,6 +651,10 @@ CREATE TABLE user_answers_diagnostic (
     UNIQUE(user_id, question_master_id)
 ) ENGINE=InnoDB;
 
+ALTER TABLE questions
+ADD COLUMN updated_at TIMESTAMP NULL DEFAULT NULL;
+
+
 
 
 
