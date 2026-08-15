@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Conversation;
 
 use App\Http\Controllers\Controller;
+use App\Models\Conversation;
+use App\Models\PlanNode;
 use App\Services\FileTextExtractorService;
 use App\Services\PromptService;
 use App\Services\UploadService;
@@ -35,17 +37,17 @@ class IaController extends Controller
             'validation' => 'nullable|string',
             'files' => 'nullable|array',
             'files.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
-            'idPlan' => 'required|integer',
-            'idSection' => 'required|integer',
+            // 'idPlan' => 'required|integer',
+            // 'idSection' => 'required|integer',
             'idConversation' => 'required|integer',
             'idQuestion' => 'required|integer',
-            'plan' => 'required|string',
-            'title' => 'required|string',
+            // 'plan' => 'required|string',
+            // 'title' => 'required|string',
             'description' => 'required|string',
             'question' => 'required|string',
             'response' => 'nullable|string',
             'is_visual' => 'boolean',
-            'apa' => 'nullable|string',
+            // 'apa' => 'nullable|string',
         ]);
 
         \Log::info('REQUEST VALIDATED DATA', [
@@ -168,8 +170,19 @@ class IaController extends Controller
     public function responseIA( Request $request, array $data, string $documentContent, string $imageContent ){
             //  $isVisual = $request->boolean('is_visual');
         try {
+            $conversation = Conversation::find($data['idConversation']);
 
-            $objective = Section::where('id', $data['idSection'] )->value('objective');
+            if (!$conversation) {
+                return response()->json([
+                    'message' => 'Conversación no encontrada'
+                ], 404);
+            }
+
+            $parentNode = PlanNode::where('user_plan_id', $conversation->user_plan_id)
+                ->whereNull('parent_id')
+                ->first();
+
+            $objective = $parentNode?->objective;
             \Log::info(' OBJECTIVE : ' . $objective );
             
             $history = $this->conversationService->getConversation($data['idConversation']);
@@ -203,6 +216,7 @@ class IaController extends Controller
             $messages = $this->promptService->buildMessagesBitacoraResponseCurrent( [  ...$data,    'file_content' => $documentContent,
                                                                                                     'image_content' => $imageContent,
                                                                                                     'objective' => $objective,
+                                                                                                    'parent_node' => $parentNode,
                                                                                                     'history' => $history ],
 
                                                                                                     $history,  

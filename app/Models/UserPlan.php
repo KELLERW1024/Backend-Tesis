@@ -21,10 +21,11 @@ class UserPlan extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function plan()
+   public function plan()
     {
-        return $this->belongsTo(Plan::class);
+        return $this->belongsTo(Plan::class, 'plan_id');
     }
+
 
     public function conversations()
     {

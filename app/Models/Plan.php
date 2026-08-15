@@ -24,15 +24,11 @@ class Plan extends Model
         'is_active'
     ];
 
-    public function sections()
+    public function nodes()
     {
-        return $this->belongsToMany(
-            Section::class,
-            'plan_sections',
-            'plan_id',
-            'section_id'
-        );
+        return $this->hasMany(PlanNode::class, 'plan_id');
     }
+
 
     public function coupons()
     {

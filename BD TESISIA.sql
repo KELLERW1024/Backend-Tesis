@@ -81,17 +81,17 @@ CREATE TABLE coupons (
 -- SECTIONS
 -- ============================================
 
-CREATE TABLE sections (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(200) NOT NULL,
-    sub_title VARCHAR(200) NULL,
-    type VARCHAR(20) NULL,
-    description TEXT,
-    objective TEXT,
-    order_index INT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+-- CREATE TABLE sections (
+--     id BIGINT PRIMARY KEY AUTO_INCREMENT,
+--     title VARCHAR(200) NOT NULL,
+--     sub_title VARCHAR(200) NULL,
+--     type VARCHAR(20) NULL,
+--     description TEXT,
+--     objective TEXT,
+--     order_index INT NULL,
+--     is_active BOOLEAN DEFAULT TRUE,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+-- ) ENGINE=InnoDB;
 
 -- ADD PARA ESTRUCTURA
 

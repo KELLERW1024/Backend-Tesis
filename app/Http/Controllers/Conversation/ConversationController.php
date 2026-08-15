@@ -376,8 +376,137 @@ class ConversationController extends Controller
 
 
     }
+    public function getConversationPlan(Request $request)
+    {
+        $user = auth()->user();
 
-    public function getConversationPlan( Request $request ){
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $idConversation = $request->get('idConversation');
+
+        if (!$idConversation) {
+            return response()->json([
+                'message' => 'idConversation es requerido'
+            ], 422);
+        }
+
+        // 1. Obtener la conversación y validar que pertenece al usuario
+        $conversation = Conversation::where('id', $idConversation)
+            ->whereHas('userPlan', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'message' => 'Conversación no encontrada'
+            ], 404);
+        }
+
+        // 2. Obtener el user_plan de la conversación
+        $userPlanId = $conversation->user_plan_id;
+
+        $planName = $conversation->userPlan->plan->name;
+
+        // 3. Obtener los IDs de las preguntas que ya tienen respuesta
+        $answeredQuestionIds = UserAnswers::where('conversation_id', $conversation->id)
+            ->pluck('question_id')
+            ->toArray();
+
+        // 4. Obtener los nodos y sus preguntas
+        $nodes = PlanNode::with([
+            'parent',
+            'questions' => function ($query) {
+                $query->orderBy('order_index');
+            }
+        ])
+        ->where('user_plan_id', $userPlanId)
+        ->orderBy('orden')
+        ->get();
+
+        // 5. Buscar la primera pregunta que todavía NO tiene respuesta
+        foreach ($nodes as $node) {
+
+            foreach ($node->questions as $question) {
+
+                if (!in_array($question->id, $answeredQuestionIds)) {
+
+                    return response()->json([
+                        'completed' => false,
+                        'plan_name' => $planName,
+                        'node' => $node,
+                        'parent_node' => $node->parent,
+                        'question' => $question
+                    ]);
+                }
+            }
+        }
+
+        // 6. Si no quedan preguntas
+        return response()->json([
+            'completed' => true,
+            'plan_name' => $planName,
+            'node' => null,
+            'parent_node' => null,
+            'question' => null,
+            'message' => 'Todas las preguntas han sido respondidas'
+        ]);
+    }
+
+
+
+public function getConversationPlan1111(Request $request)
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json([
+            'message' => 'Unauthorized'
+        ], 401);
+    }
+
+    $idConversation = $request->get('idConversation');
+
+    if (!$idConversation) {
+        return response()->json([
+            'message' => 'idConversation es requerido'
+        ], 422);
+    }
+
+    $conversation = Conversation::where('id', $idConversation)
+        ->whereHas('userPlan', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->first();
+
+    if (!$conversation) {
+        return response()->json([
+            'message' => 'Conversación no encontrada'
+        ], 404);
+    }
+
+    $userPlanId = $conversation->user_plan_id;
+
+    $nodes = PlanNode::with([
+        'questions' => function ($query) {
+            $query->orderBy('order_index');
+        }
+    ])
+    ->where('user_plan_id', $userPlanId)
+    ->orderBy('orden')
+    ->get();
+
+    return response()->json([
+        'nodes' => $nodes
+    ]);
+}
+
+
+    public function getConversationPlan1( Request $request ){
         $user = auth()->user();
 
         if (!$user) {

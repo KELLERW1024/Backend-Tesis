@@ -46,6 +46,13 @@ class PlanNode extends Model
         return $this->hasMany(PlanNode::class, 'parent_id')
             ->orderBy('orden');
     }
+
+    public function questions()
+    {
+        return $this->hasMany(Question::class, 'plan_node_id')
+            ->orderBy('order_index');
+    }
+
     
 
 }

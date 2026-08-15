@@ -111,9 +111,6 @@ REFERENCIAS Y CITAS:
 
 Analiza el siguiente contenido:
 
-[Apa]
-
-
 Reglas:
 
 - Si el contenido contiene "Sin cita" o "dato primario", no generes referencias.

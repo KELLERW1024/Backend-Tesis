@@ -182,7 +182,7 @@ class ConversationService
         return DB::transaction(function () use ($data, $message, $role) {
 
             $conversationId = $data['idConversation'];
-            $sectionId = $data['idSection'];
+            // $sectionId = $data['idSection'];
             $questionId = $data['idQuestion'];
 
             // Agregar image
@@ -198,7 +198,7 @@ class ConversationService
             // Guardar mensaje 
             DB::table('conversation_messages')->insert([
                 'conversation_id' => $conversationId,
-                'section_id' => $sectionId,
+                // 'section_id' => $sectionId,
                 'question_id' => $questionId,
                 'role' => $role,
                 'message_text' => $message,

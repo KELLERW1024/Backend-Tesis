@@ -119,9 +119,10 @@ class PromptService
     }
     public function buildMessagesBitacoraResponseCurrent( array $data, array $history , string   $documentContent,string   $imageContent, bool $isApa): array {
 
+        $parentNode = $data['parent_node'] ?? [];
         $promptIni = str_replace(
             '[ESPECIALIDAD:]',
-            $data['plan'],
+            $parentNode['titulo'] ?? '',
             Prompts::PROMPT_INICIAL
         );
 
@@ -145,13 +146,13 @@ class PromptService
             $promptEsp = strtr(
                 Prompts::PROMPT_ESPECIFICO,
                 [
-                    '[Capítulo]' => $data['title'],
-                    '[Descripcion Capítulo]' => $data['description'],
+                    '[Capítulo]' => $parentNode['titulo'] ?? '',
+                    '[Descripcion Capítulo]' => $parentNode['titulo'] ?? '',
                     '[Pregunta]' => $data['question'],
                     '[Objetivo]' => $data['objective'] ?? '',
                     '[Validacion]' => $data['validation'],
                     '[Respuesta]' => $response,
-                    '[Apa]' => $data['apa'],
+                    // '[Apa]' => $data['apa'],
                 ]
             );
 
