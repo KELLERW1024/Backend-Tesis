@@ -419,7 +419,22 @@ class ConversationService
             }
 
             // TABLA GENERADA X IA
-            $table = isset($data['table'])  ? json_decode($data['table'], true)  : null;
+            // $table = isset($data['table'])  ? json_decode($data['table'], true)  : null;
+            $table = null;
+
+            if (!empty($data['table'])) {
+
+                $table = json_decode($data['table'], true);
+
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('Error decodificando tabla', [
+                        'table' => $data['table'],
+                        'error' => json_last_error_msg()
+                    ]);
+
+                    $table = null;
+                }
+            }
 
             if (
                 is_array($table) &&

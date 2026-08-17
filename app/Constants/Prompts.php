@@ -229,6 +229,21 @@ Responde con semáforo: verde, amarillo o rojo, y lista puntual de correcciones.
  
 TEXT;
 
+    public const PROMPT_IMAGEN = <<<TEXT
+Genera una imagen profesional y visualmente clara basada exclusivamente en el contenido proporcionado.
+
+CONTENIDO:
+
+[Contenido]
+
+OBJETIVO DE LA IMAGEN:
+
+Representar visualmente los conceptos, elementos, contexto o situación principal descritos en el contenido.
+
+
+Devuelve únicamente una instrucción visual adecuada para un modelo de generación de imágenes.
+
+TEXT;
 
 }
 

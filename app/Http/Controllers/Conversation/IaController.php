@@ -14,6 +14,7 @@ use App\Services\ConversationService;
 use App\Services\OpenAIService;
 use App\Services\ReplicateService;
 use App\Models\Section;
+use App\Constants\Prompts;
 
 
 
@@ -250,8 +251,15 @@ class IaController extends Controller
                 $messageTable = $this->promptService->buildMessageTable(  $response  ); //vWFIFICAR QUE RESPOUESRTA PONER ACA  
                 
                 $tableResponse= $this->openAIService->chat( $messageTable );
+                \Log::info('TABLE RESPONSE RAW', [
+                    'tableResponse' => $tableResponse
+                ]);
 
                 $replyTable = json_decode($tableResponse, true);
+                \Log::info('TABLE JSON DECODED', [
+                    'replyTable' => $replyTable,
+                    'json_error' => json_last_error_msg()
+                ]);
 
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     $replyTable = null;
@@ -264,10 +272,13 @@ class IaController extends Controller
 
             $count_ia_image = $this->conversationService->IAimagesXQuestion( $data  );
 
-            if( $data['is_visual'] && $count_ia_image < 20 ){
-                 $image = $this->replicateService->generateImage(
-                    "la imagen tiene que ser lo mas realista posible sobre el tema : " .  $response
+            if( $data['is_visual'] && $count_ia_image < 100  ){
+                $promptImagen = str_replace(
+                    '[Contenido]',
+                    $response,
+                    Prompts::PROMPT_IMAGEN
                 );
+                 $image = $this->replicateService->generateImage(  $promptImagen  );
             }
 
             // ADD CONVERSATION A LA BITACORA
@@ -348,4 +359,17 @@ class IaController extends Controller
     //         'system'
     //     );
     // }
+
+    public function getReplicatePrediction(string $id)
+    {
+        
+        $prediction = $this->replicateService->getPrediction($id);
+
+        return response()->json([
+            'status' => $prediction['status'] ?? null,
+            'output' => $prediction['output'] ?? null,
+            'error' => $prediction['error'] ?? null,
+            'prediction' => $prediction
+        ]);
+    }
 }
