@@ -14,6 +14,10 @@ class Tabla extends Model
         'data'
     ];
 
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     public function filas()
     {
         return $this->hasMany(TablaFila::class, 'tabla_id');

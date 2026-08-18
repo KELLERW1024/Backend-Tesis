@@ -254,7 +254,7 @@ class ConversationService
         try {
 
             $conversationId = $data['idConversation'];
-            $sectionId = $data['idSection'];
+            // $sectionId = $data['idSection'];
             $questionId = $data['idQuestion'];
             $reply = $data['reply'] ?? null;
 
@@ -270,34 +270,34 @@ class ConversationService
                 ],
                 [
                     'user_id' => auth()->id(),
-                    'section_id' => $sectionId,
+                    // 'section_id' => $sectionId,
                     'answer_text' => $reply,
                 ]
             );
             // VERIFICA SI TODAS LAS PREGUNTAS DE LA SECTION YA ESTAN CULMINADAS
-            $questionIds = Question::where('section_id', $sectionId)
-                ->pluck('id');
+            // $questionIds = Question::where('section_id', $sectionId)
+            //     ->pluck('id');
 
-            $answeredIds = UserAnswers::where('conversation_id', $conversationId)
-                ->whereIn('question_id', $questionIds)
-                ->pluck('question_id');
+            // $answeredIds = UserAnswers::where('conversation_id', $conversationId)
+            //     ->whereIn('question_id', $questionIds)
+            //     ->pluck('question_id');
 
-            $missing = $questionIds->diff($answeredIds);
+            // $missing = $questionIds->diff($answeredIds);
 
-            if( $missing->isEmpty() ){
+            // if( $missing->isEmpty() ){
 
-                   ConversationSectionProgress::updateOrCreate(
-                    [
-                        'conversation_id' => $conversationId,
-                        'section_id' => $sectionId,
-                    ],
-                    [
-                        'user_id' => auth()->id(),
-                        'status' => 'completed',
-                        'completed_at' => now(),
-                    ]
-                );
-            }
+            //        ConversationSectionProgress::updateOrCreate(
+            //         [
+            //             'conversation_id' => $conversationId,
+            //             'section_id' => $sectionId,
+            //         ],
+            //         [
+            //             'user_id' => auth()->id(),
+            //             'status' => 'completed',
+            //             'completed_at' => now(),
+            //         ]
+            //     );
+            // }
             
 
             /**

@@ -173,11 +173,11 @@ class ConversationController extends Controller
     public function conversationSaveReply(Request $request, ConversationService $conversationService)
     {
         $validated = $request->validate([
-            'idPlan' => 'required|integer',
-            'idSection' => 'nullable|integer',
+            // 'idPlan' => 'required|integer',
+            // 'idSection' => 'nullable|integer',
             'idConversation' => 'nullable|integer',
             'idQuestion' => 'nullable|integer',
-
+            
             'reply' => 'nullable|string',
 
             'metadata' => 'nullable|string',
@@ -417,33 +417,74 @@ class ConversationController extends Controller
             ->pluck('question_id')
             ->toArray();
 
-        // 4. Obtener los nodos y sus preguntas
+        // 4. Obtener todos los nodos y sus preguntas
         $nodes = PlanNode::with([
-            'parent',
             'questions' => function ($query) {
                 $query->orderBy('order_index');
             }
         ])
         ->where('user_plan_id', $userPlanId)
         ->orderBy('orden')
+        ->orderBy('id')
         ->get();
+        // Agrupar nodos por parent_id
+        $nodesByParent = $nodes->groupBy('parent_id');
 
-        // 5. Buscar la primera pregunta que todavía NO tiene respuesta
-        foreach ($nodes as $node) {
+        // Función recursiva para recorrer el árbol en orden
+        $findNextQuestion = function ($parentId) use (
+            &$findNextQuestion,
+            $nodesByParent,
+            $answeredQuestionIds
+        ) {
+            $children = $nodesByParent->get($parentId, collect());
 
-            foreach ($node->questions as $question) {
+            // Ordenar los hijos por orden
+            $children = $children
+                ->sortBy([
+                    ['orden', 'asc'],
+                    ['id', 'asc'],
+                ]);
 
-                if (!in_array($question->id, $answeredQuestionIds)) {
+            foreach ($children as $node) {
 
-                    return response()->json([
-                        'completed' => false,
-                        'plan_name' => $planName,
-                        'node' => $node,
-                        'parent_node' => $node->parent,
-                        'question' => $question
-                    ]);
+                // Primero las preguntas del nodo actual
+                foreach ($node->questions as $question) {
+
+                    if (!in_array($question->id, $answeredQuestionIds)) {
+                        return [
+                            'node' => $node,
+                            'question' => $question,
+                        ];
+                    }
+                }
+
+                // Después recorrer sus hijos
+                $result = $findNextQuestion($node->id);
+
+                if ($result) {
+                    return $result;
                 }
             }
+
+            return null;
+        };
+
+
+        // 5. Buscar la primera pregunta no respondida respetando la jerarquía
+        $result = $findNextQuestion(null);
+
+        if ($result) {
+
+            $node = $result['node'];
+            $question = $result['question'];
+
+            return response()->json([
+                'completed' => false,
+                'plan_name' => $planName,
+                'node' => $node,
+                'parent_node' => $node->parent,
+                'question' => $question
+            ]);
         }
 
         // 6. Si no quedan preguntas
@@ -457,133 +498,6 @@ class ConversationController extends Controller
         ]);
     }
 
-
-
-public function getConversationPlan1111(Request $request)
-{
-    $user = auth()->user();
-
-    if (!$user) {
-        return response()->json([
-            'message' => 'Unauthorized'
-        ], 401);
-    }
-
-    $idConversation = $request->get('idConversation');
-
-    if (!$idConversation) {
-        return response()->json([
-            'message' => 'idConversation es requerido'
-        ], 422);
-    }
-
-    $conversation = Conversation::where('id', $idConversation)
-        ->whereHas('userPlan', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->first();
-
-    if (!$conversation) {
-        return response()->json([
-            'message' => 'Conversación no encontrada'
-        ], 404);
-    }
-
-    $userPlanId = $conversation->user_plan_id;
-
-    $nodes = PlanNode::with([
-        'questions' => function ($query) {
-            $query->orderBy('order_index');
-        }
-    ])
-    ->where('user_plan_id', $userPlanId)
-    ->orderBy('orden')
-    ->get();
-
-    return response()->json([
-        'nodes' => $nodes
-    ]);
-}
-
-
-    public function getConversationPlan1( Request $request ){
-        $user = auth()->user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        $userId = auth()->id();
-        $idConversation = $request->get('idConversation');
-        
-
-        // $subscription = UserSubscription::with([
-        //     'plan.sections' => function ($q) {
-        //         $q->where('is_active', true)
-        //         ->orderBy('order_index');
-        //     },
-        //     'plan.sections.questions',
-        // ])
-        // ->where('id', $idConversation)
-        // ->where('user_id', auth()->id())
-        // ->firstOrFail();
-        //\
-        $conversation = Conversation::with([  
-            'plan.sections'=> function ($q) {
-                $q->where('is_active', true)
-                ->orderBy('order_index');
-            },
-            'plan.sections.questions',
-         ])
-        ->where('id', $idConversation)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
-        //
-
-        $answers = UserAnswers::where('conversation_id', $idConversation)
-            ->where('user_id', auth()->id())
-            ->get();
-
-        $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idConversation)
-            ->where('user_id', auth()->id())
-            ->get()
-            ->keyBy('section_id');
-
-        $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
-
-        $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
-
-        $conversation->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
-
-            // answer de section
-            $section->setAttribute(
-                'answer',
-                $answersSections[$section->id]->answer_text ?? null
-            );
-            //progress de section
-            $section->setAttribute(
-                'progress',
-                $progressSectionConversation[$section->id]->status ?? null
-            );
-
-
-            // answers de questions
-            $section->questions->each(function ($question) use ($answersQuestions) {
-
-                $question->setAttribute(
-                    'answer',
-                    $answersQuestions[$question->id]->answer_text ?? null
-                );
-
-            });
-
-        });
-
-        
-
-        return new SubscriptionResource($conversation);
-    //return response()->json($progress);
-    }
 
 // =====================================================================
 // ========================================================
@@ -701,6 +615,92 @@ public function getConversationPlan1111(Request $request)
 
     // return new SubscriptionResource($conversation);
     }
+
+    public function getViewConversationPlanUser(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $idConversation = $request->get('idConversation');
+
+        $conversation = Conversation::find($idConversation);
+
+        if (!$conversation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Conversation not found'
+            ], 404);
+        }
+
+       $planNodes = PlanNode::where('user_plan_id', $conversation->user_plan_id)
+            ->with([
+                'questions' => function ($query) use ($idConversation) {
+                    $query->with([
+                        'answer' => function ($query) use ($idConversation) {
+                            $query->where('conversation_id', $idConversation)
+                                ->with([
+                                    'files' => function ($query) {
+                                        $query->where('file_type', 'image');
+                                    },
+                                    'tables'
+                                ]);
+                        }
+                    ]);
+                }
+            ])
+            ->orderBy('orden', 'asc')
+            ->get();
+
+
+            $imageOrden = 1;
+            $tableOrden = 1;
+
+            $planNodes->each(function ($node) use (&$imageOrden, &$tableOrden) {
+
+                $node->questions->each(function ($question) use (&$imageOrden, &$tableOrden) {
+
+                    if ($question->answer) {
+
+                        // Enumeración global de imágenes
+                        $question->answer->files->each(function ($file) use (&$imageOrden) {
+
+                            $file->orden = $imageOrden++;
+
+                            $file->file_path = asset(
+                                'storage/' . $file->file_path
+                            );
+                        });
+
+                        // Enumeración global de tablas
+                        $question->answer->tables->each(function ($table) use (&$tableOrden) {
+
+                            $table->orden = $tableOrden++;
+
+                            if (is_string($table->data)) {
+                                $table->data = json_decode(
+                                    $table->data,
+                                    true
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
+
+
+        return response()->json([
+            'success' => true,
+            'data' => $planNodes,
+        ]);
+    }
+
+
 
     public function updateTitleConversation(Request $request)
     {

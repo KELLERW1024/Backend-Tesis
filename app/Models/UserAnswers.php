@@ -28,4 +28,10 @@ class UserAnswers extends Model
     {
         return $this->hasMany(Tabla::class, 'answer_id');
     }
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class, 'question_id');
+    }
+
 }

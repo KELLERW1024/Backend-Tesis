@@ -42,13 +42,15 @@ class PromptService
         $sections[] = "CRITERIOS DE VALIDACIÓN: {$data['validation']}";
 
         if (!empty($data['history'])) {
+            $history = json_encode(  $data['history'] ?? [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
+
             $sections[] = "
             CONTEXTO E HISTORIAL DE RESPUESTAS ANTERIORES:
 
             Utiliza esta información únicamente para verificar coherencia y continuidad de la tesis.
             No copies contenido del historial ni lo consideres válido automáticamente.
 
-            {$data['history']}
+            {$history}
             ";
         }
 

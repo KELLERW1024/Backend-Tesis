@@ -229,21 +229,40 @@ Responde con semáforo: verde, amarillo o rojo, y lista puntual de correcciones.
  
 TEXT;
 
-    public const PROMPT_IMAGEN = <<<TEXT
-Genera una imagen profesional y visualmente clara basada exclusivamente en el contenido proporcionado.
-
-CONTENIDO:
+public const PROMPT_IMAGEN = <<<TEXT
+Crea una escena fotográfica realista basada en el significado del siguiente concepto:
 
 [Contenido]
 
-OBJETIVO DE LA IMAGEN:
+La imagen debe parecer una fotografía, NO una infografía, NO un diagrama,
+NO un mapa conceptual y NO una presentación.
 
-Representar visualmente los conceptos, elementos, contexto o situación principal descritos en el contenido.
+Muestra personas, objetos, acciones y un entorno relacionados con el concepto.
 
+IMPORTANTE:
+No mostrar ninguna palabra escrita.
+No mostrar ninguna letra.
+No mostrar ningún número.
+No mostrar ningún texto.
+No mostrar carteles.
+No mostrar pizarras.
+No mostrar menús.
+No mostrar documentos.
+No mostrar etiquetas.
+No mostrar pantallas.
+No mostrar interfaces.
+No mostrar logotipos.
+No mostrar marcas de agua.
 
-Devuelve únicamente una instrucción visual adecuada para un modelo de generación de imágenes.
+No crear cajas, tarjetas, paneles, diagramas, flechas ni elementos
+gráficos que puedan contener texto.
 
+La imagen debe comunicar el concepto exclusivamente mediante una escena
+visual y fotográfica.
+
+Estilo profesional, moderno, natural y realista.
 TEXT;
+
 
 }
 

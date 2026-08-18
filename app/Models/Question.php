@@ -16,4 +16,10 @@ class Question extends Model
         return $this->hasOne(UserAnswers::class, 'question_id')
             ->where('user_id', auth()->id());
     }
+
+    public function answer()
+    {
+        return $this->hasOne(UserAnswers::class, 'question_id', 'id');
+    }
+
 }

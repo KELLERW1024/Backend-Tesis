@@ -63,6 +63,8 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::get('/conversation/conversationsUser',[ConversationController::class,'conversationsUser']);
     Route::get('/conversation/conversationplanuser',[ConversationController::class,'getConversationPlanUser']);
 
+    Route::get('/conversation/viewconversationplanuser',[ConversationController::class,'getViewConversationPlanUser']);
+
     Route::get( '/conversation/replicate/prediction/{id}',  [IaController::class, 'getReplicatePrediction']);
 
 
