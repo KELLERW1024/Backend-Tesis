@@ -345,4 +345,122 @@ PROMPT;
 return $prompt;
 
     }
+public function buildQuestionsForLeafNodesPrompt(
+    array $plan,
+    array $nodesWithoutQuestions,
+    array $allNodes
+): string {
+
+    $planJson = json_encode(
+        $plan,
+        JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+    );
+
+    $nodesWithoutQuestionsJson = json_encode(
+        $nodesWithoutQuestions,
+        JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+    );
+
+    $allNodesJson = json_encode(
+        $allNodes,
+        JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+    );
+
+    return <<<PROMPT
+
+Eres un asesor académico especializado en elaboración de tesis.
+
+Debes generar preguntas académicas para los nodos finales que actualmente
+no tienen preguntas asociadas.
+
+Debes analizar el PLAN COMPLETO y la ESTRUCTURA COMPLETA para comprender
+el contexto de cada nodo.
+
+PLAN COMPLETO:
+
+{$planJson}
+
+
+NODOS QUE NECESITAN PREGUNTAS:
+
+{$nodesWithoutQuestionsJson}
+
+
+ESTRUCTURA COMPLETA DEL PLAN:
+
+{$allNodesJson}
+
+
+REGLAS:
+
+1. Genera preguntas únicamente para los nodos indicados en
+   "NODOS QUE NECESITAN PREGUNTAS".
+
+2. No generes preguntas para otros nodos.
+
+3. Analiza la posición jerárquica de cada nodo mediante:
+   - parent_id
+   - nivel
+   - titulo
+   - codigo
+   - orden
+
+4. Utiliza el contexto de los nodos padre y hermanos para comprender
+   correctamente qué información debe obtenerse.
+
+5. Las preguntas deben estar relacionadas directamente con el contenido
+   académico del nodo.
+
+6. Las preguntas deben permitir desarrollar contenido suficiente para una tesis.
+
+7. Evita preguntas cuya respuesta sea únicamente "sí" o "no".
+
+8. No repitas preguntas.
+
+9. No inventes información específica del negocio.
+
+10. No agregues capítulos ni nodos nuevos.
+
+11. Genera entre 2 y 5 preguntas por nodo.
+
+12. Cada pregunta debe ser clara, específica y académicamente útil.
+
+13. No agregues explicaciones.
+
+14. No uses Markdown.
+
+15. Devuelve únicamente JSON válido.
+
+
+FORMATO DE RESPUESTA:
+
+{
+    "nodes": [
+        {
+            "node_id": 10,
+            "questions": [
+                {
+                    "description": "Pregunta relacionada con el nodo"
+                },
+                {
+                    "description": "Otra pregunta relacionada con el nodo"
+                }
+            ]
+        },
+        {
+            "node_id": 15,
+            "questions": [
+                {
+                    "description": "Pregunta relacionada con el nodo"
+                }
+            ]
+        }
+    ]
+}
+
+PROMPT;
+}
+
+
+    
 }

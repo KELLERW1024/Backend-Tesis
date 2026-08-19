@@ -446,11 +446,11 @@ class PagoController extends Controller
         }
 
         $conversations = Conversation::with([
-            'user',
+            'userPlan.user',
             'subscription.plan',
             'subscription.payments',
-            'sectionProgress.section'
         ])->get();
+
 
         $data = [
             'user' => [
@@ -464,8 +464,8 @@ class PagoController extends Controller
                     'id' => $conversation->id,
 
                     'user' => [
-                        'id' => $conversation->user?->id,
-                        'name' => $conversation->user?->name,
+                        'id' => $conversation->userPlan?->user?->id,
+                        'name' => $conversation->userPlan?->user?->name,
                     ],
 
                     'status' => $conversation->status,
@@ -477,6 +477,7 @@ class PagoController extends Controller
                 ];
             }),
         ];
+
 
         return response()->json($data);
     }

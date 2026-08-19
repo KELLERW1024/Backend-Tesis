@@ -642,11 +642,24 @@ Log::info('NODOS NIVEL 1', [
             |--------------------------------------------------------------------------
             */
 
-            foreach ($nodeTree as $node) {
+            // foreach ($nodeTree as $node) {
+
+            //     $this->addNodeToDocument(
+            //         $section,
+            //         $node,
+            //         $paragraphStyle,
+            //         $contadorFigura,
+            //         $contadorTabla
+            //     );
+            // }
+            foreach ($nodeTree as $index => $node) {
+
+                $numero = (string) ($index + 1);
 
                 $this->addNodeToDocument(
                     $section,
                     $node,
+                    $numero,
                     $paragraphStyle,
                     $contadorFigura,
                     $contadorTabla
@@ -755,7 +768,9 @@ Log::info('NODOS NIVEL 1', [
 
         $build = function ($parentId) use (&$build, $grouped) {
 
-            $children = $grouped->get($parentId, collect());
+            $children = $grouped->get($parentId, collect())
+            ->sortBy('orden')// agregado
+            ->values();// agregado
 
             return $children->map(function ($node) use (&$build) {
 
@@ -771,9 +786,10 @@ Log::info('NODOS NIVEL 1', [
    private function addNodeToDocument(
         $section,
         $node,
+        $numero, // NEW
         $paragraphStyle,
         &$contadorFigura,
-        &$contadorTabla
+        &$contadorTabla, 
     ) {
         /*
         |--------------------------------------------------------------------------
@@ -788,34 +804,42 @@ Log::info('NODOS NIVEL 1', [
 
         $titulo = trim($node->titulo ?? '');
 
+        // if (!empty($titulo)) {
+
+        //     $section->addTitle(
+        //         $this->cleanText($titulo),
+        //         $nivelTitulo
+        //     );
+        // }
+
         if (!empty($titulo)) {
 
             $section->addTitle(
-                $this->cleanText($titulo),
+                $numero . ' ' . $this->cleanText($titulo),
                 $nivelTitulo
             );
         }
 
         /*
         |--------------------------------------------------------------------------
-        | OBJECTIVE DEL NODO
+        | OBJECTIVE DEL NODO NO VA
         |--------------------------------------------------------------------------
         */
 
-        if (!empty($node->objective)) {
+        // if (!empty($node->objective)) {
 
-            $section->addText(
-                $this->cleanText($node->objective),
-                [
-                    'name' => 'Arial',
-                    'size' => 10,
-                    'italic' => true,
-                ],
-                [
-                    'spaceAfter' => 100,
-                ]
-            );
-        }
+        //     $section->addText(
+        //         $this->cleanText($node->objective),
+        //         [
+        //             'name' => 'Arial',
+        //             'size' => 10,
+        //             'italic' => true,
+        //         ],
+        //         [
+        //             'spaceAfter' => 100,
+        //         ]
+        //     );
+        // }
 
         /*
         |--------------------------------------------------------------------------
@@ -1104,8 +1128,9 @@ Log::info('NODOS NIVEL 1', [
 
                 foreach ($tableData['columns'] as $column) {
 
-                    $table->addCell($cellWidth)
-                        ->addText(
+                    $table->addCell($cellWidth, [
+                            'bgColor' => 'D9D9D9',
+                        ])->addText(
                             $this->cleanText(
                                 (string) $column
                             ),
@@ -1185,16 +1210,30 @@ Log::info('NODOS NIVEL 1', [
         |
         */
 
-        foreach ($node->children as $child) {
+        // foreach ($node->children as $child) {
+
+        //     $this->addNodeToDocument(
+        //         $section,
+        //         $child,
+        //         $paragraphStyle,
+        //         $contadorFigura,
+        //         $contadorTabla
+        //     );
+        // }
+        foreach ($node->children as $index => $child) {
+
+            $numeroHijo = $numero . '.' . ($index + 1);
 
             $this->addNodeToDocument(
                 $section,
                 $child,
+                $numeroHijo,
                 $paragraphStyle,
                 $contadorFigura,
                 $contadorTabla
             );
         }
+
     }
 
 

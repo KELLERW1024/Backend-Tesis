@@ -7,6 +7,14 @@ use App\Models\Section;
 
 class Question extends Model
 {
+
+    protected $fillable = [
+        'plan_node_id',
+        'question_text',
+        'question_detail',
+        'question_example',
+        'validation_detail',
+    ];
     public function section()
     {
         return $this->belongsTo(Section::class, 'section_id');

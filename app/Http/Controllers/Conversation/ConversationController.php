@@ -741,5 +741,248 @@ class ConversationController extends Controller
         }
     }
 
+    public function closeStructure(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $request->validate([
+            'idConversation' => ['required', 'integer'],
+        ]);
+
+        $idConversation = $request->get('idConversation');
+
+        /*
+        |--------------------------------------------------------------------------
+        | CONVERSACIÓN
+        |--------------------------------------------------------------------------
+        */
+
+        $conversation = Conversation::with('userPlan.plan')
+            ->where('id', $idConversation)
+            ->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Conversation not found'
+            ], 404);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | VERIFICAR QUE LA CONVERSACIÓN PERTENEZCA AL USUARIO
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$conversation->userPlan ||
+            $conversation->userPlan->user_id != $user->id
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para acceder a esta conversación.'
+            ], 403);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PLAN
+        |--------------------------------------------------------------------------
+        */
+
+        $plan = $conversation->userPlan->plan;
+
+        if (!$plan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La conversación no tiene un plan asociado.'
+            ], 404);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | OBTENER NODOS
+        |--------------------------------------------------------------------------
+        */
+
+        $nodes = PlanNode::withCount([
+            'children',
+            'questions'
+        ])
+        ->where('plan_id', $plan->id)
+        ->where('user_plan_id', $conversation->user_plan_id)
+        ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | BUSCAR NODOS HOJA SIN PREGUNTAS
+        |--------------------------------------------------------------------------
+        */
+
+        $nodesWithoutQuestions = $nodes
+            ->filter(function ($node) {
+
+                // Es nodo final si no tiene hijos
+                $isLeaf = $node->children_count === 0;
+
+                // Verificar si tiene preguntas
+                $hasQuestions = $node->questions_count > 0;
+
+                return $isLeaf && !$hasQuestions;
+            })
+            ->values();
+
+            if ($nodesWithoutQuestions->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'can_close' => true,
+                    'message' => 'La estructura está completa.'
+                ]);
+            }
+
+            $nodosSinPreguntas = $nodesWithoutQuestions
+                    ->map(function ($node) {
+                        return [
+                            'id' => $node->id,
+                            'titulo' => $node->titulo,
+                            'codigo' => $node->codigo,
+                            'parent_id' => $node->parent_id,
+                            'orden' => $node->orden,
+                            'nivel' => $node->nivel,
+                        ];
+                    })
+                    ->values()
+                    ->toArray();
+
+
+            $estructuraCompleta = $nodes
+                ->map(function ($node) {
+                    return [
+                        'id' => $node->id,
+                        'titulo' => $node->titulo,
+                        'codigo' => $node->codigo,
+                        'parent_id' => $node->parent_id,
+                        'orden' => $node->orden,
+                        'nivel' => $node->nivel,
+                        'questions_count' => $node->questions_count,
+                    ];
+                })
+                ->values()
+                ->toArray();
+
+        $prompt = $this->promptService->buildQuestionsForLeafNodesPrompt(
+            plan: $conversation->userPlan->plan->toArray(),
+            nodesWithoutQuestions: $nodosSinPreguntas,
+            allNodes: $estructuraCompleta
+        );
+
+        \Log::info('NODOS SIN PREGUNTAS', [
+            'nodes' => $nodosSinPreguntas,
+        ]);
+
+        \Log::info('ESTRUCTURA COMPLETA', [
+            'nodes' => $estructuraCompleta,
+        ]);
+
+        $respuesta = $this->openAIService->chat($prompt);
+
+        \Log::info('RESPUESTA OPENAI - GENERACIÓN DE PREGUNTAS', [
+            'respuesta' => $respuesta,
+        ]);
+
+        $data = json_decode($respuesta, true);
+
+        if (
+            json_last_error() !== JSON_ERROR_NONE ||
+            !isset($data['nodes']) ||
+            !is_array($data['nodes'])
+        ) {
+
+            \Log::error('OpenAI devolvió una respuesta inválida', [
+                'respuesta' => $respuesta,
+                'json_error' => json_last_error_msg(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudieron generar las preguntas automáticamente.'
+            ], 500);
+        }
+
+        foreach ($data['nodes'] as $nodeData) {
+
+            if (
+                !isset($nodeData['node_id']) ||
+                !isset($nodeData['questions']) ||
+                !is_array($nodeData['questions'])
+            ) {
+                continue;
+            }
+
+            foreach ($nodeData['questions'] as $questionData) {
+
+                if (empty($questionData['description'])) {
+                    continue;
+                }
+
+                Question::create([
+                    'plan_node_id' => $nodeData['node_id'],
+                    'question_text' => $questionData['description'],
+                ]);
+            }
+        }
+
+
+
+
+
+      
+
+        /*
+        |--------------------------------------------------------------------------
+        | SI EXISTEN NODOS INCOMPLETOS
+        |--------------------------------------------------------------------------
+        */
+
+        if ($nodesWithoutQuestions->isNotEmpty()) {
+
+            return response()->json([
+                'success' => false,
+                'can_close' => false,
+                'message' => 'Existen nodos finales que no tienen preguntas asociadas.',
+                'nodes' => $nodesWithoutQuestions->map(function ($node) {
+
+                    return [
+                        'id' => $node->id,
+                        'titulo' => $node->titulo,
+                        'orden' => $node->orden,
+                        'parent_id' => $node->parent_id,
+                        'codigo' => $node->codigo,
+                    ];
+
+                })->values(),
+            ], 422);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | ESTRUCTURA CORRECTA
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+            'success' => true,
+            'can_close' => true,
+            'message' => 'La estructura está completa y puede cerrarse.',
+        ]);
+    }
+
+
     
 }

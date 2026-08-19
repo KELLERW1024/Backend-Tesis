@@ -11,7 +11,8 @@ class Tabla extends Model
     protected $fillable = [
         'nombre',
         'answer_id', 
-        'data'
+        'data',
+        'fuente'
     ];
 
     protected $casts = [

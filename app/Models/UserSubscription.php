@@ -32,6 +32,22 @@ class UserSubscription extends Model
     {
         return $this->belongsTo(Package::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class, 'plan_id');
+    }
+
+    public function conversations()
+    {
+        return $this->hasMany(
+            Conversation::class,
+            'subscription_id'
+        );
+    }
 
 
 }

@@ -105,8 +105,6 @@ CREATE TABLE user_plan(
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    UNIQUE (user_id, plan_id),
-
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE 
 ) ENGINE=InnoDB;
@@ -198,11 +196,9 @@ CREATE TABLE conversation_messages (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE SET NULL,
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE SET NULL,
 
     INDEX idx_conversation_created (conversation_id, created_at),
-    INDEX (section_id),
     INDEX (question_id)
 ) ENGINE=InnoDB;
 
@@ -309,7 +305,6 @@ CREATE TABLE conversation_section_progress (
 
     user_id BIGINT NOT NULL,
     conversation_id BIGINT NOT NULL,
-    section_id BIGINT NOT NULL,
 
     current_question_id BIGINT NULL,
 
@@ -322,11 +317,10 @@ CREATE TABLE conversation_section_progress (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP 
     ON UPDATE CURRENT_TIMESTAMP,
 
-    UNIQUE (conversation_id, section_id),
+    UNIQUE (conversation_id),
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
     FOREIGN KEY (current_question_id) REFERENCES questions(id) ON DELETE SET NULL,
 
     INDEX (user_id),
@@ -372,30 +366,6 @@ CREATE TABLE generated_documents (
     INDEX (user_id),
     INDEX (conversation_id)
 ) ENGINE=InnoDB;
-
-
-
-
-
-
--- ===================================================
-
-CREATE TABLE plan_sections (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    plan_id BIGINT NOT NULL,
-    section_id BIGINT NOT NULL,
-
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-    UNIQUE (plan_id, section_id),
-
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
-
-    INDEX (plan_id),
-    INDEX (section_id)
-) ENGINE=InnoDB;
-
 
 
 

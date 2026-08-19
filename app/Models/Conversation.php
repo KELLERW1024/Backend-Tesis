@@ -48,4 +48,16 @@ class Conversation extends Model
     // {
     //     return $this->belongsTo(Plan::class);
     // }
+
+        public function user()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            UserPlan::class,
+            'id',          // FK en user_plan que apunta desde Conversation
+            'id',          // PK de users
+            'user_plan_id',// FK en conversations
+            'user_id'      // FK en user_plan
+        );
+    }
 }
