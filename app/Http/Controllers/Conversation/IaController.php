@@ -110,61 +110,7 @@ class IaController extends Controller
         ]);
 
         return $this->responseIA( $request, $data, $documentContent, $imageContent );
-        
-
-        // /////////////////////////////
-        // $prompt = $this->promptService->buildValidationPrompt([ // ESTE METODO SOLO ARMA LAS RESPUESTA ACORDE A LA PREGUNTA
-        //     ...$data,
-        //     'file_content' => $documentContent,
-        //     'image_content' => $imageContent,
-        // ] ); 
-
-        // \Log::info('PROMPT IACONTROLLER', [
-        //     '$prompt => ' => $prompt ?? null 
-        // ]);
-
-        // $result = $this->openAIService->json($prompt); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
-        // if ( $result['is_valid'] == false ) {
-            
-        //     $result['response'] = '';
-        //     $result['images'] = [];
-
-        //     return response()->json($result);
-
-        // }else{
-        //     return $this->responseIA( $request, $data, $documentContent, $imageContent );
-            
-        // }
-
-        
-        // ANALIZA LA TABLA 
-        // else {
-            
-
-        //     $prompt = $this->promptService->buildValidationPrompt([
-        //         ...$data,
-        //         'file_content' => $documentContent,
-        //     ]);
-
-        //     \Log::info('PROMT DATA TABLA : {}'. $prompt );
-
-        //     $result = $this->openAIService->json($prompt);
-        //     if ( $result['is_valid'] == false ) {
-                
-        //         $result['response'] = '';
-        //         $result['images'] = [];
-
-        //         return response()->json($result);
-
-        //     }else{
-        //         // RESPUESTA ++++>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-        //         return $this->responseIA( $request, $data, $documentContent, $imageContent ); //$isApa);
-                
-        //     }
-        // }
-
-           
+   
        
     }
 
@@ -189,7 +135,10 @@ class IaController extends Controller
             $history = $this->conversationService->getConversation($data['idConversation']);
             \Log::info(' HISTORY : ' , $history );
 
-            // INICIO
+            // =====================================================================================
+            // INICIO DONDE SE  VALIDA SI LA RESPUESTA CORRESPONDEO TIENE UNA DIRECTIVA VALIDA
+            // ======================================================================================
+
             $prompt = $this->promptService->buildValidationPrompt([ // ESTE METODO SOLO ARMA LAS RESPUESTA ACORDE A LA PREGUNTA
                     ...$data,
                     'file_content' => $documentContent,
@@ -208,11 +157,16 @@ class IaController extends Controller
                 $result['response'] = '';
                 $result['images'] = [];
 
+                 \Log::info('RESPONSE VALIDACION ', [
+                    '$result => ' => $result ?? null 
+                ]);
+
                 return response()->json($result);
             }
 
-        
+            //===========
             // FIN
+            // ===========
 
             $messages = $this->promptService->buildMessagesBitacoraResponseCurrent( [  ...$data,    'file_content' => $documentContent,
                                                                                                     'image_content' => $imageContent,
@@ -273,9 +227,11 @@ class IaController extends Controller
             $count_ia_image = $this->conversationService->IAimagesXQuestion( $data  );
 
             if( $data['is_visual'] && $count_ia_image < 100  ){
+
+                $datax = json_decode($reply, true);
                 $promptImagen = str_replace(
                     '[Contenido]',
-                    $response,
+                    $datax['response'] ?? '',
                     Prompts::PROMPT_IMAGEN
                 );
                  $image = $this->replicateService->generateImage(  $promptImagen  );

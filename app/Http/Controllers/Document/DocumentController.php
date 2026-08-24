@@ -479,7 +479,8 @@ class DocumentController extends Controller
 
             ])
             ->where('plan_id', $plan->id)
-            ->whereNotNull('user_plan_id')
+            ->where('user_plan_id', $conversation->user_plan_id)
+            // ->whereNotNull('user_plan_id')
             ->orderBy('orden')
             ->get();
 

@@ -14,23 +14,20 @@ class PromptService
         $sections[] = "
             Eres un asesor académico especializado en elaboración y sustentación de tesis universitarias.
 
-            Tu función es evaluar la respuesta proporcionada por el tesista y si está incompleta, completar con la información previa que tenemos de respuestas anteriores
-             y hacer que forme parte del documento de tesis.
+            Tu función es evaluar la respuesta proporcionada por el tesista o validar que la respuesta sea una directica válida de interacción con la data que 
+            tenemos en el historial de respuetas.  
 
             La evaluación debe considerar:
             - La pregunta actual.
-            - El objetivo del capítulo o sección.
             - Los criterios de validación definidos.
             - La información obtenida previamente en otras preguntas.
 
             Debes analizar si la respuesta:
-            - Mantiene coherencia con el objetivo académico del capítulo.
-            - Es consistente con las respuestas anteriores.
-            - Presenta ideas claras, estructuradas y comprensibles.
+            - Es hasta un 60% consistente con las respuestas anteriores o si es una directiva válida para la generación de la arespuesta.
 
-            Si la respuesta es incompleta, completalo siguiendo la data de las respuestas anteriores.
-            Si la respuesta contradice información previa, indica la inconsistencia.
-            Si la respuesta no responde la pregunta, explica brevemente el motivo.
+            Si la respuesta es incompleta, complétalo siguiendo la data de las respuestas anteriores.
+            Si la respuesta contradice información previa, indica la inconsistencia esto es crítico.
+            Si la respuesta no responde la pregunta y no es una directica válida para la generación de la respuesta a esta pregunta, explica brevemente el motivo.
             ";
 
 
@@ -79,6 +76,9 @@ class PromptService
 
             Evalúa con la siguiente escala:
 
+            85
+            Directiva válida  para la  construcción de la respuesta
+
             90-100:
             Respuesta completa, académica, coherente y lista para integrarse en la tesis.
 
@@ -94,9 +94,6 @@ class PromptService
 
             REGLAS IMPORTANTES:
 
-            - Evalúa únicamente la información proporcionada.
-            - No inventes datos, referencias, autores, estadísticas ni fuentes.
-            - No agregues información externa.
             - Usa el historial solamente como contexto de coherencia.
             - El feedback debe ser corto, específico y orientado a mejorar la tesis.
             - is_valid debe ser true únicamente cuando score sea igual o mayor a 75.
@@ -114,6 +111,189 @@ class PromptService
 
         return implode("\n\n", array_filter($sections));
     }
+
+   public function promptValidationRedundanceQuestion( array $history,  string $question  ): string {
+
+    $sections = [];
+
+    $sections[] = <<<PROMPT
+Eres un asesor académico especializado en investigación, elaboración y sustentación de tesis universitarias.
+
+Tu función es determinar si la pregunta actual necesita ser presentada nuevamente al usuario o si puede ser respondida utilizando exclusivamente la información que el usuario ya proporcionó anteriormente en esta conversación.
+
+No debes evaluar únicamente si la pregunta es similar o parecida a una pregunta anterior.
+
+Debes determinar si la información histórica disponible contiene evidencia suficiente, específica y coherente para construir una respuesta académica válida a la pregunta actual.
+PROMPT;
+
+    $sections[] = <<<PROMPT
+PREGUNTA ACTUAL:
+
+{$question}
+PROMPT;
+
+    if (!empty($history)) {
+
+        $historyJson = json_encode(
+            $history,
+            JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+        );
+
+        $sections[] = <<<PROMPT
+HISTORIAL DE LA CONVERSACIÓN:
+
+La siguiente información corresponde a respuestas, datos y contenido proporcionado anteriormente por el usuario durante esta conversación.
+
+Utiliza este historial como fuente principal para determinar si la pregunta actual puede ser respondida.
+
+No asumas que una información es verdadera si no está presente en el historial.
+No inventes datos.
+No agregues información externa.
+No completes información faltante mediante suposiciones.
+
+HISTORIAL:
+
+{$historyJson}
+PROMPT;
+    } else {
+
+        $sections[] = <<<PROMPT
+HISTORIAL DE LA CONVERSACIÓN:
+
+No existe información histórica disponible.
+
+Por lo tanto, no debes intentar responder la pregunta utilizando conocimientos externos o suposiciones.
+PROMPT;
+    }
+
+    $sections[] = <<<PROMPT
+REGLAS DE EVALUACIÓN:
+
+1. Debes determinar si la pregunta actual puede responderse de manera suficiente utilizando EXCLUSIVAMENTE la información contenida en el historial.
+
+2. Si el historial contiene información suficiente, específica y coherente para responder la pregunta:
+   - Genera la respuesta utilizando únicamente dicha información.
+   - No solicites nuevamente al usuario información que ya fue proporcionada.
+   - Retorna "show": false.
+   - Genera la respuesta en lenguaje académico y formal.
+   - La respuesta debe tener un desarrollo suficiente para responder completamente la pregunta.
+
+3. Si el historial NO contiene información suficiente para responder la pregunta:
+   - No inventes información.
+   - No hagas suposiciones.
+   - No utilices conocimientos externos.
+   - No generes una respuesta especulativa.
+   - Retorna "show": true.
+   - "resp" debe ser una cadena vacía.
+
+4. Si el historial contiene información parcialmente relacionada, pero esta no es suficiente para responder correctamente la pregunta:
+   - Considera que la información NO es suficiente.
+   - Retorna "show": true.
+   - "resp" debe ser una cadena vacía.
+
+5. Una pregunta NO debe considerarse redundante únicamente porque trate sobre el mismo tema que una respuesta anterior.
+
+   La pregunta solamente puede omitirse cuando la información histórica disponible permita construir una respuesta suficientemente completa y sustentada.
+
+6. Si existen varias respuestas históricas relacionadas con la pregunta:
+   - Integra la información relevante.
+   - Evita repetir literalmente las respuestas anteriores.
+   - Construye una respuesta coherente y académicamente estructurada.
+
+7. La respuesta generada debe responder directamente la pregunta, pero NO debe limitarse innecesariamente a una sola oración cuando exista suficiente información histórica para desarrollar la idea.
+
+8. La extensión de la respuesta debe ser proporcional a la información disponible:
+
+   - Si existe poca información, genera una respuesta breve pero completa.
+   - Si existe suficiente información, desarrolla la respuesta en un párrafo académico bien estructurado.
+   - Si existe abundante información relevante, integra los elementos necesarios sin generar contenido repetitivo.
+
+9. Cuando la información histórica permita identificar relaciones entre elementos, puedes explicarlas.
+
+   Por ejemplo:
+   - problema y sus características;
+   - causas y efectos;
+   - situación actual y consecuencias;
+   - características y dificultades;
+   - procesos y problemas asociados.
+
+   Sin embargo, estas relaciones deben estar sustentadas por la información histórica.
+
+10. No agregues causas, consecuencias, características, cifras, porcentajes, fechas, nombres, resultados, interpretaciones o cualquier otro dato que no pueda sustentarse directamente con la información histórica.
+
+11. Puedes reformular, sintetizar, organizar e integrar la información histórica para producir una redacción académica mejor estructurada.
+
+12. No debes copiar textualmente el historial salvo que sea estrictamente necesario.
+
+13. No utilices:
+   - conocimientos generales;
+   - conocimiento académico externo;
+   - información de internet;
+   - información obtenida de otras fuentes;
+   - suposiciones;
+   - datos inventados.
+
+   Solo utiliza la información proporcionada en el historial.
+
+14. La respuesta debe mantener coherencia con la información proporcionada anteriormente y no debe contradecir respuestas previas.
+
+15. La respuesta debe estar redactada en lenguaje académico, formal y natural, apropiado para una tesis universitaria.
+
+16. Evita respuestas excesivamente genéricas.
+
+17. No menciones expresiones como:
+   - "según el historial";
+   - "según la información proporcionada";
+   - "el usuario indicó";
+   - "basándome en la conversación".
+
+   La respuesta debe presentarse directamente como contenido académico.
+
+18. Si la información histórica permite responder la pregunta, no vuelvas a solicitar esa información al usuario.
+
+19. Si para responder correctamente sería necesario inventar, asumir o completar información que no está presente en el historial, debes retornar "show": true.
+
+DECISIÓN:
+
+"show": true
+Significa que la pregunta DEBE mostrarse al usuario porque la información histórica NO es suficiente para responderla correctamente.
+
+"show": false
+Significa que la pregunta NO debe mostrarse al usuario porque la información histórica es suficiente para generar una respuesta válida.
+
+RESPUESTA:
+
+Si "show" es false:
+- "resp" debe contener una respuesta académica desarrollada.
+- La respuesta debe utilizar exclusivamente información sustentada en el historial.
+- La extensión debe ser proporcional a la información disponible.
+
+Si "show" es true:
+- "resp" debe ser una cadena vacía.
+
+Devuelve ÚNICAMENTE JSON válido.
+
+No utilices Markdown.
+No agregues explicaciones fuera del JSON.
+
+FORMATO OBLIGATORIO:
+
+{
+    "show": true,
+    "resp": ""
+}
+
+O:
+
+{
+    "show": false,
+    "resp": "Respuesta académica desarrollada utilizando exclusivamente la información histórica disponible."
+}
+PROMPT;
+
+    return implode("\n\n", array_filter($sections));
+}
+
     public function buildMessagesBitacoraResponseCurrent( array $data, array $history , string   $documentContent,string   $imageContent, bool $isApa): array {
 
         $parentNode = $data['parent_node'] ?? [];

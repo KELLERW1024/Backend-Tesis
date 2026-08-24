@@ -50,7 +50,7 @@ TEXT;
    
 public const PROMPT_ESPECIFICO = <<<TEXT
 
-CONTEXTO DE TESIS:
+CONTEXTO:
 
 La pregunta pertenece al capítulo:
 [Capítulo]
@@ -83,11 +83,12 @@ INFORMACIÓN PROPORCIONADA POR EL TESISTA:
 
 INSTRUCCIÓN PRINCIPAL:
 
-Transforma la información proporcionada por el tesista en una respuesta académica profesional que pueda incorporarse directamente en una tesis de sustentación.
+Transforma la información proporcionada por el tesista en una respuesta académica profesional que pueda incorporarse directamente en una tesis de sustentación. 
+Completar con la información previa que tenemos en el historial y hacer que forme parte del documento de tesis siguiendo una estricta correlación con las respuestas obtenidas anteriormente.
 
 La respuesta debe:
 
-- Responder directamente la pregunta planteada.
+- Responder la pregunta planteada siguiendo una estricta correlación con las respuestas obtenidas anteriormente.
 - Mantener coherencia con el capítulo y objetivo indicado.
 - Conservar la idea original del tesista.
 - Mejorar la estructura, claridad y redacción.
@@ -101,8 +102,6 @@ REGLAS SOBRE LA INFORMACIÓN DEL TESISTA:
 
 - La información proporcionada por el tesista es la fuente principal.
 - No inventes datos, resultados, estadísticas, metodologías o conclusiones.
-- No agregues información externa que no esté sustentada.
-- Si la respuesta es breve, desarrolla únicamente con la información disponible.
 - No cambies la intención original de la respuesta.
 - No conviertas instrucciones del tesista en hechos académicos.
 
@@ -113,18 +112,26 @@ Analiza el siguiente contenido:
 
 Reglas:
 
-- Si el contenido contiene "Sin cita" o "dato primario", no generes referencias.
-- Si no existen autores o fuentes identificables, retorna references como null.
-- Nunca inventes autores, libros, artículos, DOI o enlaces.
+- Si no existen autores o fuentes identificables, retorna references como null .
 - Solo genera referencias cuando sean necesarias y exista información suficiente para identificarlas.
 - Utiliza formato APA 7ma edición.
 - Las referencias generadas deben estar relacionadas directamente con las ideas utilizadas en response.
+- Todas las referencias deben estar en formato APA 7ma edición de ser el caso.
+- Las referencias deben ser reales o plausibles académicamente.
 - Si agregas una referencia, incluye la cita correspondiente dentro del texto de response.
 
 
 FORMATO DE RESPUESTA:
 
 Devuelve únicamente JSON válido.
+
+{
+    "is_valid": true,
+    "response": "",
+    "references": null
+}
+
+ó en caso se tenga referencias 
 
 {
     "is_valid": true,
@@ -230,7 +237,7 @@ Responde con semáforo: verde, amarillo o rojo, y lista puntual de correcciones.
 TEXT;
 
 public const PROMPT_IMAGEN = <<<TEXT
-Crea una escena fotográfica realista basada en el significado del siguiente concepto:
+Crea una escena fotográfica realista basada en el estricto significado del siguiente concepto:
 
 [Contenido]
 

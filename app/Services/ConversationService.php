@@ -242,6 +242,20 @@ class ConversationService
 
     }
 
+    public function saveUserAnswerAutomatic($conversationId, $questionId, $reply ){
+         UserAnswers::updateOrCreate(
+                [
+                    'conversation_id' => $conversationId,
+                    'question_id' => $questionId,
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    // 'section_id' => $sectionId,
+                    'answer_text' => $reply,
+                ]
+            );
+    }
+
     public function saveUserAnswer(
         array $data,
         array $files = [],
@@ -641,7 +655,7 @@ class ConversationService
 
         $questionIds = Question::where('section_id', $sectionId)->pluck('id');
 
-        $answeredIds = UserAnswer::where('conversation_id', $conversationId)
+        $answeredIds = UserAnswers::where('conversation_id', $conversationId)
                                     ->whereIn('question_id', $questionIds)
                                     ->pluck('question_id');
 

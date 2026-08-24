@@ -29,19 +29,19 @@ class ConversationController extends Controller
     }
     
 
-    public function startConversation(Request $request)
-    {
-        $validated = $request->validate([
-            'plan_id' => 'required|integer'
-        ]);
+    // public function startConversation(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'plan_id' => 'required|integer'
+    //     ]);
 
-        $result = $this->conversationService->startConversation(
-            auth()->id(),
-            $validated['plan_id']
-        );
+    //     $result = $this->conversationService->startConversation(
+    //         auth()->id(),
+    //         $validated['plan_id']
+    //     );
 
-        return response()->json($result);
-    }
+    //     return response()->json($result);
+    // }
     public function saveAnswerDiagnostic(Request $request , ConversationService $conversationService)
     {
         $validated = $request->validate([
@@ -86,7 +86,7 @@ class ConversationController extends Controller
 
             $plansNode = PlanNode::whereNull('user_plan_id')
                                 ->where('plan_id', $planId)
-                                ->where('id', '<=', 123)
+                                // ->where('id', '<=', 123)  // Esto desafecta resuemn, introduccion y otros
                                 ->oldest('id')
                                 ->get();
 
@@ -376,7 +376,11 @@ class ConversationController extends Controller
 
 
     }
-    public function getConversationPlan(Request $request)
+
+    //====================================
+    // PREGUNTA A SER RESPONDIDA
+    //====================================
+    public function getConversationPlan1(Request $request)
     {
         $user = auth()->user();
 
@@ -478,6 +482,27 @@ class ConversationController extends Controller
             $node = $result['node'];
             $question = $result['question'];
 
+
+
+            //  ACA CONSULTAR SI LA PREGUNTA QPUEDE SER REPONDIDA CON L ADATA HISTORICA QUE TENEMOS
+            $history = $this->conversationService->getConversation( $idConversation );
+            \Log::info(' HISTORY : ' , $history );
+
+            $promptQuestion = $this->promptService->promptValidationRedundanceQuestion( $history,  $question->question_text   ); 
+
+            $resultIA = $this->openAIService->json($promptQuestion); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
+            if ( $resultIA['show'] == false ) {
+                
+                $this->conversationService->saveUserAnswerAutomatic( $idConversation, $question->id , $resultIA['resp'] );
+
+                 \Log::info('RESPONSE VALIDACION ', [
+                    '$resultIA => ' => $resultIA ?? null 
+                ]);
+
+            }
+
+
+
             return response()->json([
                 'completed' => false,
                 'plan_name' => $planName,
@@ -497,6 +522,239 @@ class ConversationController extends Controller
             'message' => 'Todas las preguntas han sido respondidas'
         ]);
     }
+    public function getConversationPlan(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $idConversation = $request->get('idConversation');
+
+        if (!$idConversation) {
+            return response()->json([
+                'message' => 'idConversation es requerido'
+            ], 422);
+        }
+
+        // =========================================================
+        // 1. OBTENER LA CONVERSACIÓN Y VALIDAR QUE PERTENECE AL USUARIO
+        // =========================================================
+
+        $conversation = Conversation::where('id', $idConversation)
+            ->whereHas('userPlan', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'message' => 'Conversación no encontrada'
+            ], 404);
+        }
+
+        // =========================================================
+        // 2. OBTENER EL USER PLAN
+        // =========================================================
+
+        $userPlanId = $conversation->user_plan_id;
+
+        $planName = $conversation->userPlan->plan->name;
+
+        // =========================================================
+        // 3. OBTENER PREGUNTAS YA RESPONDIDAS
+        // =========================================================
+
+        $answeredQuestionIds = UserAnswers::where(
+            'conversation_id',
+            $conversation->id
+        )
+            ->whereNotNull('question_id')
+            ->pluck('question_id')
+            ->toArray();
+
+        // =========================================================
+        // 4. OBTENER TODOS LOS NODOS Y SUS PREGUNTAS
+        // =========================================================
+
+        $nodes = PlanNode::with([
+            'questions' => function ($query) {
+                $query->orderBy('order_index');
+            }
+        ])
+            ->where('user_plan_id', $userPlanId)
+            ->orderBy('orden')
+            ->orderBy('id')
+            ->get();
+
+        // =========================================================
+        // 5. AGRUPAR NODOS POR PADRE
+        // =========================================================
+
+        $nodesByParent = $nodes->groupBy('parent_id');
+
+        // =========================================================
+        // 6. FUNCIÓN PARA ENCONTRAR LA SIGUIENTE PREGUNTA
+        // =========================================================
+
+        $findNextQuestion = function ($parentId) use (
+            &$findNextQuestion,
+            $nodesByParent,
+            &$answeredQuestionIds
+        ) {
+
+            $children = $nodesByParent->get($parentId, collect());
+
+            $children = $children->sortBy([
+                ['orden', 'asc'],
+                ['id', 'asc'],
+            ]);
+
+            foreach ($children as $node) {
+
+                // ---------------------------------------------
+                // Revisar preguntas del nodo actual
+                // ---------------------------------------------
+
+                foreach ($node->questions as $question) {
+
+                    if (!in_array($question->id, $answeredQuestionIds)) {
+
+                        return [
+                            'node' => $node,
+                            'question' => $question,
+                        ];
+                    }
+                }
+
+                // ---------------------------------------------
+                // Revisar hijos del nodo
+                // ---------------------------------------------
+
+                $result = $findNextQuestion($node->id);
+
+                if ($result) {
+                    return $result;
+                }
+            }
+
+            return null;
+        };
+
+        // =========================================================
+        // 7. BUSCAR PREGUNTAS HASTA ENCONTRAR UNA QUE NECESITE
+        //    SER RESPONDIDA POR EL USUARIO
+        // =========================================================
+
+        while (true) {
+
+            $result = $findNextQuestion(null);
+
+            // -----------------------------------------------------
+            // NO QUEDAN PREGUNTAS
+            // -----------------------------------------------------
+
+            if (!$result) {
+
+                return response()->json([
+                    'completed' => true,
+                    'plan_name' => $planName,
+                    'node' => null,
+                    'parent_node' => null,
+                    'question' => null,
+                    'message' => 'Todas las preguntas han sido respondidas'
+                ]);
+            }
+
+            $node = $result['node'];
+            $question = $result['question'];
+
+            // =====================================================
+            // 8. OBTENER HISTORIAL ACTUALIZADO
+            // =====================================================
+
+            $history = $this->conversationService->getConversation(
+                $idConversation
+            );
+
+            \Log::info('HISTORY', [
+                'conversation_id' => $idConversation,
+                'question_id' => $question->id,
+                'history' => $history
+            ]);
+
+            // =====================================================
+            // 9. PREGUNTAR A LA IA SI PUEDE RESPONDERLA
+            // =====================================================
+
+            $promptQuestion =
+                $this->promptService->promptValidationRedundanceQuestion(
+                    $history,
+                    $question->question_text
+                );
+
+            $resultIA = $this->openAIService->json($promptQuestion);
+
+            \Log::info('RESPONSE VALIDACION', [
+                'question_id' => $question->id,
+                'resultIA' => $resultIA
+            ]);
+
+            // =====================================================
+            // 10. LA IA PUEDE RESPONDERLA AUTOMÁTICAMENTE
+            // =====================================================
+
+            if (($resultIA['show'] ?? true) === false) {
+
+                $responseAutomatic = $resultIA['resp'] ?? '';
+
+                // Validar que realmente exista una respuesta
+                if (!empty(trim($responseAutomatic))) {
+
+                    $this->conversationService->saveUserAnswerAutomatic(
+                        $idConversation,
+                        $question->id,
+                        $responseAutomatic
+                    );
+
+                    // MUY IMPORTANTE:
+                    // Agregamos la pregunta como respondida
+                    // para que no vuelva a aparecer dentro
+                    // del mismo request.
+
+                    $answeredQuestionIds[] = $question->id;
+
+                    \Log::info('PREGUNTA RESPONDIDA AUTOMATICAMENTE', [
+                        'conversation_id' => $idConversation,
+                        'question_id' => $question->id,
+                        'response' => $responseAutomatic
+                    ]);
+
+                    // -------------------------------------------------
+                    // CONTINUAR CON LA SIGUIENTE PREGUNTA
+                    // -------------------------------------------------
+
+                    continue;
+                }
+            }
+
+            // =====================================================
+            // 11. LA IA NO PUEDE RESPONDERLA
+            // =====================================================
+
+            return response()->json([
+                'completed' => false,
+                'plan_name' => $planName,
+                'node' => $node,
+                'parent_node' => $node->parent,
+                'question' => $question
+            ]);
+        }
+    }
+
 
 
 // =====================================================================
