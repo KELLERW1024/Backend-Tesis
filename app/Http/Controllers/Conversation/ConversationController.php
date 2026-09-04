@@ -84,11 +84,18 @@ class ConversationController extends Controller
 
             $rubro = $result['rubro'];
 
+            // ACA SE REALIZA EL FILTRO PARA LA CRECAION DE LOS NUEVOS NODOS Y SUS PREGUNTAS. pOR AHORA SOLO PARA plan DE NEGOCIO
             $plansNode = PlanNode::whereNull('user_plan_id')
-                                ->where('plan_id', $planId)
-                                // ->where('id', '<=', 123)  // Esto desafecta resuemn, introduccion y otros
-                                ->oldest('id')
-                                ->get();
+                     ->where('plan_id', $planId)
+                     ->whereNotIn('id', [1, 2, 3, 139, 140])
+                     ->oldest('id')
+                     ->get();
+
+            // $plansNode = PlanNode::whereNull('user_plan_id')
+            //                     ->where('plan_id', $planId)
+            //                     ->where('id', '<=', 123)  // Esto desafecta resuemn, introduccion y otros
+            //                     ->oldest('id')
+            //                     ->get();
 
             foreach ($plansNode as $planNode) {
 
@@ -348,7 +355,7 @@ class ConversationController extends Controller
 
         $planNode = PlanNode::whereNull('user_plan_id')
                                         ->where('plan_id', $planId )
-                                        ->latest('id')
+                                        ->oldest('id')
                                         ->first();
 
         if (!$planNode) {
