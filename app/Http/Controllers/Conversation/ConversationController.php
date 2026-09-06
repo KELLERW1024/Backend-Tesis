@@ -683,7 +683,7 @@ class ConversationController extends Controller
             // 8. OBTENER HISTORIAL ACTUALIZADO
             // =====================================================
 
-            $history = $this->conversationService->getConversation(
+            $history = $this->conversationService->getHistoryLimit10(
                 $idConversation
             );
 

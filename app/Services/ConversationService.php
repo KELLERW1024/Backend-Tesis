@@ -176,6 +176,26 @@ class ConversationService
         })->values()->toArray();
     }
 
+    public function getHistoryLimit10(int $idConversation): array
+    {
+         return UserAnswers::where('conversation_id', $idConversation)
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->filter(function ($row) {
+                    return !empty($row->answer_text);
+                })
+                ->reverse()
+                ->map(function ($row) {
+                    return [
+                        'role' => 'user',
+                        'content' => $row->answer_text,
+                    ];
+                })
+                ->values()
+                ->toArray();
+    }
+
 
     public function saveMessage(array $data, String $message , String $role )
     {
