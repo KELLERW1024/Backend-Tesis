@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use App\Models\PlanNode;
 use App\Services\FileTextExtractorService;
 use App\Services\PromptService;
+use App\Services\ThesisContextService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -26,7 +27,8 @@ class IaController extends Controller
     protected OpenAIService $openAIService,
     protected PromptService $promptService,
     protected UploadService $uploadService,
-      private ReplicateService $replicateService
+    private ReplicateService $replicateService, 
+    protected ThesisContextService $thesisContextService, 
 
     ) {}
 
@@ -132,11 +134,14 @@ class IaController extends Controller
             $objective = $parentNode?->objective;
             \Log::info(' OBJECTIVE : ' . $objective );
             
-            $history = $this->conversationService->getConversation($data['idConversation']);
+            $history = $this->conversationService->getHistoryLimit10($data['idConversation']);
             \Log::info(' HISTORY : ' , $history );
 
+            // $historycapitulos = $this->conversationService->getHistorysentens($data['idConversation']);
+            // \Log::info(' HISTORYCAPITULOS : ' , $historycapitulos );
+
             // =====================================================================================
-            // INICIO DONDE SE  VALIDA SI LA RESPUESTA CORRESPONDEO TIENE UNA DIRECTIVA VALIDA
+            // INICIO DONDE SE  VALIDA SI LA RESPUESTA CORRESPONDE O TIENE UNA DIRECTIVA VALIDA
             // ======================================================================================
 
             $prompt = $this->promptService->buildValidationPrompt([ // ESTE METODO SOLO ARMA LAS RESPUESTA ACORDE A LA PREGUNTA
@@ -152,7 +157,9 @@ class IaController extends Controller
             ]);
 
             $result = $this->openAIService->json($prompt); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
-            if ( $result['is_valid'] == false ) {
+            $context = $this->thesisContextService->validateResponseAgainstContext( $data['idConversation'], $data['response']);
+
+            if ( $result['is_valid'] == false ||  $context['is_inconsistent'] == true ) {
                 
                 $result['response'] = '';
                 $result['images'] = [];
@@ -160,6 +167,13 @@ class IaController extends Controller
                  \Log::info('RESPONSE VALIDACION ', [
                     '$result => ' => $result ?? null 
                 ]);
+                if( $context['is_inconsistent'] == true ){
+                     return response()->json([
+                        'is_valid' => false , 
+                        'response' => 'La respuesta no tiene congruencia con el tema.'
+                    ]);
+                }
+               
 
                 return response()->json($result);
             }
@@ -299,6 +313,12 @@ class IaController extends Controller
             $reply,
             'system'
         );
+
+        //  ACTUALIZA EL CONTEXTO SEGUN LA RESPUESTA OBTENIDA
+        $conversation = Conversation::find($data['idConversation']);
+
+        $this->thesisContextService->updateContextFromAnswer ( $data['idConversation'], $conversation->user_plan_id  , $data['idQuestion'],  $reply);
+
     }
 
     // private function saveBitacoraConversation(array $data, string $reply): void

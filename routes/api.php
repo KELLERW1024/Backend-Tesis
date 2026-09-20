@@ -10,7 +10,7 @@ use App\Http\Controllers\Package\PackageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UsersController;
+use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Payment\PagoController;
 use App\Http\Controllers\Payment\WebhookController;
 
@@ -38,15 +38,29 @@ Route::prefix('auth')->group(function ($router) {
 // Grupo protegido con middleware auth
 Route::middleware('auth:api')->group(function ($router) {
 
+    // List-Users
+    Route::get('/users', [UsersController::class, 'index']);
+    Route::get('/users/{id}', [UsersController::class, 'show']);
+    Route::post('/users', [UsersController::class, 'store']);
+    Route::patch('/users/{id}', [UsersController::class, 'update']);
+
     // Users
     // Route::post("users/{id}",[UsersController::class,"update"]);
     Route::get('/plans', [PlanesController::class, "index"]);
     Route::get('/plans/getplanid', [PlanesController::class, "getPlanId"]);
+    Route::get('/plans/{id}', [PlanesController::class, 'show']);
+    Route::post('/plans', [PlanesController::class, 'store']);
+    Route::patch('/plans/{id}', [PlanesController::class, 'update']);
+    Route::patch('/plans/{id}/status', [PlanesController::class, 'toggleStatus']);
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
     Route::get('section/obtenercapitulosplan',[PlanesController::class,'obtenerCapitulosPlan']);
 
     Route::get('packages',[PackageController::class,'index']);
+    Route::get('packages/{id}', [PackageController::class, 'show']);
+    Route::post('packages', [PackageController::class, 'store']);
+    Route::patch('packages/{id}', [PackageController::class, 'update']);
     Route::get('getpackageplans',[PackageController::class,'getPackagePlans']);
+    Route::post('packages/{id}/plans', [PackageController::class, 'syncPackagePlans']);
 
 
 
@@ -84,6 +98,9 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::post('/payment/free', [PagoController::class, 'registerFree']);
 
     Route::get('/payment/getpayments', [PagoController::class, 'getPayments']);
+
+    Route::post('/payment/{id}/approve', [PagoController::class, 'approvePayment']);
+    Route::post('/payment/{id}/reject', [PagoController::class, 'rejectPayment']);
 
     Route::post('/mp/webhook', [WebhookController::class, 'handle']);
 
@@ -126,8 +143,6 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::delete('/{id}', [StructureController::class, 'destroy']);
 
     Route::patch('/{id}/position', [StructureController::class, 'position']);
-
-    
 
     
 });

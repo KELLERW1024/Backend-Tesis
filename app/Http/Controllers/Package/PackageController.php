@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Package;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Package\StorePackageRequest;
+use App\Http\Requests\Package\UpdatePackageRequest;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use App\Models\Package;
+use Illuminate\Support\Facades\DB;
 
 
 class PackageController extends Controller
 {
     public function index()
     {
-        $packages = Package::where('is_active', 1)
+        $packages = Package::orderBy('id', 'desc')
                 // ->with('plans')
                 ->get();
 
@@ -37,6 +40,83 @@ class PackageController extends Controller
         return response()->json([
             'success' => true,
             'data' => $package
+        ]);
+    }
+
+    public function store(StorePackageRequest $request)
+    {
+        $data = $request->validated();
+
+        $plans = $data['plans'] ?? [];
+        unset($data['plans']);
+
+        $data['is_active'] = $request->input('is_active', 1);
+
+        if (isset($data['benefits']) && is_array($data['benefits'])) {
+            $data['benefits'] = json_encode($data['benefits']);
+        }
+
+        $package = DB::transaction(function () use ($data, $plans) {
+            $createdPackage = Package::create($data);
+
+            if (!empty($plans)) {
+                $createdPackage->plans()->sync($plans);
+            }
+
+            return $createdPackage->load('plans');
+        });
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Paquete creado correctamente',
+            'data'    => $package
+        ], 201);
+    }
+
+    public function update(UpdatePackageRequest $request, $id)
+    {
+        $package = Package::findOrFail($id);
+
+        $data = array_filter($request->validated(), fn($value) => !is_null($value));
+
+        $hasPlans = array_key_exists('plans', $data);
+        $plans = $data['plans'] ?? [];
+        unset($data['plans']);
+
+        if (isset($data['benefits']) && is_array($data['benefits'])) {
+            $data['benefits'] = json_encode($data['benefits']);
+        }
+
+        DB::transaction(function () use ($package, $data, $hasPlans, $plans) {
+            $package->update($data);
+
+            if ($hasPlans) {
+                $package->plans()->sync($plans);
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Paquete actualizado correctamente',
+            'data'    => $package->load('plans')
+        ], 200);
+    }
+
+    public function syncPackagePlans(Request $request, $id)
+    {
+        $request->validate([
+            'plans'   => 'present|array',
+            'plans.*' => 'integer|exists:plans,id'
+        ]);
+
+        $package = Package::findOrFail($id);
+        
+        $package->plans()->sync($request->plans);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Planes actualizados correctamente para el paquete',
+            'data'    => $package->load('plans')
         ]);
     }
 }

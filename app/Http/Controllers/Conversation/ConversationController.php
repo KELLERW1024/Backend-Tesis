@@ -28,20 +28,9 @@ class ConversationController extends Controller
         
     }
     
-
-    // public function startConversation(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'plan_id' => 'required|integer'
-    //     ]);
-
-    //     $result = $this->conversationService->startConversation(
-    //         auth()->id(),
-    //         $validated['plan_id']
-    //     );
-
-    //     return response()->json($result);
-    // }
+    // =====================================================================================
+    // GUARDA LAS RESPUESTAS DIAGNOSTICO Y CALIFICA EL RUBRO DEL PLAN ADEMAS DE FILTRAR E INSERTAR LOS NODOS DEL PLAN 
+    // ======================================================================================
     public function saveAnswerDiagnostic(Request $request , ConversationService $conversationService)
     {
         $validated = $request->validate([
@@ -56,15 +45,14 @@ class ConversationController extends Controller
              'questions' => $validated['questions'],
             ]);
 
-            $conversation = Conversation::find($validated['id_subscription_conversation']);
+        $conversation = Conversation::find($validated['id_subscription_conversation']);
 
-            $userPlanId = $conversation?->user_plan_id;
+        $userPlanId = $conversation?->user_plan_id;
 
-            $userPlan = UserPlan::find( $userPlanId );
+        $userPlan = UserPlan::find( $userPlanId );
 
-            $planId= $userPlan->plan_id;
+        $planId= $userPlan->plan_id;
 
-        
         try {
             $user = auth()->user();
 
@@ -172,11 +160,12 @@ class ConversationController extends Controller
                 ]
             ], 500);
         }
-
-        
     }
 
     
+    // =====================================================================================
+    // GUARDA LAS RESPUESTAS DE CADA PREGUNTA
+    // ======================================================================================
     public function conversationSaveReply(Request $request, ConversationService $conversationService)
     {
         $validated = $request->validate([
@@ -236,6 +225,9 @@ class ConversationController extends Controller
         
     }
 
+    // =====================================================================================
+    // OBTIENE LAS CONVERSACIONES DEL USUARIO 
+    // ======================================================================================
     public function conversationsUser()
     {
         $user = auth()->user();
@@ -281,31 +273,14 @@ class ConversationController extends Controller
                 ];
             }),
 
-
-            // 'conversations' => $conversations->map(function ($conversation) {
-
-            //     $packageName = $conversation->subscription?->package?->name;
-            //     $planName = $conversation -> plan?->name; 
-
-            //     $paymentStatus = $conversation->subscription?->payments
-            //                                                     ?->sortByDesc('created_at')
-            //                                                     ->first()
-            //                                                     ?->status;
-
-            //     return [
-            //         'id' => $conversation->id,
-            //         'status' => $conversation->status,
-            //         'title' => $conversation->title,
-            //         'plan_name' => $planName,
-            //         'package_name' => $packageName,
-            //         'payment_status' => $paymentStatus,
-            //     ];
-            // }),
         ];
 
         return response()->json($data);
     }
 
+    // =====================================================================================
+    // VERIFICA SI LA CONVERSACION YA CUENTA CON EL DIAGNOSTICO
+    // ======================================================================================
     public function getVerficationDiagnosticExist( Request $request ){
         $user = auth()->user();
 
@@ -384,151 +359,9 @@ class ConversationController extends Controller
 
     }
 
-    //====================================
-    // PREGUNTA A SER RESPONDIDA
-    //====================================
-    public function getConversationPlan1(Request $request)
-    {
-        $user = auth()->user();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
-        }
-
-        $idConversation = $request->get('idConversation');
-
-        if (!$idConversation) {
-            return response()->json([
-                'message' => 'idConversation es requerido'
-            ], 422);
-        }
-
-        // 1. Obtener la conversación y validar que pertenece al usuario
-        $conversation = Conversation::where('id', $idConversation)
-            ->whereHas('userPlan', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->first();
-
-        if (!$conversation) {
-            return response()->json([
-                'message' => 'Conversación no encontrada'
-            ], 404);
-        }
-
-        // 2. Obtener el user_plan de la conversación
-        $userPlanId = $conversation->user_plan_id;
-
-        $planName = $conversation->userPlan->plan->name;
-
-        // 3. Obtener los IDs de las preguntas que ya tienen respuesta
-        $answeredQuestionIds = UserAnswers::where('conversation_id', $conversation->id)
-            ->pluck('question_id')
-            ->toArray();
-
-        // 4. Obtener todos los nodos y sus preguntas
-        $nodes = PlanNode::with([
-            'questions' => function ($query) {
-                $query->orderBy('order_index');
-            }
-        ])
-        ->where('user_plan_id', $userPlanId)
-        ->orderBy('orden')
-        ->orderBy('id')
-        ->get();
-        // Agrupar nodos por parent_id
-        $nodesByParent = $nodes->groupBy('parent_id');
-
-        // Función recursiva para recorrer el árbol en orden
-        $findNextQuestion = function ($parentId) use (
-            &$findNextQuestion,
-            $nodesByParent,
-            $answeredQuestionIds
-        ) {
-            $children = $nodesByParent->get($parentId, collect());
-
-            // Ordenar los hijos por orden
-            $children = $children
-                ->sortBy([
-                    ['orden', 'asc'],
-                    ['id', 'asc'],
-                ]);
-
-            foreach ($children as $node) {
-
-                // Primero las preguntas del nodo actual
-                foreach ($node->questions as $question) {
-
-                    if (!in_array($question->id, $answeredQuestionIds)) {
-                        return [
-                            'node' => $node,
-                            'question' => $question,
-                        ];
-                    }
-                }
-
-                // Después recorrer sus hijos
-                $result = $findNextQuestion($node->id);
-
-                if ($result) {
-                    return $result;
-                }
-            }
-
-            return null;
-        };
-
-
-        // 5. Buscar la primera pregunta no respondida respetando la jerarquía
-        $result = $findNextQuestion(null);
-
-        if ($result) {
-
-            $node = $result['node'];
-            $question = $result['question'];
-
-
-
-            //  ACA CONSULTAR SI LA PREGUNTA QPUEDE SER REPONDIDA CON L ADATA HISTORICA QUE TENEMOS
-            $history = $this->conversationService->getConversation( $idConversation );
-            \Log::info(' HISTORY : ' , $history );
-
-            $promptQuestion = $this->promptService->promptValidationRedundanceQuestion( $history,  $question->question_text   ); 
-
-            $resultIA = $this->openAIService->json($promptQuestion); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
-            if ( $resultIA['show'] == false ) {
-                
-                $this->conversationService->saveUserAnswerAutomatic( $idConversation, $question->id , $resultIA['resp'] );
-
-                 \Log::info('RESPONSE VALIDACION ', [
-                    '$resultIA => ' => $resultIA ?? null 
-                ]);
-
-            }
-
-
-
-            return response()->json([
-                'completed' => false,
-                'plan_name' => $planName,
-                'node' => $node,
-                'parent_node' => $node->parent,
-                'question' => $question
-            ]);
-        }
-
-        // 6. Si no quedan preguntas
-        return response()->json([
-            'completed' => true,
-            'plan_name' => $planName,
-            'node' => null,
-            'parent_node' => null,
-            'question' => null,
-            'message' => 'Todas las preguntas han sido respondidas'
-        ]);
-    }
+    // =====================================================================================
+    // OBTIENE LA ULTIMA PREGUNTA PARA RESPONDER Y VERIFCA SI LA PREGUNTA PUEDE SER RESPONDIDA 
+    // ======================================================================================
     public function getConversationPlan(Request $request)
     {
         $user = auth()->user();
@@ -763,14 +596,12 @@ class ConversationController extends Controller
     }
 
 
-
-// =====================================================================
-// ========================================================
-
-
+    // =====================================================================================
+    // XXXXXXXXXXXXXXXXXXXXXXXXXXX
+    // ======================================================================================
     public function getConversationPlanUser( Request $request)
     {
-            $user = auth()->user();
+        $user = auth()->user();
 
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);

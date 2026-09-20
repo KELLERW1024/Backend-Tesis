@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Constants\Prompts;
+use App\Models\ThesisContext;
+use App\Models\Question;
 
 class PromptService
 {
@@ -473,7 +475,7 @@ PROMPT;
 $prompt = <<<PROMPT
 Eres un experto en estructuración de planes de negocio y proyectos de tesis.
 
-Tu tarea es seleccionar, de una lista de capítulos, títulos y subtítulos
+Tu tarea es seleccionar estrictamente, de una lista de capítulos, títulos y subtítulos
 existentes, únicamente los contenidos que son necesarios para construir
 un plan de negocio cuyo rubro principal es:
 
@@ -636,6 +638,96 @@ FORMATO DE RESPUESTA:
 PROMPT;
 }
 
+// =======================================================
+ // PROMPT PARA VEFICAR SI ES NECESARIO ACTUALIZAR EL CONTEXTO 
+//  ==================================================
+    public function promptUpdateThesisContext(
+        ThesisContext $context,
+        Question $question,
+        string $answer
+    ): string {
+
+        return <<<PROMPT
+
+Eres un sistema encargado de mantener el contexto
+estructurado de un proyecto de plan de negocio.
+
+Tu tarea NO es responder la pregunta.
+
+Tu tarea es determinar si la respuesta del usuario
+aporta información importante y estable sobre el
+negocio que debería incorporarse al contexto.
+
+CONTEXTO ACTUAL:
+
+Nombre del negocio:
+{$context->business_name}
+
+Sector:
+{$context->business_sector}
+
+Producto o servicio:
+{$context->product_service}
+
+Cliente objetivo:
+{$context->target_customer}
+
+Problema principal:
+{$context->main_problem}
+
+Propuesta de valor:
+{$context->value_proposition}
+
+
+PREGUNTA DEL PLAN:
+
+{$question->question_text}
+
+
+RESPUESTA DEL USUARIO:
+
+{$answer}
+
+
+Analiza la respuesta.
+
+Si la respuesta aporta información relevante
+sobre el negocio, devuelve los campos que deberían
+actualizarse.
+
+Si la respuesta NO aporta información importante
+para el contexto general del negocio, no actualices.
+
+IMPORTANTE:
+
+- No inventes información.
+- No modifiques información sin evidencia.
+- No copies información innecesariamente.
+- No incluyas información específica que solamente
+  sirve para responder esta pregunta.
+- El contexto debe representar el negocio completo.
+- Si la respuesta contradice claramente el contexto
+  actual, indícalo.
+- Devuelve únicamente JSON.
+
+Formato:
+
+{
+    "update_context": true,
+    "context_conflict": false,
+    "conflict_reason": null,
+    "updates": {
+        "business_name": null,
+        "business_sector": null,
+        "product_service": null,
+        "target_customer": null,
+        "main_problem": null,
+        "value_proposition": null
+    }
+}
+
+PROMPT;
+    }
 
     
 }

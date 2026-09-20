@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Http\Requests\Plan\StorePlanRequest;
+use App\Http\Requests\Plan\UpdatePlanRequest;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PlanResource;
@@ -22,9 +24,10 @@ class PlanesController extends Controller
                 'duration_days',
                 'max_sections',
                 'max_messages',
-                'max_exports'
+                'max_exports',
+                'is_active'
             ])
-            ->where('is_active', true)
+            ////->where('is_active', true)
             //->orderBy('price', 'asc')
             ->get();
 
@@ -79,5 +82,56 @@ class PlanesController extends Controller
         return response()->json($plan);
     }
 
-    // public function existPlanUsers()
+    public function show($id)
+    {
+        $plan = Plan::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $plan
+        ]);
+    }
+
+    public function store(StorePlanRequest $request)
+    {
+        $data = $request->validated();
+        $data['is_active'] = $request->input('is_active', 1);
+
+        $plan = Plan::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Plan creado correctamente',
+            'data'    => $plan
+        ], 201);
+    }
+
+    public function update(UpdatePlanRequest $request, $id)
+    {
+        $plan = Plan::findOrFail($id);
+        $data = array_filter($request->validated(), fn($value) => !is_null($value));
+
+        $plan->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Plan actualizado correctamente',
+            'data'    => $plan
+        ]);
+    }
+
+    public function toggleStatus($id)
+    {
+        $plan = Plan::findOrFail($id);
+        $plan->is_active = $plan->is_active ? 0 : 1;
+        $plan->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado del plan actualizado',
+            'data'    => $plan
+        ]);
+    }
+
+    
 }

@@ -624,6 +624,42 @@ CREATE TABLE user_answers_diagnostic (
 ALTER TABLE questions
 ADD COLUMN updated_at TIMESTAMP NULL DEFAULT NULL;
 
+-- =========================
+CREATE TABLE thesis_context (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+
+    conversation_id BIGINT NOT NULL,
+    user_plan_id BIGINT NOT NULL,
+
+    business_name VARCHAR(255),
+    business_sector VARCHAR(255),
+
+    product_service TEXT,
+    target_customer TEXT,
+    main_problem TEXT,
+    value_proposition TEXT,
+
+    context_summary LONGTEXT,
+
+    embedding JSON NULL,
+
+    confidence DECIMAL(5,2) DEFAULT 0,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE (conversation_id),
+
+    FOREIGN KEY (conversation_id)
+        REFERENCES conversations(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (user_plan_id)
+        REFERENCES user_plan(id)
+        ON DELETE CASCADE
+);
+
 
 
 

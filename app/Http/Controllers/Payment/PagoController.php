@@ -18,6 +18,7 @@ use App\Models\Package;
 use App\Models\CouponRedemption;
 use Illuminate\Support\Facades\Log;
 use App\Models\Conversation;
+use App\Models\UserSubscription;
 
 use Illuminate\Support\Facades\Validator;
 
@@ -437,7 +438,7 @@ class PagoController extends Controller
     }
 
     // VER todos los pagos realizados 
-    public function getPayments()
+    public function getPayments()   
     {
         $user = auth()->user();
 
@@ -447,7 +448,9 @@ class PagoController extends Controller
 
         $conversations = Conversation::with([
             'userPlan.user',
+            'userPlan.plan',
             'subscription.plan',
+            'subscription.package',
             'subscription.payments',
         ])->get();
 
@@ -456,29 +459,88 @@ class PagoController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
+                'last_name' => $user->last_name,
             ],
 
             'conversations' => $conversations->map(function ($conversation) {
 
-                return [
-                    'id' => $conversation->id,
+            $lastPayment = $conversation->subscription?->payments?->last();
 
-                    'user' => [
+                return [
+                        'id' => $conversation->id,
+                        'user' => [
                         'id' => $conversation->userPlan?->user?->id,
                         'name' => $conversation->userPlan?->user?->name,
+                        'last_name' => $conversation->userPlan?->user?->last_name, // 👈 Añadido
+                        'email' => $conversation->userPlan?->user?->email,
                     ],
 
                     'status' => $conversation->status,
                     'title' => $conversation->title,
 
-                    'plan_name' => $conversation->subscription?->plan?->name,
+        
+                    'package_name' => $conversation->subscription?->package?->name ?? 'Sin paquete',
+                    'plan_name' => $conversation->subscription?->plan?->name
+                    ?? $conversation->userPlan?->plan?->name,
 
-                    'payments' => $conversation->subscription?->payments,
+                    'amount' => $lastPayment?->final_amount ?? $lastPayment?->amount ?? 0,
+                    'operation_number' => $lastPayment?->operation_number,
+                    'payment_provider' => $lastPayment?->payment_provider,
+                    'payment_status' => $lastPayment?->status,
+                    'voucher_path' => $lastPayment?->voucher_path,
+                   'voucher_url' => $lastPayment?->voucher_path 
+                        ? (str_starts_with($lastPayment->voucher_path, 'http') 
+                         ? $lastPayment->voucher_path 
+                         : asset('storage/' . ltrim(str_replace('storage/', '', $lastPayment->voucher_path), '/')))
+                        : null,
+
+                // Mantenemos la lista completa por si la necesitas más adelante en el modal "Ver detalle"
+                'payments' => $conversation->subscription?->payments,
                 ];
             }),
         ];
 
-
         return response()->json($data);
+    }
+
+    public function approvePayment($paymentId)
+    {
+        $payment = Payments::findOrFail($paymentId);
+
+        DB::transaction(function () use ($payment) {
+            $payment->update([
+                'status' => 'completed'
+            ]);
+
+            if ($payment->subscription_id) {
+                UserSubscription::where('id', $payment->subscription_id)->update([
+                    'status' => 'active'
+                ]);
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pago validado'
+        ], 200);
+    }
+
+    public function rejectPayment($paymentId)
+    {
+        $payment = Payments::findOrFail($paymentId);
+
+        DB::transaction(function () use ($payment) {
+            $payment->update(['status' => 'failed']);
+
+            if ($payment->subscription_id) {
+                UserSubscription::where('id', $payment->subscription_id)
+                    ->update(['status' => 'cancelled']);
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pago rechazado correctamente'
+        ]);
     }
 }

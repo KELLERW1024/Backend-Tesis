@@ -196,6 +196,36 @@ class ConversationService
                 ->toArray();
     }
 
+   public function getHistorysentens(int $idConversation): array
+{
+    return UserAnswers::where('user_answers.conversation_id', $idConversation)
+
+        ->join('questions', 'questions.id', '=', 'user_answers.question_id')
+        ->join('plan_node', 'plan_node.id', '=', 'questions.plan_node_id')
+        ->select('user_answers.*', 'plan_node.parent_id', 'plan_node.id as node_id')
+        ->orderBy('user_answers.created_at', 'asc')
+        ->get()
+
+        ->filter(function ($row) {
+            return !empty($row->answer_text);
+        })
+
+        ->groupBy(function ($row) {
+            return $row->parent_id ?? $row->node_id;
+        })
+        ->flatMap(function ($group) {
+            return $group->take(4);
+        })
+
+        ->map(function ($row) {
+            return [
+                'role' => 'user',
+                'content' => $row->answer_text,
+            ];
+        })
+        ->values()
+        ->toArray();
+}
 
     public function saveMessage(array $data, String $message , String $role )
     {
