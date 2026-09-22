@@ -63,7 +63,6 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::post('packages/{id}/plans', [PackageController::class, 'syncPackagePlans']);
 
 
-
     Route::post('/conversation/validateAnswerResponse',[IaController::class,'validateAnswerResponse']);
     // Route::post('/conversation/validateanswer',[IaController::class,'validateAnswer']);
 
@@ -104,13 +103,13 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::post('/mp/webhook', [WebhookController::class, 'handle']);
 
-
-
     Route::get('/download',[DocumentController::class,'generarDocument']);
-
 
     Route::get('/diagnostic/nextquestion',[DocumentController::class,'nextQuestion']);
 
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::post('/profile', [AuthController::class, 'updateProfile']);
+    
     // ============================================
     // STRUCTURE
     // ============================================

@@ -270,6 +270,23 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout()
+{
+    try {
+        auth('api')->logout();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sesión cerrada correctamente'
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Token inválido o expirado'
+        ], 200); // 200 para permitir que el front continúe con la limpieza local
+    }
+}
+
     // 
     public function resetPasswordLink(Request $request)
     {
@@ -314,5 +331,60 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Contraseña actualizada correctamente. Ahora puedes iniciar sesión con la nueva contraseña.'
         ]);
-    } 
+    }
+    
+    public function profile()
+{
+    $user = auth('api')->user();
+
+    return response()->json([
+        'status' => 'success',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'role_id' => $user->role_id,
+            'created_at' => $user->created_at->format('d/m/Y')
+        ]
+    ], 200);
+}
+
+public function updateProfile(Request $request)
+{
+    $user = auth('api')->user();
+
+    $request->validate([
+        'name' => 'required|string|max:150',
+        'last_name' => 'required|string|max:150',
+        'current_password' => 'nullable|string|min:6',
+        'new_password' => 'nullable|string|min:6|confirmed',
+    ]);
+
+    $user->name = $request->name;
+    $user->last_name = $request->last_name;
+
+    if ($request->filled('new_password')) {
+        if (!$request->filled('current_password') || !Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La contraseña actual no coincide'
+            ], 422);
+        }
+        $user->password = Hash::make($request->new_password);
+    }
+
+    $user->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Perfil actualizado correctamente',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+        ]
+    ], 200);
+    }
 }

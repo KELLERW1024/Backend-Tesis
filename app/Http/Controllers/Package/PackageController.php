@@ -9,20 +9,31 @@ use App\Models\Plan;
 use Illuminate\Http\Request;
 use App\Models\Package;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 
 class PackageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $packages = Package::orderBy('id', 'desc')
-                // ->with('plans')
-                ->get();
+        $query = Package::query();
+
+        if ($request->boolean('active_only')) {
+            $query->where('is_active', 1);
+            // ÚNICAMENTE los planes activos
+            $query->with(['plans' => function ($q) {
+                $q->where('is_active', 1);
+            }]);
+        } else {
+            // Para el panel administrativo traemos todos los planes vinculados
+            $query->with('plans');
+        }
+        $packages = Package::orderBy('id', 'desc')->get();
 
         return response()->json([
             'success' => true,
             'data' => $packages
-        ]);
+        ], 200);
     }
 
     public function getPackagePlans( Request $request )
@@ -35,7 +46,9 @@ class PackageController extends Controller
 
         $idPackage = $request->idPackage;
 
-        $package = Package::with('plans')->findOrFail( $idPackage );
+        $package = Package::with(['plans' => function ($q) {
+            $q->where('is_active', 1);
+        }])->findOrFail($idPackage);
 
         return response()->json([
             'success' => true,
@@ -106,11 +119,15 @@ class PackageController extends Controller
     {
         $request->validate([
             'plans'   => 'present|array',
-            'plans.*' => 'integer|exists:plans,id'
+            'plans.*' => [
+                    'integer',
+                    Rule::exists('plans', 'id')->where(function ($query) {
+                        $query->where('is_active', 1);
+                    })
+            ]
         ]);
 
         $package = Package::findOrFail($id);
-        
         $package->plans()->sync($request->plans);
 
         return response()->json([
