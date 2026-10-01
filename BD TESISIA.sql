@@ -660,6 +660,9 @@ CREATE TABLE thesis_context (
         ON DELETE CASCADE
 );
 
+ALTER TABLE conversations
+ADD COLUMN status_structure TINYINT(1) NOT NULL DEFAULT 0;
+
 
 
 
