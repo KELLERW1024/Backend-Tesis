@@ -123,7 +123,6 @@ class ConversationController extends Controller
              
             $conversationService->registerPlanNodesUser( $planNodes, $questions , $planId, $userPlanId);
             
-
             foreach ($validated['questions'] as $question) {
 
                 \Log::info('Pregunta y respuesta', [
@@ -162,7 +161,69 @@ class ConversationController extends Controller
         }
     }
 
-    
+    public function assistantChat(Request $request)
+    {
+        $validated = $request->validate([
+            'idConversation' => 'required|integer|exists:conversations,id',
+            'idQuestion' => 'required|integer|exists:questions,id',
+            'messages' => 'nullable|array',
+            'messages.*.role' => 'required|in:user,assistant',
+            'messages.*.content' => 'required|string',
+            'user_message' => 'nullable|string',
+        ]);
+
+        $conversation = Conversation::with(['userPlan.plan'])->findOrFail($validated['idConversation']);
+
+        if (!$this->isPaymentCompleted($conversation)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Acceso denegado. Pago no aprobado.'
+            ], 403);
+        }
+
+        $question = Question::with('planNode')->findOrFail($validated['idQuestion']);
+
+        // Historial completo de respuestas acumuladas en la tesis
+        $thesisHistory = $this->conversationService->getHistorysentens($conversation->id);
+
+        $chatMessages = $validated['messages'] ?? [];
+        if (!empty($validated['user_message'])) {
+            $chatMessages[] = [
+                'role' => 'user',
+                'content' => $validated['user_message']
+            ];
+        }
+
+        $prompt = $this->promptService->promptAssistantCoCreation([
+            'question' => $question->question_text,
+            'detail' => $question->question_detail,
+            'objective' => $question->planNode?->objective ?? $question->planNode?->titulo,
+            'thesis_history' => $thesisHistory,
+            'chat_messages' => $chatMessages,
+        ]);
+
+        try {
+            $aiResult = $this->openAIService->json($prompt);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'chat_message' => $aiResult['chat_message'] ?? '',
+                    'draft_text' => $aiResult['draft_text'] ?? '',
+                    'is_complete' => (bool)($aiResult['is_complete'] ?? false),
+                    'progress_percentage' => (int)($aiResult['progress_percentage'] ?? 20),
+                    'metrics_summary' => $aiResult['metrics_summary'] ?? null,
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Assistant AI error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al conectar con el asistente de redacción.'
+            ], 500);
+        }
+    }
+
     // =====================================================================================
     // GUARDA LAS RESPUESTAS DE CADA PREGUNTA
     // ======================================================================================
@@ -194,7 +255,6 @@ class ConversationController extends Controller
                 'all_request' => $request->all(),
             ]);
 
-
         $files = $request->file('files') ?? [];
         $metadata = json_decode($request->metadata, true) ?? [];
         $references = json_decode($request->references, true) ?? [];
@@ -221,8 +281,6 @@ class ConversationController extends Controller
                 ]
             ], 500);
         }
-
-        
     }
 
     // =====================================================================================
@@ -239,11 +297,12 @@ class ConversationController extends Controller
         $conversations = Conversation::with([
                             'subscription.package',
                             'subscription.payments',
-                            'sectionProgress.section',
-                            'userPlan'
+                            'userPlan.plan',
+                            'sectionProgress.section'  
                         ])->whereHas('userPlan', function ($query) use ($user) {
                             $query->where('user_id', $user->id);
                         })
+                        ->orderBy('id', 'desc')
                         ->get();
 
 
@@ -254,18 +313,23 @@ class ConversationController extends Controller
             ],
             'conversations' => $conversations->map(function ($conversation) {
 
-                $packageName = $conversation->subscription?->package?->name;
+                $package = $conversation->subscription?->package;
+                $packageName = $package?->name ?? 'Paquete general';
 
-                $planName = $conversation->plan?->name;
+
+                $packageIsActive = $package ? (bool) $package->is_active : true;
+                
+                $planName = $conversation->userPlan?->plan?->name ?? 'Plan asignado';
 
                 $paymentStatus = $conversation->subscription?->payments
                     ?->sortByDesc('created_at')
                     ->first()
-                    ?->status;
+                    ?->status ?? 'pending';
 
                 return [
                     'id' => $conversation->id,
                     'status' => $conversation->status,
+                    'package_is_active' => $packageIsActive,
                     'title' => $conversation->title,
                     'plan_name' => $planName,
                     'package_name' => $packageName,
@@ -301,10 +365,18 @@ class ConversationController extends Controller
             ], 404);
         }
 
+        if (!$this->isPaymentCompleted($conversation)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Acceso denegado. El pago de esta suscripción no está aprobado.'
+            ], 403);
+        }
+
         return response()->json([
             'exists' => true,
             'has_summary' => !empty($conversation->summary),
             'summary' => $conversation->summary,
+            'status_structure' => (int) ($conversation->status_structure ?? 0),
         ]);
 
     }
@@ -321,6 +393,12 @@ class ConversationController extends Controller
         $idConversation = $request->get('idConversation');
 
         $conversation = Conversation::findOrFail($idConversation);
+
+        if (!$this->isPaymentCompleted($conversation)) {
+            return response()->json([
+                'message' => 'Acceso denegado. El pago de esta suscripción no está aprobado.'
+            ], 403);
+        }
 
         $userPlanId = $conversation->user_plan_id;
 
@@ -396,6 +474,12 @@ class ConversationController extends Controller
             ], 404);
         }
 
+        if (!$this->isPaymentCompleted($conversation)) {
+            return response()->json([
+                'message' => 'Acceso denegado. El pago de esta suscripción no está aprobado.'
+            ], 403);
+        }
+        
         // =========================================================
         // 2. OBTENER EL USER PLAN
         // =========================================================
@@ -620,6 +704,7 @@ class ConversationController extends Controller
 
         return response()->json([
             'success' => true,
+            'status_structure' => (int) ($conversation?->status_structure ?? 0),
             'data' => $planNodes,
         ]);
 
@@ -733,6 +818,13 @@ class ConversationController extends Controller
             ], 404);
         }
 
+        if (!$this->isPaymentCompleted($conversation)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Acceso denegado. El pago de esta suscripción no está aprobado.'
+            ], 403);
+        }
+
        $planNodes = PlanNode::where('user_plan_id', $conversation->user_plan_id)
             ->with([
                 'questions' => function ($query) use ($idConversation) {
@@ -751,7 +843,6 @@ class ConversationController extends Controller
             ])
             ->orderBy('orden', 'asc')
             ->get();
-
 
             $imageOrden = 1;
             $tableOrden = 1;
@@ -935,6 +1026,10 @@ class ConversationController extends Controller
             ->values();
 
             if ($nodesWithoutQuestions->isEmpty()) {
+                $conversation->update([
+                    'status_structure' => 1
+                ]);
+                
                 return response()->json([
                     'success' => true,
                     'can_close' => true,
@@ -1045,7 +1140,7 @@ class ConversationController extends Controller
         | SI EXISTEN NODOS INCOMPLETOS
         |--------------------------------------------------------------------------
         */
-
+/*
         if ($nodesWithoutQuestions->isNotEmpty()) {
 
             return response()->json([
@@ -1065,13 +1160,16 @@ class ConversationController extends Controller
                 })->values(),
             ], 422);
         }
-
+ */
         /*
         |--------------------------------------------------------------------------
         | ESTRUCTURA CORRECTA
         |--------------------------------------------------------------------------
         */
-
+        $conversation->update([
+            'status_structure' => 1
+        ]);
+        
         return response()->json([
             'success' => true,
             'can_close' => true,
@@ -1079,6 +1177,19 @@ class ConversationController extends Controller
         ]);
     }
 
+    // =====================================================================================
+    // VALIDA SI LA CONVERSACIÓN CUENTA CON PAGO APROBADO
+    // =====================================================================================
+    private function isPaymentCompleted(Conversation $conversation): bool
+    {
+        $conversation->loadMissing('subscription.payments');
 
+        $paymentStatus = $conversation->subscription?->payments
+            ?->sortByDesc('created_at')
+            ->first()
+            ?->status;
+
+        return in_array(strtolower($paymentStatus ?? ''), ['completed', 'paid']);
+    }
     
 }

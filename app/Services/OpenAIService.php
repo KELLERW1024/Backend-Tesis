@@ -33,6 +33,7 @@ class OpenAIService
     public function json(string $prompt): array
     {
         $response = Http::withToken(config('services.openai.key'))
+          //->timeout(30)   
             ->post($this->url, [
                 'model' => 'gpt-4.1-mini',
                 'input' => $prompt,

@@ -16,6 +16,7 @@ class Conversation extends Model
         'title',
         'summary',
         'status',
+        'status_structure',
         'last_activity_at'
     ];
 

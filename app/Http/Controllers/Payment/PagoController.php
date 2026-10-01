@@ -446,14 +446,11 @@ class PagoController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $conversations = Conversation::with([
-            'userPlan.user',
-            'userPlan.plan',
-            'subscription.plan',
+        $payments = Payments::with([
+            'user',
             'subscription.package',
-            'subscription.payments',
-        ])->get();
-
+            'subscription.conversations.userPlan.plan',
+        ])->orderBy('id', 'desc')->get();
 
         $data = [
             'user' => [
@@ -462,40 +459,44 @@ class PagoController extends Controller
                 'last_name' => $user->last_name,
             ],
 
-            'conversations' => $conversations->map(function ($conversation) {
+            'conversations' => $payments->map(function ($payment) {
 
-            $lastPayment = $conversation->subscription?->payments?->last();
+                $packageName = $payment->subscription?->package?->name ?? 'Paquete personalizado';
+
+                // Obtenemos el primer plan vinculado
+                $primerPlan = $payment->subscription?->conversations
+                    ?->map(fn($conv) => $conv->userPlan?->plan?->name)
+                    ->filter()
+                    ->first();
 
                 return [
-                        'id' => $conversation->id,
-                        'user' => [
-                        'id' => $conversation->userPlan?->user?->id,
-                        'name' => $conversation->userPlan?->user?->name,
-                        'last_name' => $conversation->userPlan?->user?->last_name, // 👈 Añadido
-                        'email' => $conversation->userPlan?->user?->email,
+                    'id' => $payment->id,
+                    'payment_id' => $payment->id,
+                    'user' => [
+                        'id' => $payment->user?->id,
+                        'name' => $payment->user?->name,
+                        'last_name' => $payment->user?->last_name,
+                        'email' => $payment->user?->email,
                     ],
 
-                    'status' => $conversation->status,
-                    'title' => $conversation->title,
+                    'status' => $payment->subscription?->status ?? 'active',
+                    'title' => $packageName,
 
-        
-                    'package_name' => $conversation->subscription?->package?->name ?? 'Sin paquete',
-                    'plan_name' => $conversation->subscription?->plan?->name
-                    ?? $conversation->userPlan?->plan?->name,
+                    'package_name' => $packageName,
+                    'plan_name' => $primerPlan ?? $packageName,
 
-                    'amount' => $lastPayment?->final_amount ?? $lastPayment?->amount ?? 0,
-                    'operation_number' => $lastPayment?->operation_number,
-                    'payment_provider' => $lastPayment?->payment_provider,
-                    'payment_status' => $lastPayment?->status,
-                    'voucher_path' => $lastPayment?->voucher_path,
-                   'voucher_url' => $lastPayment?->voucher_path 
-                        ? (str_starts_with($lastPayment->voucher_path, 'http') 
-                         ? $lastPayment->voucher_path 
-                         : asset('storage/' . ltrim(str_replace('storage/', '', $lastPayment->voucher_path), '/')))
+                    'amount' => $payment->final_amount ?? $payment->amount ?? 0,
+                    'operation_number' => $payment->operation_number,
+                    'payment_provider' => $payment->payment_provider,
+                    'payment_status' => $payment->status,
+                    'voucher_path' => $payment->voucher_path,
+                    'voucher_url' => $payment->voucher_path 
+                        ? (str_starts_with($payment->voucher_path, 'http') 
+                            ? $payment->voucher_path 
+                            : asset('storage/' . ltrim(str_replace('storage/', '', $payment->voucher_path), '/')))
                         : null,
 
-                // Mantenemos la lista completa por si la necesitas más adelante en el modal "Ver detalle"
-                'payments' => $conversation->subscription?->payments,
+                    'payments' => [$payment],
                 ];
             }),
         ];

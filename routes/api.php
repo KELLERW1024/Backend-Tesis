@@ -24,12 +24,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('auth')->group(function ($router) {
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
     //Route::post('/forgot-password',[AuthController::class,'forgotPassword']);
     Route::post('/forgot-password-code',[AuthController::class,'forgotPasswordCode']);
-    Route::post('/reset-password',[AuthController::class,'resetPassword']);
-    //Route::post('/verify-code',[AuthController::class,'verifyCode']);
+   // Route::post('/reset-password',[AuthController::class,'resetPassword']);
+    Route::post('/verify-code',[AuthController::class,'verifyCode']);
     Route::post('/reset-password-code',[AuthController::class,'resetPasswordCode']);
 
 
@@ -37,6 +36,8 @@ Route::prefix('auth')->group(function ($router) {
 
 // Grupo protegido con middleware auth
 Route::middleware('auth:api')->group(function ($router) {
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // List-Users
     Route::get('/users', [UsersController::class, 'index']);
@@ -71,6 +72,8 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::post('/conversation/savereply',[ConversationController::class,'conversationSaveReply']);
     Route::post('/conversation/saveanswerdiagnostic',[ConversationController::class,'saveAnswerDiagnostic']);
+    
+    Route::post('/conversation/assistant-chat', [ConversationController::class, 'assistantChat']);
 
     //Route::get('/conversation/conversationprogress',[ConversationController::class,'conversationProgress']);
     Route::get('/conversation/conversationsUser',[ConversationController::class,'conversationsUser']);
