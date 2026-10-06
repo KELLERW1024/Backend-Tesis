@@ -663,6 +663,9 @@ CREATE TABLE thesis_context (
 ALTER TABLE conversations
 ADD COLUMN status_structure TINYINT(1) NOT NULL DEFAULT 0;
 
+ALTER TABLE plan_node
+ADD COLUMN execution_phase TINYINT NOT NULL DEFAULT 1;
+
 
 
 

@@ -23,6 +23,14 @@ class ThesisContextService
         string $answer
     ): ThesisContext {
 
+        \Log::info('=== INICIO updateContextFromAnswer ===', [
+            'conversation_id' => $conversationId,
+            'user_plan_id' => $userPlanId,
+            'question_id' => $questionId,
+            'answer_length' => strlen($answer),
+            'answer' => $answer,
+        ]);
+
         $question = Question::findOrFail($questionId);
 
         $context = ThesisContext::firstOrCreate(

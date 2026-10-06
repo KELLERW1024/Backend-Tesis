@@ -84,7 +84,8 @@ INFORMACIÓN PROPORCIONADA POR EL TESISTA:
 INSTRUCCIÓN PRINCIPAL:
 
 Transforma la información proporcionada por el tesista en una respuesta académica profesional que pueda incorporarse directamente en una tesis de sustentación. 
-Completar con la información previa que tenemos en el historial y hacer que forme parte del documento de tesis siguiendo una estricta correlación con las respuestas obtenidas anteriormente.
+Utilizar la información previa disponible en el historial únicamente para mantener la coherencia con las respuestas anteriores. No utilizar el historial para inventar, 
+asumir o completar información que no haya sido proporcionada o respaldada.
 
 La respuesta debe:
 
@@ -97,6 +98,30 @@ La respuesta debe:
 - Evitar expresiones informales o ambiguas.
 - Presentar argumentos claros y técnicamente consistentes.
 
+ESTILO Y FLUIDEZ DE REDACCIÓN:
+
+- Redacta de manera natural, fluida y académica, evitando estructuras repetitivas o mecánicas.
+- No inicies todos los párrafos utilizando el nombre del negocio, empresa, proyecto, producto o institución.
+- Utiliza el nombre del negocio únicamente cuando sea necesario para identificarlo o evitar ambigüedad.
+- Después de presentar inicialmente el sujeto principal, utiliza mecanismos de cohesión textual como pronombres, expresiones referenciales, sujetos implícitos, conectores y construcciones impersonales cuando corresponda.
+- Evita repetir innecesariamente el mismo sujeto al inicio de oraciones consecutivas.
+- No repitas una misma idea utilizando diferentes palabras. Cada párrafo debe aportar información nueva, desarrollar una idea o establecer una relación lógica con lo explicado anteriormente.
+- Evita reformular varias veces la misma información únicamente para aumentar la extensión de la respuesta.
+- Prioriza la continuidad lógica entre las oraciones y párrafos.
+- Varía la estructura sintáctica de las oraciones para evitar una redacción monótona.
+- No utilices expresiones como "El negocio denominado...", "El negocio...", "La empresa..." o el nombre del negocio al inicio de cada párrafo de manera sistemática.
+- Cuando el contexto permita identificar claramente el sujeto, omite su repetición.
+- Mantén siempre el significado original proporcionado por el tesista.
+
+CONTROL DE REDUNDANCIA:
+
+- Antes de desarrollar la respuesta, identifica qué información ya fue expresada dentro de la propia respuesta y evita repetirla.
+- Cada párrafo debe cumplir una función diferente dentro de la respuesta.
+- No repitas características del negocio, segmentos, canales de venta, productos, beneficios o problemas previamente explicados, salvo que sea necesario para desarrollar un aspecto diferente.
+- Cuando una información ya haya sido presentada, desarrolla sus implicancias, relación con la pregunta, características o consecuencias en lugar de volver a describirla.
+- No utilices sinónimos para repetir una misma idea.
+- La extensión de la respuesta debe estar determinada por la cantidad y complejidad de la información necesaria para responder la pregunta, no por la necesidad de alcanzar una determinada longitud.
+
 
 REGLAS SOBRE LA INFORMACIÓN DEL TESISTA:
 
@@ -108,17 +133,34 @@ REGLAS SOBRE LA INFORMACIÓN DEL TESISTA:
 
 REFERENCIAS Y CITAS:
 
-Analiza el siguiente contenido:
+REGLAS PARA LAS CITAS ACADÉMICAS:
 
-Reglas:
+* La necesidad de una cita depende del origen y naturaleza de la información utilizada, no del capítulo ni de si el texto fue generado por el tesista o por la IA.
+* Cuando una afirmación requiera respaldo académico y exista una fuente identificable en la información disponible, incorpora la cita correspondiente directamente dentro del texto de response.
+* Utiliza exclusivamente el formato de citación APA 7 para las citas dentro del texto.
+* Cuando una fuente se mencione por primera vez, utiliza preferentemente la forma narrativa completa, seguida de su abreviatura entre corchetes cuando corresponda. Ejemplo: Instituto Nacional de Estadística e Informática [INEI] (2022).
+* Después de haber introducido la abreviatura de una institución, puedes utilizar la forma abreviada en citas posteriores. Ejemplo: (INEI, 2022).
+* Cuando la información de una fuente respalde una afirmación concreta, coloca la cita inmediatamente después de la afirmación respaldada.
+* No coloques una cita al final de un párrafo si la fuente no respalda todas las afirmaciones contenidas en dicho párrafo.
+* Diferencia claramente entre la información respaldada por la fuente y las interpretaciones, análisis o conclusiones propias del proyecto.
+* No atribuyas a una fuente conclusiones que no estén respaldadas directamente por ella.
+* No inventes autores, instituciones, años ni fuentes.
+* Si no existe una fuente identificable para una afirmación, no inventes una cita.
+* La cita debe formar parte naturalmente de la redacción académica y no debe aparecer como un elemento aislado.
+* No agregues la referencia bibliográfica completa dentro de response. En esta etapa solamente deben generarse las citas dentro del texto.
 
-- Si no existen autores o fuentes identificables, retorna references como null .
-- Solo genera referencias cuando sean necesarias y exista información suficiente para identificarlas.
-- Utiliza formato APA 7ma edición.
-- Las referencias generadas deben estar relacionadas directamente con las ideas utilizadas en response.
-- Todas las referencias deben estar en formato APA 7ma edición de ser el caso.
-- Las referencias deben ser reales o plausibles académicamente.
-- Si agregas una referencia, incluye la cita correspondiente dentro del texto de response.
+
+REGLAS PARA REFERENCES:
+
+- Si no existen fuentes identificables utilizadas en response, retorna references como null.
+- Solo genera referencias cuando una fuente real haya sido utilizada o identificada y exista información suficiente para registrarla.
+- No generes referencias plausibles, hipotéticas o inventadas.
+- No completes mediante suposiciones los datos bibliográficos que no estén disponibles.
+- Si faltan datos esenciales para identificar una fuente, no generes esa referencia.
+- Utiliza formato APA 7.ª edición.
+- Cada elemento de references debe corresponder directamente a una fuente citada en response.
+- Si agregas una referencia, debe existir la cita correspondiente dentro de response.
+- Toda cita presente en response que corresponda a una fuente externa debe tener su fuente correspondiente en references cuando sea posible identificarla.
 
 
 FORMATO DE RESPUESTA:
@@ -158,83 +200,6 @@ RESTRICCIONES:
 
 TEXT;
 
-    public const PROMPT_ESPECIFICO_APA = <<<TEXT
-Ésta pregunta corresponde al [Capítulo] : [Descripcion Capítulo] , pero no incluir [Capítulo] : [Descripcion Capítulo] en la respuesta.
-
-Ésta es la pregunta: [Pregunta] que correponde al capítulo, esta su validacion: [Validacion] y esta la respuesta: [Respuesta] que ingresó el usuario,
-construir párrafos estrurando la idea a partir de las respuesta dada,  teniendo en cuenta el capítulo y descripción. 
-
-Si la respuesta no responde la pregunta ya no debes realizar la validacion, lo que  debes hacer es tomar la respuesta como una directiva válida y realizar lo que indica.
-Si algun parrafo pertenece a algun author ponerlo como cita en formato APA, toda la respuesta debe ir en response y  solo las bibliografias utilizadas iran en references
-donde debes actuar como un generador de bibliografía académica. 
-
-
-REGLAS:
-- No expliques nada.
-- No incluyas texto fuera del JSON.
-- Usa entre 3 y 6 referencias.
-- Todas las referencias deben estar en formato APA 7ma edición.
-- Las referencias deben ser reales o plausibles académicamente.
-- El contenido en "response" debe incluir citas en el texto cuando uses ideas de autores.
-- Si no usas autores explícitos en el texto, igual incluye referencias relacionadas.
-- Mantén coherencia temática entre el texto y las referencias.
-
-Devuelve ÚNICAMENTE un objeto JSON con la siguiente estructura:
-
-{
-    "is_valid" => true,
-  "response": "",
-  "references": [
-    {
-      "authors": [],
-      "title": "",
-      "year": "",
-      "source_type": "book | journal_article | web_page | report",
-      "url": "",
-      "apa_citation": ""
-    }
-  ]
-}
-
-TEXT;
-
-    public const PROMPT_INSTRUCCIONES = <<<TEXT
-1. No inventes datos. Si falta un dato crítico, señala la omisión y devuelve una alerta accionable.
-2. Distingue dato del usuario, dato primario levantado por el usuario y dato externo verificable.
-3. Cuando uses fuente externa, cita en APA 7 dentro del texto y agrega la referencia al acumulador final.
-4. Cuando el dato sea del usuario, no cites; si ayuda a la claridad, rotula como “Dato proporcionado por el usuario”.
-5. Si el capítulo genera tabla o figura, deja lista la estructura con número, título y nota APA.
-6. Cierra el capítulo con un breve juicio ejecutivo: qué muestra el capítulo y qué riesgo o fortaleza revela.
- 
-TEXT;
-
-    public const PROMPT_ENSAMBLADO= <<<TEXT
-Ensambla el documento final de Perfil de Negocio Rural con esta lógica:
-portada e índices según plantilla institucional;
-cuerpo del documento con capítulos en el orden oficial;
-tablas y figuras numeradas consecutivamente;
-conclusiones y recomendaciones alineadas a lo hallado;
-sección final de referencias y anexos.
-Antes de cerrar, valida coherencia entre:
-- cifras citadas en el texto y tablas,
-- citas y referencias,
-- anexos mencionados y anexos incluidos,
-- alertas detectadas y recomendaciones finales.
- 
-TEXT;
-
-    public const PROMPT_CHECKFINAL= <<<TEXT
-Revisa y devuelve estado de cumplimiento:
-1. ¿Hay datos críticos faltantes?
-2. ¿Se mezclaron datos del usuario con datos externos sin distinguirlos?
-3. ¿Todas las fuentes externas están citadas y referenciadas?
-4. ¿Existen referencias no citadas?
-5. ¿Las tablas y figuras tienen número, título y nota cuando corresponde?
-6. ¿Las conclusiones realmente se desprenden del análisis?
-7. ¿El documento está listo para exportarse sin observaciones mayores?
-Responde con semáforo: verde, amarillo o rojo, y lista puntual de correcciones.
- 
-TEXT;
 
 public const PROMPT_IMAGEN = <<<TEXT
 Crea una escena fotográfica realista basada en el estricto significado del siguiente concepto:
@@ -272,9 +237,3 @@ TEXT;
 
 
 }
-
-   
-
-//Éstas son las preguntas: [Preguntas] y estas son las respuestas: [Respuestas], que ingresó el usuario,
-//a partir de ello verificar si las repuestas responden a las preguntas, construir párrafos de 5 a 8 líneas, máximo de 5 párrafos,
-//estrurando la idea a partir de las respuestas dadas. Si alguna pregunta no ha sido respodida, solicitarla para poder construir los párrafos.

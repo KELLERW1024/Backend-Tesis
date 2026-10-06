@@ -9,6 +9,7 @@ use App\Models\Question;
 class PromptService
 {
 
+    // PROMPT DE VALIDACION DE RESPUESTA
     public function buildValidationPrompt(array $data): string
     {
         $sections = [];
@@ -25,7 +26,7 @@ class PromptService
             - La información obtenida previamente en otras preguntas.
 
             Debes analizar si la respuesta:
-            - Es hasta un 60% consistente con las respuestas anteriores o si es una directiva válida para la generación de la arespuesta.
+            - Es hasta un 80% consistente con las respuestas anteriores o si es una directiva válida para la generación de la respuesta.
 
             Si la respuesta es incompleta, complétalo siguiendo la data de las respuestas anteriores.
             Si la respuesta contradice información previa, indica la inconsistencia esto es crítico.
@@ -84,13 +85,13 @@ class PromptService
             90-100:
             Respuesta completa, académica, coherente y lista para integrarse en la tesis.
 
-            75-89:
+            85-89:
             Respuesta válida, por lo que debes completar la información faltante tomando la data hitorica.
 
-            50-74:
-            Respuesta parcialmente válida, por lo que debes completar la información faltante.
+            75-84:
+            Respuesta parcialmente válida, por lo que debes completar la información faltante solo si tenemos la información disponible, recuerda que no debes inventar información.
 
-            0-49:
+            0-74:
             Respuesta inválida, no responde la pregunta o no tiene contenido suficiente.
 
 
@@ -365,7 +366,6 @@ PROMPT;
 
         $response = implode("\n\n", $studentInput);
         
-        // if( !$isApa ){
             $promptEsp = strtr(
                 Prompts::PROMPT_ESPECIFICO,
                 [
@@ -375,7 +375,6 @@ PROMPT;
                     '[Objetivo]' => $data['objective'] ?? '',
                     '[Validacion]' => $data['validation'],
                     '[Respuesta]' => $response,
-                    // '[Apa]' => $data['apa'],
                 ]
             );
 
@@ -401,6 +400,7 @@ PROMPT;
         return $messages;
     }
 
+    // PARA INDICAR QUE LA INFORMACION SEA CONVERTIDA EN TABLA
     public function buildMessageTable(string $resp): string
     {
         return <<<PROMPT
@@ -434,7 +434,8 @@ PROMPT;
         null
         PROMPT;
     }
-
+    
+    // DIAGNOSTICO ESPECIFICO PARA VEFICAR EL RUBRO EY LOS NODOS DEL PLAN
     public function diagnosticRubroPlan( String $questionsAnswers ){
         $prompt = <<<PROMPT
 Eres un experto en clasificación de modelos de negocio.
@@ -510,7 +511,173 @@ PROMPT;
 
     }
 
-    public function promptFiltroNode( string $rubro,  array $nodesForAI ){
+    public function promptFiltroNode(string $rubro, array $nodesForAI)
+{
+    $nodesJson = json_encode(
+        $nodesForAI,
+        JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+    );
+
+    $prompt = <<<PROMPT
+
+Eres un experto en estructuración de planes de negocio y proyectos de tesis.
+
+Tu tarea es seleccionar, EXCLUSIVAMENTE de la lista de PLAN NODES proporcionada,
+los nodos que sean necesarios y pertinentes para construir un plan de negocio
+cuyo rubro principal es:
+
+RUBRO: {$rubro}
+
+OBJETIVO:
+
+Analiza los títulos disponibles y selecciona únicamente los nodos que sean
+pertinentes para el rubro indicado.
+
+La jerarquía de los nodos debe ser considerada ÚNICAMENTE para tomar la
+decisión de selección.
+
+IMPORTANTE: la jerarquía NO debe representarse en la respuesta.
+
+REGLAS OBLIGATORIAS:
+
+1. NO debes crear nuevos nodos.
+
+2. NO debes modificar ningún título.
+
+3. NO debes cambiar ningún ID.
+
+4. NO debes inventar IDs.
+
+5. Solo puedes seleccionar IDs que aparezcan exactamente en la lista
+   de PLAN NODES proporcionada.
+
+6. Debes considerar la relación entre capítulos, títulos y subtítulos
+   para determinar qué contenidos son pertinentes para el rubro.
+
+7. Si un capítulo o sección es necesario para desarrollar correctamente
+   el plan de negocio, debes incluir también los nodos dependientes que
+   sean necesarios.
+
+8. Los contenidos generales y fundamentales de un plan de negocio deben
+   conservarse cuando sean aplicables al rubro.
+
+9. Debes excluir únicamente los contenidos que claramente no correspondan
+   al rubro indicado.
+
+10. NO debes representar relaciones padre-hijo en la respuesta.
+
+11. NO debes utilizar la propiedad "children".
+
+12. NO debes anidar objetos dentro de otros objetos.
+
+13. NO debes agrupar nodos por capítulos.
+
+14. NO debes devolver una estructura jerárquica.
+
+15. La propiedad "nodes" DEBE ser siempre una lista PLANA.
+
+16. Cada elemento dentro de "nodes" DEBE contener únicamente la propiedad
+    "id".
+
+17. Todos los IDs seleccionados deben estar directamente dentro de
+    "nodes", incluso cuando un nodo sea hijo o nieto de otro nodo.
+
+18. Mantén el orden original en el que los IDs aparecen en la lista
+    de PLAN NODES.
+
+19. No devuelvas explicaciones, comentarios, texto adicional ni Markdown.
+
+20. La respuesta DEBE ser exclusivamente un JSON válido.
+
+FORMATO DE SALIDA OBLIGATORIO:
+
+{
+    "rubro": "{$rubro}",
+    "nodes": [
+        {
+            "id": 1
+        },
+        {
+            "id": 2
+        },
+        {
+            "id": 5
+        }
+    ]
+}
+
+EJEMPLO DE FORMATO CORRECTO:
+
+{
+    "rubro": "{$rubro}",
+    "nodes": [
+        {"id": 1},
+        {"id": 2},
+        {"id": 4},
+        {"id": 5},
+        {"id": 6},
+        {"id": 10},
+        {"id": 11}
+    ]
+}
+
+EJEMPLO DE FORMATO INCORRECTO:
+
+{
+    "rubro": "{$rubro}",
+    "nodes": [
+        {
+            "id": 4,
+            "children": [
+                {"id": 5},
+                {"id": 6}
+            ]
+        }
+    ]
+}
+
+El formato anterior es INCORRECTO.
+
+También es INCORRECTO devolver:
+
+{
+    "rubro": "{$rubro}",
+    "nodes": [
+        {
+            "id": 4,
+            "children": [
+                {
+                    "id": 5
+                }
+            ]
+        }
+    ]
+}
+
+La única estructura permitida es una lista PLANA de objetos con la propiedad
+"id".
+
+LISTA DE PLAN NODES:
+
+{$nodesJson}
+
+RECUERDA:
+
+- Selecciona únicamente nodos existentes.
+- Respeta los IDs originales.
+- Usa la jerarquía solamente para decidir qué nodos seleccionar.
+- NO devuelvas la jerarquía.
+- NO utilices "children".
+- NO anides nodos.
+- Todos los IDs seleccionados deben estar directamente dentro de "nodes".
+- Mantén el orden original.
+- Devuelve exclusivamente JSON válido.
+
+PROMPT;
+
+    return $prompt;
+}
+    public function promptFiltroNode1( string $rubro,  array $nodesForAI ){
         $nodesJson = json_encode(
     $nodesForAI,
     JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
@@ -690,6 +857,16 @@ PROMPT;
         Question $question,
         string $answer
     ): string {
+        \Log::info('=== INICIO promptUpdateThesisContext ===');
+
+        \Log::info('Datos recibidos en promptUpdateThesisContext:', [
+            'context_id' => $context->id ?? null,
+            'conversation_id' => $context->conversation_id ?? null,
+            'question_id' => $question->id ?? null,
+            'question' => $question->question ?? null,
+            'answer_length' => strlen($answer),
+            'answer' => $answer,
+        ]);
 
         return <<<PROMPT
 

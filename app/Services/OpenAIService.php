@@ -10,6 +10,9 @@ class OpenAIService
     public function chat(array|string $input): string
     {
         $response = Http::withToken(config('services.openai.key'))
+            ->retry(2, 1000, function ($exception) {
+                return $exception instanceof \Illuminate\Http\Client\ConnectionException;
+            })
             ->post($this->url, [
                 'model' => 'gpt-4.1-mini',
                 'input' => $input,
@@ -33,7 +36,10 @@ class OpenAIService
     public function json(string $prompt): array
     {
         $response = Http::withToken(config('services.openai.key'))
-          //->timeout(30)   
+          //->timeout(30)
+            ->retry(2, 1000, function ($exception) {
+                return $exception instanceof \Illuminate\Http\Client\ConnectionException;
+            })   
             ->post($this->url, [
                 'model' => 'gpt-4.1-mini',
                 'input' => $prompt,

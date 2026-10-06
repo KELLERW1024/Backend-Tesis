@@ -72,10 +72,10 @@ class ConversationController extends Controller
 
             $rubro = $result['rubro'];
 
-            // ACA SE REALIZA EL FILTRO PARA LA CRECAION DE LOS NUEVOS NODOS Y SUS PREGUNTAS. pOR AHORA SOLO PARA plan DE NEGOCIO
+            // ACA SE REALIZA EL FILTRO PARA LA CRECAION DE LOS NUEVOS NODOS Y SUS PREGUNTAS
             $plansNode = PlanNode::whereNull('user_plan_id')
                      ->where('plan_id', $planId)
-                     ->whereNotIn('id', [1, 2, 3, 139, 140])
+                    //  ->whereNotIn('id', [1, 2, 3, 139, 140])
                      ->oldest('id')
                      ->get();
 
@@ -102,6 +102,7 @@ class ConversationController extends Controller
 
             $promptFiltroNodes = $this->promptService->promptFiltroNode( $rubro, $nodesForAI ); 
 
+            // iNICIO NUEVA GENERACION DE NODOS => finalmente no se modifico el codigo peri el prompt node retornaba children al a;lgunas ocasiones y generaba el conflicto
             $resultFiltro = $this->openAIService->json($promptFiltroNodes);
 
             \Log::info('RESULTADO FILTRO NODES IA:', [
@@ -114,6 +115,8 @@ class ConversationController extends Controller
             $planNodes = PlanNode::whereIn('id', $nodeIdsFiltrados)
                 ->orderBy('id', 'asc')
                 ->get();
+
+            // FIN NUEVA GENERACION DE NODOS
 
             $questions = Question::whereIn('plan_node_id', $planNodes->pluck('id'))
                 ->orderBy('plan_node_id', 'asc')
@@ -160,6 +163,33 @@ class ConversationController extends Controller
             ], 500);
         }
     }
+    // FILTRA LOS NODOS A REGISTRARSE
+public function flattenNodeIds(array $nodes): array
+{
+    $ids = [];
+
+    foreach ($nodes as $node) {
+
+        if (!is_array($node)) {
+            continue;
+        }
+
+        // Agregar el ID del nodo actual
+        if (isset($node['id']) && is_numeric($node['id'])) {
+            $ids[] = (int) $node['id'];
+        }
+
+        // Recorrer los hijos
+        if (isset($node['subnodes']) && is_array($node['subnodes'])) {
+            $ids = array_merge(
+                $ids,
+                $this->flattenNodeIds($node['subnodes'])
+            );
+        }
+    }
+
+    return array_values(array_unique($ids));
+}
 
     public function assistantChat(Request $request)
     {
@@ -181,7 +211,9 @@ class ConversationController extends Controller
             ], 403);
         }
 
-        $question = Question::with('planNode')->findOrFail($validated['idQuestion']);
+        // Se consulta Question sin la relación inexistente planNode
+        $question = Question::findOrFail($validated['idQuestion']);
+        $planNode = \App\Models\PlanNode::find($question->plan_node_id);
 
         // Historial completo de respuestas acumuladas en la tesis
         $thesisHistory = $this->conversationService->getHistorysentens($conversation->id);
@@ -197,7 +229,7 @@ class ConversationController extends Controller
         $prompt = $this->promptService->promptAssistantCoCreation([
             'question' => $question->question_text,
             'detail' => $question->question_detail,
-            'objective' => $question->planNode?->objective ?? $question->planNode?->titulo,
+            'objective' => $planNode?->objective ?? $planNode?->titulo ?? '',
             'thesis_history' => $thesisHistory,
             'chat_messages' => $chatMessages,
         ]);
@@ -345,7 +377,8 @@ class ConversationController extends Controller
     // =====================================================================================
     // VERIFICA SI LA CONVERSACION YA CUENTA CON EL DIAGNOSTICO
     // ======================================================================================
-    public function getVerficationDiagnosticExist( Request $request ){
+    public function getVerficationDiagnosticExist( Request $request )
+    {
         $user = auth()->user();
 
         if (!$user) {
@@ -510,6 +543,7 @@ class ConversationController extends Controller
             }
         ])
             ->where('user_plan_id', $userPlanId)
+            ->where('execution_phase', 1) // ACA MODIFICAR DEPENDIENDO LAS FASES DEL NODO 
             ->orderBy('orden')
             ->orderBy('id')
             ->get();
@@ -572,6 +606,9 @@ class ConversationController extends Controller
         // 7. BUSCAR PREGUNTAS HASTA ENCONTRAR UNA QUE NECESITE
         //    SER RESPONDIDA POR EL USUARIO
         // =========================================================
+        $triggerAi = $request->boolean('trigger_ai', false);
+        $automaticAnswerCount = 0;
+        $maxAutomaticAnswers = 2;
 
         while (true) {
 
@@ -596,6 +633,17 @@ class ConversationController extends Controller
             $node = $result['node'];
             $question = $result['question'];
 
+            // Si la IA ya respondió 2 preguntas automáticamente
+            if (!$triggerAi || $automaticAnswerCount >= $maxAutomaticAnswers) {
+                return response()->json([
+                    'completed' => false,
+                    'plan_name' => $planName,
+                    'node' => $node,
+                    'parent_node' => $node->parent,
+                    'question' => $question
+                ]);
+            }
+
             // =====================================================
             // 8. OBTENER HISTORIAL ACTUALIZADO
             // =====================================================
@@ -614,6 +662,10 @@ class ConversationController extends Controller
             // 9. PREGUNTAR A LA IA SI PUEDE RESPONDERLA
             // =====================================================
 
+            $resultIA = null;
+
+            try {
+
             $promptQuestion =
                 $this->promptService->promptValidationRedundanceQuestion(
                     $history,
@@ -625,7 +677,18 @@ class ConversationController extends Controller
             \Log::info('RESPONSE VALIDACION', [
                 'question_id' => $question->id,
                 'resultIA' => $resultIA
-            ]);
+            ]); 
+            } catch (\Throwable $e) {
+                \Log::warning('Error o timeout al consultar IA en getConversationPlan: ' . $e->getMessage());
+
+                return response()->json([
+                    'completed' => false,
+                    'plan_name' => $planName,
+                    'node' => $node,
+                    'parent_node' => $node->parent,
+                    'question' => $question
+                ]);
+            }
 
             // =====================================================
             // 10. LA IA PUEDE RESPONDERLA AUTOMÁTICAMENTE
@@ -650,10 +713,12 @@ class ConversationController extends Controller
                     // del mismo request.
 
                     $answeredQuestionIds[] = $question->id;
+                    $automaticAnswerCount++;// Sumamos al contador consecutivo
 
                     \Log::info('PREGUNTA RESPONDIDA AUTOMATICAMENTE', [
                         'conversation_id' => $idConversation,
                         'question_id' => $question->id,
+                        'consecutive_count' => $automaticAnswerCount,
                         'response' => $responseAutomatic
                     ]);
 
@@ -699,6 +764,7 @@ class ConversationController extends Controller
         $userPlanId = $conversation?->user_plan_id;
 
         $planNodes = PlanNode::where('user_plan_id', $userPlanId )
+                // ->where('execution_phase', 1)  
                 ->orderBy('id', 'asc')
                 ->get();
 
