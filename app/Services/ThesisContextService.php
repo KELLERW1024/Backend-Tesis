@@ -187,12 +187,55 @@ class ThesisContextService
     }
 
     /**
+     * Convertir el contexto a un texto compacto para validar incongruencias.
+     * Si hay resumen_general (Cap 2+), lo usa junto con los datos específicos.
+     * Si no hay resumen (Cap 1), usa las últimas 5 respuestas del usuario.
+     */
+    public function buildValidationText(
+        int $conversationId
+    ): string {
+        $context = $this->getContext($conversationId);
+
+        $resumenGeneral = $context?->plan_context['resumen_general'] ?? null;
+        $assistantData = $context?->assistant_context ?? [];
+
+        // Si ya hay resumen general consolidado (Capítulo 2 en adelante)
+        if (!empty($resumenGeneral)) {
+            $texto = "RESUMEN CONSOLIDADO DEL PROYECTO:\n" . $resumenGeneral . "\n\n";
+
+            $datosValidos = array_filter($assistantData, fn($v) => !empty($v));
+            if (!empty($datosValidos)) {
+                $texto .= "DATOS CLAVE REGISTRADOS:\n";
+                foreach ($datosValidos as $k => $v) {
+                    $texto .= "- " . ucfirst(str_replace('_', ' ', $k)) . ": {$v}\n";
+                }
+            }
+            return trim($texto);
+        }
+
+        // Si estamos en el Capítulo 1 (aún no hay resumen general):
+        // Obtenemos las últimas 5 respuestas usando ConversationService
+        $conversationService = app(ConversationService::class);
+        $historial5 = $conversationService->getHistoryLimit10($conversationId);
+
+        if (!empty($historial5)) {
+            $texto = "RESPUESTAS PREVIAS DADAS POR EL USUARIO (CAPÍTULO 1):\n";
+            foreach ($historial5 as $item) {
+                $texto .= "- {$item['content']}\n\n";
+            }
+            return trim($texto);
+        }
+
+        return '';
+    }
+
+    /**
      * Convertir el contexto a un texto compacto.
      *
      * Este texto será útil para construir posteriormente
      * el prompt de validación.
      */
-    public function buildValidationText(
+    /*public function buildValidationText(
         int $conversationId
     ): string {
         $context = $this->getContext($conversationId);
@@ -233,7 +276,7 @@ class ThesisContextService
 
         return implode("\n", $lines);
     }
-
+*/
     // ===========================================
     // FIN OBNTENER CONTEXTO COMPARAR
     // ==========================================
@@ -249,6 +292,12 @@ public function validateResponseAgainstContext(
      */
     $contextText = $this->buildValidationText($conversationId);
 
+    \Log::info('CONTEXTO USADO PARA VALIDAR INCONGRUENCIA', [
+        'conversation_id' => $conversationId,
+        'es_resumen_general' => str_contains($contextText, 'RESUMEN CONSOLIDADO DEL PROYECTO:'),
+        'context_text' => $contextText
+    ]);
+    
     /*
      * Si todavía no existe contexto,
      * no podemos realizar una comparación.

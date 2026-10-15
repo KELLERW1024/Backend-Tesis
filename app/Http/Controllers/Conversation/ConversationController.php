@@ -211,13 +211,26 @@ public function flattenNodeIds(array $nodes): array
             ], 403);
         }
 
-        // Se consulta Question sin la relación inexistente planNode
         $question = Question::findOrFail($validated['idQuestion']);
         $planNode = \App\Models\PlanNode::find($question->plan_node_id);
 
-        // Historial completo de respuestas acumuladas en la tesis
-        $thesisHistory = $this->conversationService->getHistorysentens($conversation->id);
+        // =========================================================================
+        // OBTENER CONTEXTOS LIGEROS DE THESIS_CONTEXT (CERO BÚSQUEDAS PESADAS)
+        // =========================================================================
+        $thesisContext = \App\Models\ThesisContext::where('conversation_id', $conversation->id)->first();
 
+        $resumenGeneral = $thesisContext?->plan_context['resumen_general'] ?? null;
+        $assistantData = $thesisContext?->assistant_context ?? [
+            'nombre_proyecto_empresa' => null,
+            'alcance_geografico' => null,
+            'capacidad_operativa' => null,
+            'precio_o_tarifa' => null,
+            'costos_o_inversion' => null,
+            'demanda_o_volumen' => null,
+            'impacto_o_meta_financiera' => null,
+        ];
+
+        // Tomar únicamente los últimos 6 turnos para mantener el prompt ligero
         $chatMessages = $validated['messages'] ?? [];
         if (!empty($validated['user_message'])) {
             $chatMessages[] = [
@@ -225,17 +238,53 @@ public function flattenNodeIds(array $nodes): array
                 'content' => $validated['user_message']
             ];
         }
+        $chatMessages = array_slice($chatMessages, -6);
 
+        // Construir el prompt con solo la información esencial
         $prompt = $this->promptService->promptAssistantCoCreation([
             'question' => $question->question_text,
             'detail' => $question->question_detail,
             'objective' => $planNode?->objective ?? $planNode?->titulo ?? '',
-            'thesis_history' => $thesisHistory,
+            'resumen_general' => $resumenGeneral,
+            'assistant_context' => $assistantData,
             'chat_messages' => $chatMessages,
         ]);
 
         try {
             $aiResult = $this->openAIService->json($prompt);
+
+            
+            // LOG 1: Ver qué respondió el agente y qué datos específicos detectó
+            \Log::info("AGENTE IA - RESPUESTA RECIBIDA", [
+                'conversation_id' => $conversation->id,
+                'question_id' => $question->id,
+                'progress_percentage' => $aiResult['progress_percentage'] ?? null,
+                'is_complete' => $aiResult['is_complete'] ?? null,
+                'updated_specific_data_detectado' => $aiResult['updated_specific_data'] ?? [],
+            ]);
+            
+            // =========================================================================
+            // ACTUALIZAR DATOS ESPECÍFICOS EN ASSISTANT_CONTEXT SI EL AGENTE EXTRAJO ALGO
+            // =========================================================================
+            if (!empty($aiResult['updated_specific_data']) && is_array($aiResult['updated_specific_data'])) {
+                $hasChanges = false;
+                foreach ($aiResult['updated_specific_data'] as $key => $val) {
+                    $valorActual = trim((string)($assistantData[$key] ?? ''));
+                    $nuevoValor = trim((string)$val);
+
+                    if ($valorActual === '' && $nuevoValor !== '') {
+                        $assistantData[$key] = $nuevoValor;
+                        $hasChanges = true;
+
+                    }
+                }
+
+                if ($hasChanges && $thesisContext) {
+                    $thesisContext->assistant_context = $assistantData;
+                    $thesisContext->save();
+                    
+                }
+            }
 
             return response()->json([
                 'success' => true,
@@ -543,10 +592,41 @@ public function flattenNodeIds(array $nodes): array
             }
         ])
             ->where('user_plan_id', $userPlanId)
-            ->where('execution_phase', 1) // ACA MODIFICAR DEPENDIENDO LAS FASES DEL NODO 
+            ->where('execution_phase', 1) 
             ->orderBy('orden')
             ->orderBy('id')
             ->get();
+
+            // Verificamos si en la Fase 1 aún queda alguna pregunta sin responder
+        $hasPendingPhase1 = false;
+        foreach ($nodes as $nodeItem) {
+            foreach ($nodeItem->questions as $qItem) {
+                if (!in_array($qItem->id, $answeredQuestionIds)) {
+                    $hasPendingPhase1 = true;
+                    break 2;
+                }
+            }
+        }
+
+        // Si la Fase 1 ya terminó por completo, pasamos automáticamente a la Fase 2
+        if (!$hasPendingPhase1) {
+            $nodes = PlanNode::with([
+                'questions' => function ($query) {
+                    $query->orderBy('order_index');
+                }
+            ])
+                ->where('user_plan_id', $userPlanId)
+                ->where('execution_phase', 2)
+                ->orderBy('orden')
+                ->orderBy('id')
+                ->get();
+
+            \Log::info("FASE 1 COMPLETADA -> INICIANDO FASE 2 (SÍNTESIS FINAL)", [
+                'conversation_id' => $idConversation,
+                'user_plan_id' => $userPlanId,
+                'total_nodos_fase_2' => $nodes->count(),
+            ]);
+        }
 
         // =========================================================
         // 5. AGRUPAR NODOS POR PADRE
@@ -648,16 +728,34 @@ public function flattenNodeIds(array $nodes): array
             // 8. OBTENER HISTORIAL ACTUALIZADO
             // =====================================================
 
-            $history = $this->conversationService->getHistoryLimit10(
-                $idConversation
-            );
+            $thesisContext = \App\Models\ThesisContext::where('conversation_id', $idConversation)->first();
+            $resumenGeneral = $thesisContext?->plan_context['resumen_general'] ?? null;
+            $assistantData = $thesisContext?->assistant_context ?? [];  
 
-            \Log::info('HISTORY', [
+            // Filtrar solo los datos específicos que realmente tengan información (no nulos ni vacíos)
+            $datosEspecificosLimpios = array_filter($assistantData, fn($val) => !empty($val));
+
+            // Si ya existe resumen consolidado
+            if (!empty($resumenGeneral)) {
+                $contextoParaValidar = "RESUMEN GENERAL CONSOLIDADO DEL PROYECTO:\n" . $resumenGeneral . "\n\n";
+                
+                if (!empty($datosEspecificosLimpios)) {
+                    $contextoParaValidar .= "DATOS ESPECÍFICOS Y CUANTITATIVOS REGISTRADOS:\n";
+                    foreach ($datosEspecificosLimpios as $campo => $valor) {
+                        $contextoParaValidar .= "- " . ucfirst(str_replace('_', ' ', $campo)) . ": {$valor}\n";
+                    }
+                }
+            } else {
+                $contextoParaValidar = $this->conversationService->getHistoryLimit10($idConversation);
+            }
+
+            \Log::info('VALIDANDO PREGUNTA CON IA', [
                 'conversation_id' => $idConversation,
                 'question_id' => $question->id,
-                'history' => $history
+                'usando_resumen_general' => !empty($resumenGeneral),
+                'resumen_general_usado' => !empty($resumenGeneral) ? $resumenGeneral : 'Capítulo 1: Últimas 5 respuestas',
             ]);
-
+            
             // =====================================================
             // 9. PREGUNTAR A LA IA SI PUEDE RESPONDERLA
             // =====================================================
@@ -666,18 +764,18 @@ public function flattenNodeIds(array $nodes): array
 
             try {
 
-            $promptQuestion =
-                $this->promptService->promptValidationRedundanceQuestion(
-                    $history,
-                    $question->question_text
-                );
+                $promptQuestion =
+                    $this->promptService->promptValidationRedundanceQuestion(
+                        $contextoParaValidar,
+                        $question->question_text
+                    );
 
-            $resultIA = $this->openAIService->json($promptQuestion);
+                $resultIA = $this->openAIService->json($promptQuestion);
 
-            \Log::info('RESPONSE VALIDACION', [
-                'question_id' => $question->id,
-                'resultIA' => $resultIA
-            ]); 
+                \Log::info('RESPONSE VALIDACION', [
+                    'question_id' => $question->id,
+                    'resultIA' => $resultIA
+                ]); 
             } catch (\Throwable $e) {
                 \Log::warning('Error o timeout al consultar IA en getConversationPlan: ' . $e->getMessage());
 

@@ -52,11 +52,21 @@ class AIService
      * Analiza una respuesta utilizando el contexto
      * almacenado de la tesis.
      */
-    public function analizarIncongruencia(  int $conversationId,  string $pregunta,  string $respuesta ): array {
+   public function analizarIncongruencia(int $conversationId, string $pregunta, string $respuesta): array {
 
         $context = $this->obtenerContexto($conversationId);
 
-        if (!$context) {
+        // Pasamos $conversationId aquí
+        $contexto = $this->construirContexto($context, $conversationId);
+
+        \Log::info('EVALUANDO INCONGRUENCIA CON IA', [
+            'conversation_id' => $conversationId,
+            'pregunta' => $pregunta,
+            'respuesta' => $respuesta,
+            'contexto_usado' => $contexto,
+        ]);
+
+        if (empty(trim($contexto))) {
             return [
                 'hay_incongruencia' => false,
                 'nivel' => 'ninguno',
@@ -64,8 +74,6 @@ class AIService
                 'elementos_contradictorios' => [],
             ];
         }
-
-        $contexto = $this->construirContexto($context);
 
         $prompt = $this->construirPromptIncongruencia(
             $pregunta,
@@ -75,15 +83,52 @@ class AIService
 
         $resultado = $this->openAIService->json($prompt);
 
+        \Log::info('RESULTADO INCONGRUENCIA IA', [
+            'resultado' => $resultado
+        ]);
+
         return $this->normalizarResultado($resultado);
     }
 
+    private function construirContexto(?ThesisContext $context, int $conversationId): string {
+
+        $resumenGeneral = $context?->plan_context['resumen_general'] ?? null;
+        $assistantData = $context?->assistant_context ?? [];
+
+        // Si ya hay resumen general
+        if (!empty($resumenGeneral)) {
+            $texto = "RESUMEN CONSOLIDADO DEL PROYECTO:\n" . $resumenGeneral . "\n\n";
+
+            $datosValidos = array_filter($assistantData, fn($v) => !empty($v));
+            if (!empty($datosValidos)) {
+                $texto .= "DATOS CLAVE REGISTRADOS:\n";
+                foreach ($datosValidos as $k => $v) {
+                    $texto .= "- " . ucfirst(str_replace('_', ' ', $k)) . ": {$v}\n";
+                }
+            }
+            return trim($texto);
+        }
+
+        // Capítulo 1: Usamos app() para no romper dependencias circulares
+        $conversationService = app(ConversationService::class);
+        $historial5 = $conversationService->getHistoryLimit10($conversationId);
+
+        if (!empty($historial5)) {
+            $texto = "RESPUESTAS RECIENTES DADAS POR EL USUARIO (CAPÍTULO 1):\n";
+            foreach ($historial5 as $item) {
+                $texto .= "- {$item['content']}\n\n";
+            }
+            return trim($texto);
+        }
+
+        return '';
+    }
 
     /**
      * Convierte el registro de thesis_context
      * en texto para la IA.
      */
-    private function construirContexto( ThesisContext $context  ): string {
+    /*private function construirContexto( ThesisContext $context  ): string {
 
         return <<<CONTEXTO
 Nombre del negocio:
@@ -109,7 +154,7 @@ Resumen:
 CONTEXTO;
     }
 
-
+*/
     /**
      * Construye el prompt para detectar incongruencias.
      */
@@ -195,4 +240,98 @@ PROMPT;
                 : [],
         ];
     }
+
+    /**
+     * Procesa y consolida un capítulo terminado:
+    */
+    public function consolidarCapituloPlanContext(int $conversationId, int $numeroCapitulo, string $chapterTitle, array $qaList): void
+    {
+        $conversation = \App\Models\Conversation::find($conversationId);
+        if (!$conversation) return;
+
+        // Armamos el texto con las preguntas y respuestas del capítulo
+        $contenidoCapitulo = "";
+        foreach ($qaList as $item) {
+            $contenidoCapitulo .= "P: {$item['pregunta']}\n";
+            $contenidoCapitulo .= "R: {$item['respuesta']}\n\n";
+        }
+
+       // 1. Plantilla base fija obligatoria
+        $basePlanContext = [
+            'resumen_general' => null,
+            'cap_1' => null,
+            'cap_2' => null,
+            'cap_3' => null,
+            'cap_4' => null,
+            'cap_5' => null,
+            'cap_6' => null,
+            'cap_7' => null,
+            'cap_8' => null,
+            'cap_9' => null,
+            'cap_10' => null,
+        ];
+
+        // 2. Obtener o crear el registro thesis_context
+        // 2. Obtener o crear el registro thesis_context
+        $thesisContext = \App\Models\ThesisContext::firstOrCreate(
+            ['conversation_id' => $conversationId],
+            [
+                'user_plan_id' => $conversation->user_plan_id,
+                'assistant_context' => [
+                    'nombre_proyecto_empresa' => null,
+                    'alcance_geografico' => null,
+                    'capacidad_operativa' => null,
+                    'precio_o_tarifa' => null,
+                    'costos_o_inversion' => null,
+                    'demanda_o_volumen' => null,
+                    'impacto_o_meta_financiera' => null,
+                ],
+                'plan_context' => $basePlanContext
+            ]
+        );
+        
+        $planContext = array_merge($basePlanContext, $thesisContext->plan_context ?? []);
+        $resumenGeneralAnterior = $planContext['resumen_general'] ?? null;
+
+        $prompt = <<<PROMPT
+            Eres un director académico y metodológico de planes de negocio y proyectos de tesis.
+            Se ha completado el capítulo {$numeroCapitulo}: "{$chapterTitle}".
+
+            RESPUESTAS COMPLETADAS EN ESTE CAPÍTULO:
+            {$contenidoCapitulo}
+
+            RESUMEN GENERAL ACUMULADO PREVIO (Capítulos anteriores):
+            {$resumenGeneralAnterior}
+
+            Tu objetivo:
+            1. "resumen_capitulo": Redacta un resumen breve, preciso y sustancial de lo respondido en este capítulo (máximo 120-180 palabras), destacando datos clave, decisiones y cifras.
+            2. "nuevo_resumen_general": Si no había resumen general previo, usa el resumen de este capítulo. Si ya existía uno previo, intégralos en un solo texto fluido y unificado (máximo 120-1200 palabras) que sintetice toda la columna vertebral del proyecto hasta el momento.
+
+            RESPONDE ÚNICAMENTE CON ESTE FORMATO JSON:
+            {
+                "resumen_capitulo": "Texto del resumen del capítulo actual...",
+                "nuevo_resumen_general": "Texto consolidado de todos los capítulos hasta el actual..."
+            }
+            PROMPT;
+
+        try {
+            $resultado = $this->openAIService->json($prompt);
+
+            $claveCap = "cap_{$numeroCapitulo}";
+            $planContext[$claveCap] = $resultado['resumen_capitulo'] ?? '';
+            $planContext['resumen_general'] = $resultado['nuevo_resumen_general'] ?? $resultado['resumen_capitulo'] ?? '';
+
+            $thesisContext->plan_context = $planContext;
+            $thesisContext->save();
+
+            \Log::info("Capítulo {$numeroCapitulo} consolidado en plan_context", [
+                'clave' => $claveCap,
+                'conversation_id' => $conversationId
+            ]);
+
+        } catch (\Throwable $e) {
+            \Log::error("Error al consolidar plan_context capítulo {$numeroCapitulo}: " . $e->getMessage());
+        }
+    }
+
 }

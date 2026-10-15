@@ -1945,14 +1945,1765 @@ questions (
     'Para responder qué indicador verificará su cumplimiento, mencione los elementos indispensables para recomendaciones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: qué indicador verificará su cumplimiento.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué indicador verificará su cumplimiento y no sustituya este dato con información de otro apartado.'
+),
+
+-- PLAN DE MEJORA===============================================================
+-- Diagnóstico inicial
+(129,
+    'Describa brevemente la empresa, el area o proceso que desea mejorar y la situacion que le preocupa.',
+    'Incluya organización, proceso, personas afectadas, periodo y síntomas observados.',
+    '“Una empresa de mi ciudad presenta retrasos frecuentes en un proceso operativo y recibe reclamos por incumplimiento.”',
+    'No proponga todavía una solución ni confunda un síntoma con la causa.'
+),
+(129,
+    '¿La empresa ya funciona y cuenta con autorización para utilizar su información?',
+    'Precise antigüedad, responsable que autoriza, nivel de acceso y restricciones.',
+    '“La empresa opera actualmente y la gerencia autorizo el uso de registros anonimizados para el estudio.”',
+    'No incorpore información confidencial sin autorización y permisos de acceso.'
+),
+(129,
+    '¿Qué tipo de mejora parece necesitar principalmente?',
+    'Seleccione proceso, calidad, clientes, ventas, logística, personas, tecnología, finanzas, legal, ambiental o mixto.',
+    '“La necesidad principal es mejorar un proceso, con apoyo tecnológico e impacto en costos.”',
+    'La clasificación es preliminar y debe confirmarse después del diagnóstico.'
+),
+(129,
+    '¿Qué consecuencias visibles produce la situación?',
+    'Mencione costo, demora, error, merma, reclamo, venta perdida, riesgo o incumplimiento.',
+    '“La situación genera retrabajo, horas adicionales y reclamos recurrentes.”',
+    'No cuantifique sin unidad, periodo y evidencia.'
+),
+(129,
+    '¿Qué información o evidencias se encuentran disponibles?',
+    'Seleccione reportes, registros, entrevistas, encuestas, estados, fotografías, mediciones o sistemas.',
+    '“Existen registros de incidencias, tiempos de proceso y entrevistas con responsables.”',
+    'Indique fecha, responsable y confiabilidad de cada evidencia.'
+),
+(129,
+    '¿Qué sede, área, proceso y periodo se incluirán en el estudio?',
+    'Delimite inicio y fin del proceso, periodo, incluidos, excluidos y restricciones.',
+    '“Se estudiará el proceso principal de una sede durante los últimos seis meses; otras sedes quedan fuera.”',
+    'Un alcance demasiado amplio reduce profundidad y trazabilidad.'
+),
+(129,
+    '¿La propuesta se formulará, se probará mediante piloto o se implementará completamente?',
+    'Seleccione nivel de ejecución y explique que evidencia real podrá obtenerse.',
+    '“Se formulará la propuesta y se realizará una prueba piloto controlada.”',
+    'No declare resultados reales si la mejora no fue ejecutada.'
+),
+(129,
+    '¿Qué estructura institucional o cambios requiere el documento?',
+    'Use la estructura base y registre capítulos obligatorios, opcionales y modificaciones.',
+    '“Se mantendrá la estructura base y se agregará un subtitulo de impacto ambiental.”',
+    'Eliminar un apartado esencial debe activar advertencia y análisis de impacto.'
+),
+-- Resumen ejecutivo
+(130,
+    '¿Qué información aprobada debe incluir resumen ejecutivo?',
+    'Para responder “Que información aprobada debe incluir resumen ejecutivo”, concéntrese en sintetizar empresa, problema, método, causas, propuesta, costo, beneficio y viabilidad. Use datos correspondientes a resumen ejecutivo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En resumen ejecutivo, se registrará la situación actual, el periodo analizado y la evidencia disponible para sintetizar empresa, problema, método, causas, propuesta, costo, beneficio y viabilidad.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a resumen ejecutivo y no duplicar contenido de otro apartado.'
+),
+(130,
+    '¿Que evidencia y resultados sustentan resumen ejecutivo?',
+    'Para responder “Que evidencia y resultados sustentan resumen ejecutivo”, concéntrese en sintetizar empresa, problema, método, causas, propuesta, costo, beneficio y viabilidad. Use datos correspondientes a resumen ejecutivo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre resumen ejecutivo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a resumen ejecutivo y no duplicar contenido de otro apartado.'
+),
+(130,
+    '¿Qué control de coherencia y calidad debe superar resumen ejecutivo?',
+    'Para responder “Que control de coherencia y calidad debe superar resumen ejecutivo”, concéntrese en sintetizar empresa, problema, método, causas, propuesta, costo, beneficio y viabilidad. Use datos correspondientes a resumen ejecutivo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de resumen ejecutivo se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a resumen ejecutivo y no duplicar contenido de otro apartado.'
+),
+-- Introducción
+(131,
+    '¿Qué información aprobada debe incluir introducción?',
+    'Para responder “Que información aprobada debe incluir introducción”, concéntrese en presentar contexto, motivo, objetivo, método, alcance y organización. Use datos correspondientes a introducción, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En introducción, se registrará la situación actual, el periodo analizado y la evidencia disponible para presentar contexto, motivo, objetivo, método, alcance y organización.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a introducción y no duplicar contenido de otro apartado.'
+),
+(131,
+    '¿Que evidencia y resultados sustentan introducción?',
+    'Para responder “Que evidencia y resultados sustentan introducción”, concéntrese en presentar contexto, motivo, objetivo, método, alcance y organización. Use datos correspondientes a introducción, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre introducción.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a introducción y no duplicar contenido de otro apartado.'
+),
+(131,
+    '¿Qué control de coherencia y calidad debe superar introducción?',
+    'Para responder “Que control de coherencia y calidad debe superar introducción”, concéntrese en presentar contexto, motivo, objetivo, método, alcance y organización. Use datos correspondientes a introducción, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de introducción se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a introducción y no duplicar contenido de otro apartado.'
+),
+-- Situación inicial
+(133,
+    '¿Qué información concreta debe registrarse para describir la situación observada, el área, los afectados y el periodo?',
+    'Para responder “Que información concreta debe registrarse para describir la situación observada, el área, los afectados y el periodo”, concéntrese en describir la situación observada, el área, los afectados y el periodo. Use datos correspondientes a situación inicial, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En situación inicial, se registrará la situación actual, el periodo analizado y la evidencia disponible para describir la situación observada, el área, los afectados y el periodo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a situación inicial y no duplicar contenido de otro apartado.'
+),
+(133,
+    '¿Qué hechos, personas, periodo y evidencia respaldan situación inicial?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan situación inicial”, concéntrese en describir la situación observada, el área, los afectados y el periodo. Use datos correspondientes a situación inicial, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre situación inicial.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a situación inicial y no duplicar contenido de otro apartado.'
+),
+(133,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección situación inicial?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección situación inicial”, concéntrese en describir la situación observada, el área, los afectados y el periodo. Use datos correspondientes a situación inicial, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de situación inicial se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a situación inicial y no duplicar contenido de otro apartado.'
+),
+-- Identificación preliminar del problema
+(134,
+    '¿Qué información concreta debe registrarse para formular una brecha inicial sin confundir problema, causa y solución?',
+    'Para responder “Que información concreta debe registrarse para formular una brecha inicial sin confundir problema, causa y solución”, concéntrese en formular una brecha inicial sin confundir problema, causa y solución. Use datos correspondientes a identificación preliminar del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En identificación preliminar del problema, se registrará la situación actual, el periodo analizado y la evidencia disponible para formular una brecha inicial sin confundir problema, causa y solución.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a identificación preliminar del problema y no duplicar contenido de otro apartado.'
+),
+(134,
+    '¿Qué hechos, personas, periodo y evidencia respaldan identificación preliminar del problema?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan identificación preliminar del problema”, concéntrese en formular una brecha inicial sin confundir problema, causa y solución. Use datos correspondientes a identificación preliminar del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre identificación preliminar del problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a identificación preliminar del problema y no duplicar contenido de otro apartado.'
+),
+(134,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección identificación preliminar del problema?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección identificación preliminar del problema”, concéntrese en formular una brecha inicial sin confundir problema, causa y solución. Use datos correspondientes a identificación preliminar del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de identificación preliminar del problema se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a identificación preliminar del problema y no duplicar contenido de otro apartado.'
+),
+-- Evidencias iniciales
+(135,
+    '¿Qué información concreta debe registrarse para inventariar registros, documentos, testimonios y datos disponibles?',
+    'Para responder “Que información concreta debe registrarse para inventariar registros, documentos, testimonios y datos disponibles”, concéntrese en inventariar registros, documentos, testimonios y datos disponibles. Use datos correspondientes a evidencias iniciales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En evidencias iniciales, se registrará la situación actual, el periodo analizado y la evidencia disponible para inventariar registros, documentos, testimonios y datos disponibles.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a evidencias iniciales y no duplicar contenido de otro apartado.'
+),
+(135,
+    '¿Qué hechos, personas, periodo y evidencia respaldan evidencias iniciales?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan evidencias iniciales”, concéntrese en inventariar registros, documentos, testimonios y datos disponibles. Use datos correspondientes a evidencias iniciales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre evidencias iniciales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a evidencias iniciales y no duplicar contenido de otro apartado.'
+),
+(135,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección evidencias iniciales?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección evidencias iniciales”, concéntrese en inventariar registros, documentos, testimonios y datos disponibles. Use datos correspondientes a evidencias iniciales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de evidencias iniciales se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a evidencias iniciales y no duplicar contenido de otro apartado.'
+),
+-- Justificación del proyecto
+(136,
+    '¿Qué información concreta debe registrarse para demostrar importancia, urgencia, beneficiarios y costo de no actuar?',
+    'Para responder “Que información concreta debe registrarse para demostrar importancia, urgencia, beneficiarios y costo de no actuar”, concéntrese en demostrar importancia, urgencia, beneficiarios y costo de no actuar. Use datos correspondientes a justificación del proyecto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En justificación del proyecto, se registrará la situación actual, el periodo analizado y la evidencia disponible para demostrar importancia, urgencia, beneficiarios y costo de no actuar.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a justificación del proyecto y no duplicar contenido de otro apartado.'
+),
+(136,
+    '¿Qué hechos, personas, periodo y evidencia respaldan justificación del proyecto?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan justificación del proyecto”, concéntrese en demostrar importancia, urgencia, beneficiarios y costo de no actuar. Use datos correspondientes a justificación del proyecto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre justificación del proyecto.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a justificación del proyecto y no duplicar contenido de otro apartado.'
+),
+(136,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección justificación del proyecto?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección justificación del proyecto”, concéntrese en demostrar importancia, urgencia, beneficiarios y costo de no actuar. Use datos correspondientes a justificación del proyecto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de justificación del proyecto se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a justificación del proyecto y no duplicar contenido de otro apartado.'
+),
+-- Alcance y delimitación
+(137,
+    '¿Qué información concreta debe registrarse para definir sede, área, proceso, periodo, incluidos, excluidos y restricciones?',
+    'Para responder “Que información concreta debe registrarse para definir sede, área, proceso, periodo, incluidos, excluidos y restricciones”, concéntrese en definir sede, área, proceso, periodo, incluidos, excluidos y restricciones. Use datos correspondientes a alcance y delimitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En alcance y delimitación, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir sede, área, proceso, periodo, incluidos, excluidos y restricciones.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a alcance y delimitación y no duplicar contenido de otro apartado.'
+),
+(137,
+    '¿Qué hechos, personas, periodo y evidencia respaldan alcance y delimitación?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan alcance y delimitación”, concéntrese en definir sede, área, proceso, periodo, incluidos, excluidos y restricciones. Use datos correspondientes a alcance y delimitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre alcance y delimitación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a alcance y delimitación y no duplicar contenido de otro apartado.'
+),
+(137,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección alcance y delimitación?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección alcance y delimitación”, concéntrese en definir sede, área, proceso, periodo, incluidos, excluidos y restricciones. Use datos correspondientes a alcance y delimitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de alcance y delimitación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a alcance y delimitación y no duplicar contenido de otro apartado.'
+),
+-- Objetivos preliminares del estudio
+(138,
+    '¿Qué información concreta debe registrarse para orientar el diagnóstico y los resultados esperados?',
+    'Para responder “Que información concreta debe registrarse para orientar el diagnóstico y los resultados esperados”, concéntrese en orientar el diagnóstico y los resultados esperados. Use datos correspondientes a objetivos preliminares del estudio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En objetivos preliminares del estudio, se registrará la situación actual, el periodo analizado y la evidencia disponible para orientar el diagnóstico y los resultados esperados.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a objetivos preliminares del estudio y no duplicar contenido de otro apartado.'
+),
+(138,
+    '¿Qué hechos, personas, periodo y evidencia respaldan objetivos preliminares del estudio?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan objetivos preliminares del estudio”, concéntrese en orientar el diagnóstico y los resultados esperados. Use datos correspondientes a objetivos preliminares del estudio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre objetivos preliminares del estudio.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a objetivos preliminares del estudio y no duplicar contenido de otro apartado.'
+),
+(138,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección objetivos preliminares del estudio?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección objetivos preliminares del estudio”, concéntrese en orientar el diagnóstico y los resultados esperados. Use datos correspondientes a objetivos preliminares del estudio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de objetivos preliminares del estudio se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a objetivos preliminares del estudio y no duplicar contenido de otro apartado.'
+),
+-- Identificación de la empresa
+(140,
+    '¿Qué información concreta debe registrarse para registrar datos generales, actividad, ubicación, tamaño y antigüedad?',
+    'Para responder “Que información concreta debe registrarse para registrar datos generales, actividad, ubicación, tamaño y antigüedad”, concéntrese en registrar datos generales, actividad, ubicación, tamaño y antigüedad. Use datos correspondientes a identificación de la empresa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En identificación de la empresa, se registrará la situación actual, el periodo analizado y la evidencia disponible para registrar datos generales, actividad, ubicación, tamaño y antigüedad.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a identificación de la empresa y no duplicar contenido de otro apartado.'
+),
+(140,
+    '¿Qué hechos, personas, periodo y evidencia respaldan identificación de la empresa?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan identificación de la empresa”, concéntrese en registrar datos generales, actividad, ubicación, tamaño y antigüedad. Use datos correspondientes a identificación de la empresa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre identificación de la empresa.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a identificación de la empresa y no duplicar contenido de otro apartado.'
+),
+(140,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección identificación de la empresa?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección identificación de la empresa”, concéntrese en registrar datos generales, actividad, ubicación, tamaño y antigüedad. Use datos correspondientes a identificación de la empresa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de identificación de la empresa se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a identificación de la empresa y no duplicar contenido de otro apartado.'
+),
+-- Descripción del negocio
+(141,
+    '¿Qué información concreta debe registrarse para explicar oferta, clientes, canales, proveedores e ingresos?',
+    'Para responder “Que información concreta debe registrarse para explicar oferta, clientes, canales, proveedores e ingresos”, concéntrese en explicar oferta, clientes, canales, proveedores e ingresos. Use datos correspondientes a descripción del negocio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En descripción del negocio, se registrará la situación actual, el periodo analizado y la evidencia disponible para explicar oferta, clientes, canales, proveedores e ingresos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a descripción del negocio y no duplicar contenido de otro apartado.'
+),
+(141,
+    '¿Qué hechos, personas, periodo y evidencia respaldan descripción del negocio?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan descripción del negocio”, concéntrese en explicar oferta, clientes, canales, proveedores e ingresos. Use datos correspondientes a descripción del negocio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre descripción del negocio.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a descripción del negocio y no duplicar contenido de otro apartado.'
+),
+(141,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección descripción del negocio?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección descripción del negocio”, concéntrese en explicar oferta, clientes, canales, proveedores e ingresos. Use datos correspondientes a descripción del negocio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de descripción del negocio se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a descripción del negocio y no duplicar contenido de otro apartado.'
+),
+-- Direccionamiento estratégico
+(142,
+    '¿Qué información concreta debe registrarse para vincular misión, visión, valores y objetivos con la mejora?',
+    'Para responder “Que información concreta debe registrarse para vincular misión, visión, valores y objetivos con la mejora”, concéntrese en vincular misión, visión, valores y objetivos con la mejora. Use datos correspondientes a direccionamiento estratégico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En direccionamiento estratégico, se registrará la situación actual, el periodo analizado y la evidencia disponible para vincular misión, visión, valores y objetivos con la mejora.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a direccionamiento estratégico y no duplicar contenido de otro apartado.'
+),
+(142,
+    '¿Qué hechos, personas, periodo y evidencia respaldan direccionamiento estratégico?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan direccionamiento estratégico”, concéntrese en vincular misión, visión, valores y objetivos con la mejora. Use datos correspondientes a direccionamiento estratégico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre direccionamiento estratégico.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a direccionamiento estratégico y no duplicar contenido de otro apartado.'
+),
+(142,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección direccionamiento estratégico?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección direccionamiento estratégico”, concéntrese en vincular misión, visión, valores y objetivos con la mejora. Use datos correspondientes a direccionamiento estratégico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de direccionamiento estratégico se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a direccionamiento estratégico y no duplicar contenido de otro apartado.'
+),
+-- Organización
+(143,
+    '¿Qué información concreta debe registrarse para analizar áreas, puestos, funciones, autoridad y coordinación?',
+    'Para responder “Que información concreta debe registrarse para analizar áreas, puestos, funciones, autoridad y coordinación”, concéntrese en analizar áreas, puestos, funciones, autoridad y coordinación. Use datos correspondientes a organización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En organización, se registrará la situación actual, el periodo analizado y la evidencia disponible para analizar áreas, puestos, funciones, autoridad y coordinación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a organización y no duplicar contenido de otro apartado.'
+),
+(143,
+    '¿Qué hechos, personas, periodo y evidencia respaldan organización?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan organización”, concéntrese en analizar áreas, puestos, funciones, autoridad y coordinación. Use datos correspondientes a organización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre organización.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a organización y no duplicar contenido de otro apartado.'
+),
+(143,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección organización?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección organización”, concéntrese en analizar áreas, puestos, funciones, autoridad y coordinación. Use datos correspondientes a organización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de organización se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a organización y no duplicar contenido de otro apartado.'
+),
+-- Mapa general de procesos
+(144,
+    '¿Qué información concreta debe registrarse para ubicar procesos estratégicos, operativos, de apoyo y el proceso afectado?',
+    'Para responder “Que información concreta debe registrarse para ubicar procesos estratégicos, operativos, de apoyo y el proceso afectado”, concéntrese en ubicar procesos estratégicos, operativos, de apoyo y el proceso afectado. Use datos correspondientes a mapa general de procesos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En mapa general de procesos, se registrará la situación actual, el periodo analizado y la evidencia disponible para ubicar procesos estratégicos, operativos, de apoyo y el proceso afectado.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a mapa general de procesos y no duplicar contenido de otro apartado.'
+),
+(144,
+    '¿Qué hechos, personas, periodo y evidencia respaldan mapa general de procesos?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan mapa general de procesos”, concéntrese en ubicar procesos estratégicos, operativos, de apoyo y el proceso afectado. Use datos correspondientes a mapa general de procesos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre mapa general de procesos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a mapa general de procesos y no duplicar contenido de otro apartado.'
+),
+(144,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección mapa general de procesos?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección mapa general de procesos”, concéntrese en ubicar procesos estratégicos, operativos, de apoyo y el proceso afectado. Use datos correspondientes a mapa general de procesos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de mapa general de procesos se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a mapa general de procesos y no duplicar contenido de otro apartado.'
+),
+-- Trayectoria empresarial
+(145,
+    '¿Qué información concreta debe registrarse para explicar hitos y cambios relacionados con la situación actual?',
+    'Para responder “Que información concreta debe registrarse para explicar hitos y cambios relacionados con la situación actual”, concéntrese en explicar hitos y cambios relacionados con la situación actual. Use datos correspondientes a trayectoria empresarial, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En trayectoria empresarial, se registrará la situación actual, el periodo analizado y la evidencia disponible para explicar hitos y cambios relacionados con la situación actual.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a trayectoria empresarial y no duplicar contenido de otro apartado.'
+),
+(145,
+    '¿Qué hechos, personas, periodo y evidencia respaldan trayectoria empresarial?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan trayectoria empresarial”, concéntrese en explicar hitos y cambios relacionados con la situación actual. Use datos correspondientes a trayectoria empresarial, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre trayectoria empresarial.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a trayectoria empresarial y no duplicar contenido de otro apartado.'
+),
+(145,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección trayectoria empresarial?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección trayectoria empresarial”, concéntrese en explicar hitos y cambios relacionados con la situación actual. Use datos correspondientes a trayectoria empresarial, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de trayectoria empresarial se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a trayectoria empresarial y no duplicar contenido de otro apartado.'
+),
+-- Partes interesadas
+(146,
+    '¿Qué información concreta debe registrarse para identificar actores, expectativas, influencia y participación?',
+    'Para responder “Que información concreta debe registrarse para identificar actores, expectativas, influencia y participación”, concéntrese en identificar actores, expectativas, influencia y participación. Use datos correspondientes a partes interesadas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En partes interesadas, se registrará la situación actual, el periodo analizado y la evidencia disponible para identificar actores, expectativas, influencia y participación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a partes interesadas y no duplicar contenido de otro apartado.'
+),
+(146,
+    '¿Qué hechos, personas, periodo y evidencia respaldan partes interesadas?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan partes interesadas”, concéntrese en identificar actores, expectativas, influencia y participación. Use datos correspondientes a partes interesadas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre partes interesadas.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a partes interesadas y no duplicar contenido de otro apartado.'
+),
+(146,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección partes interesadas?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección partes interesadas”, concéntrese en identificar actores, expectativas, influencia y participación. Use datos correspondientes a partes interesadas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de partes interesadas se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a partes interesadas y no duplicar contenido de otro apartado.'
+),
+-- Metodologia del diagnostico
+(148,
+    '¿Qué información concreta debe registrarse para definir enfoque, técnicas, fuentes, periodo, muestra, limitaciones y confidencialidad?',
+    'Para responder “Que información concreta debe registrarse para definir enfoque, técnicas, fuentes, periodo, muestra, limitaciones y confidencialidad”, concéntrese en definir enfoque, técnicas, fuentes, periodo, muestra, limitaciones y confidencialidad. Use datos correspondientes a metodología del diagnóstico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En metodología del diagnóstico, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir enfoque, técnicas, fuentes, periodo, muestra, limitaciones y confidencialidad.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a metodología del diagnóstico y no duplicar contenido de otro apartado.'
+),
+(148,
+    '¿Qué hechos, personas, periodo y evidencia respaldan metodología del diagnóstico?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan metodología del diagnóstico”, concéntrese en definir enfoque, técnicas, fuentes, periodo, muestra, limitaciones y confidencialidad. Use datos correspondientes a metodología del diagnóstico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre metodología del diagnóstico.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a metodología del diagnóstico y no duplicar contenido de otro apartado.'
+),
+(148,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección metodología del diagnóstico?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección metodología del diagnóstico”, concéntrese en definir enfoque, técnicas, fuentes, periodo, muestra, limitaciones y confidencialidad. Use datos correspondientes a metodología del diagnóstico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de metodología del diagnóstico se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a metodología del diagnóstico y no duplicar contenido de otro apartado.'
+),
+-- Instrumentos y validación
+(149,
+    '¿Qué información concreta debe registrarse para diseñar y validar instrumentos alineados con las variables?',
+    'Para responder “Que información concreta debe registrarse para diseñar y validar instrumentos alineados con las variables”, concéntrese en diseñar y validar instrumentos alineados con las variables. Use datos correspondientes a instrumentos y validación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En instrumentos y validación, se registrará la situación actual, el periodo analizado y la evidencia disponible para diseñar y validar instrumentos alineados con las variables.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a instrumentos y validación y no duplicar contenido de otro apartado.'
+),
+(149,
+    '¿Qué hechos, personas, periodo y evidencia respaldan instrumentos y validación?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan instrumentos y validación”, concéntrese en diseñar y validar instrumentos alineados con las variables. Use datos correspondientes a instrumentos y validación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre instrumentos y validación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a instrumentos y validación y no duplicar contenido de otro apartado.'
+),
+(149,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección instrumentos y validación?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección instrumentos y validación”, concéntrese en diseñar y validar instrumentos alineados con las variables. Use datos correspondientes a instrumentos y validación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de instrumentos y validación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a instrumentos y validación y no duplicar contenido de otro apartado.'
+),
+-- Factores políticos y legales
+(150,
+    '¿Qué información concreta debe registrarse para evaluar normas, permisos y decisiones públicas materiales?',
+    'Para responder “Que información concreta debe registrarse para evaluar normas, permisos y decisiones públicas materiales”, concéntrese en evaluar normas, permisos y decisiones públicas materiales. Use datos correspondientes a factores políticos y legales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En factores políticos y legales, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar normas, permisos y decisiones públicas materiales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a factores políticos y legales y no duplicar contenido de otro apartado.'
+),
+(150,
+    '¿Qué hechos, personas, periodo y evidencia respaldan factores políticos y legales?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan factores políticos y legales”, concéntrese en evaluar normas, permisos y decisiones públicas materiales. Use datos correspondientes a factores políticos y legales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre factores políticos y legales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a factores políticos y legales y no duplicar contenido de otro apartado.'
+),
+(150,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección factores políticos y legales?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección factores políticos y legales”, concéntrese en evaluar normas, permisos y decisiones públicas materiales. Use datos correspondientes a factores políticos y legales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de factores políticos y legales se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a factores políticos y legales y no duplicar contenido de otro apartado.'
+),
+-- Factores económicos
+(151,
+    '¿Qué información concreta debe registrarse para evaluar variables que afectan costos, demanda y financiamiento?',
+    'Para responder “Que información concreta debe registrarse para evaluar variables que afectan costos, demanda y financiamiento”, concéntrese en evaluar variables que afectan costos, demanda y financiamiento. Use datos correspondientes a factores económicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En factores económicos, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar variables que afectan costos, demanda y financiamiento.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a factores económicos y no duplicar contenido de otro apartado.'
+),
+(151,
+    '¿Qué hechos, personas, periodo y evidencia respaldan factores económicos?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan factores económicos”, concéntrese en evaluar variables que afectan costos, demanda y financiamiento. Use datos correspondientes a factores económicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre factores económicos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a factores económicos y no duplicar contenido de otro apartado.'
+),
+(151,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección factores económicos?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección factores económicos”, concéntrese en evaluar variables que afectan costos, demanda y financiamiento. Use datos correspondientes a factores económicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de factores económicos se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a factores económicos y no duplicar contenido de otro apartado.'
+),
+-- Factores sociales
+(152,
+    '¿Qué información concreta debe registrarse para evaluar hábitos, cultura, población y expectativas?',
+    'Para responder “Que información concreta debe registrarse para evaluar hábitos, cultura, población y expectativas”, concéntrese en evaluar hábitos, cultura, población y expectativas. Use datos correspondientes a factores sociales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En factores sociales, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar hábitos, cultura, población y expectativas.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a factores sociales y no duplicar contenido de otro apartado.'
+),
+(152,
+    '¿Qué hechos, personas, periodo y evidencia respaldan factores sociales?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan factores sociales”, concéntrese en evaluar hábitos, cultura, población y expectativas. Use datos correspondientes a factores sociales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre factores sociales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a factores sociales y no duplicar contenido de otro apartado.'
+),
+(152,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección factores sociales?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección factores sociales”, concéntrese en evaluar hábitos, cultura, población y expectativas. Use datos correspondientes a factores sociales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de factores sociales se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a factores sociales y no duplicar contenido de otro apartado.'
+),
+-- Factores tecnológicos
+(153,
+    '¿Qué información concreta debe registrarse para evaluar tecnologías, adopción, integración, seguridad y obsolescencia?',
+    'Para responder “Que información concreta debe registrarse para evaluar tecnologías, adopción, integración, seguridad y obsolescencia”, concéntrese en evaluar tecnologías, adopción, integración, seguridad y obsolescencia. Use datos correspondientes a factores tecnológicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En factores tecnológicos, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar tecnologías, adopción, integración, seguridad y obsolescencia.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a factores tecnológicos y no duplicar contenido de otro apartado.'
+),
+(153,
+    '¿Qué hechos, personas, periodo y evidencia respaldan factores tecnológicos?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan factores tecnológicos”, concéntrese en evaluar tecnologías, adopción, integración, seguridad y obsolescencia. Use datos correspondientes a factores tecnológicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre factores tecnológicos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a factores tecnológicos y no duplicar contenido de otro apartado.'
+),
+(153,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección factores tecnológicos?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección factores tecnológicos”, concéntrese en evaluar tecnologías, adopción, integración, seguridad y obsolescencia. Use datos correspondientes a factores tecnológicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de factores tecnológicos se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a factores tecnológicos y no duplicar contenido de otro apartado.'
+),
+-- Factores ambientales
+(154,
+    '¿Qué información concreta debe registrarse para evaluar clima, recursos, residuos e impactos?',
+    'Para responder “Que información concreta debe registrarse para evaluar clima, recursos, residuos e impactos”, concéntrese en evaluar clima, recursos, residuos e impactos. Use datos correspondientes a factores ambientales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En factores ambientales, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar clima, recursos, residuos e impactos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a factores ambientales y no duplicar contenido de otro apartado.'
+),
+(154,
+    '¿Qué hechos, personas, periodo y evidencia respaldan factores ambientales?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan factores ambientales”, concéntrese en evaluar clima, recursos, residuos e impactos. Use datos correspondientes a factores ambientales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre factores ambientales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a factores ambientales y no duplicar contenido de otro apartado.'
+),
+(154,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección factores ambientales?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección factores ambientales”, concéntrese en evaluar clima, recursos, residuos e impactos. Use datos correspondientes a factores ambientales, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de factores ambientales se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a factores ambientales y no duplicar contenido de otro apartado.'
+),
+-- Diagnostico competitivo
+(155,
+    '¿Qué información concreta debe registrarse para comparar competidores, referentes y buenas prácticas pertinentes?',
+    'Para responder “Que información concreta debe registrarse para comparar competidores, referentes y buenas prácticas pertinentes”, concéntrese en comparar competidores, referentes y buenas prácticas pertinentes. Use datos correspondientes a diagnostico competitivo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En diagnostico competitivo, se registrará la situación actual, el periodo analizado y la evidencia disponible para comparar competidores, referentes y buenas prácticas pertinentes.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a diagnostico competitivo y no duplicar contenido de otro apartado.'
+),
+(155,
+    '¿Qué hechos, personas, periodo y evidencia respaldan diagnostico competitivo?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan diagnostico competitivo”, concéntrese en comparar competidores, referentes y buenas prácticas pertinentes. Use datos correspondientes a diagnostico competitivo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre diagnostico competitivo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a diagnostico competitivo y no duplicar contenido de otro apartado.'
+),
+(155,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección diagnostico competitivo?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección diagnostico competitivo”, concéntrese en comparar competidores, referentes y buenas prácticas pertinentes. Use datos correspondientes a diagnostico competitivo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de diagnóstico competitivo se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a diagnostico competitivo y no duplicar contenido de otro apartado.'
+),
+-- Perspectiva financiera
+(156,
+    '¿Qué información concreta debe registrarse para medir ventas, costos, rentabilidad, liquidez y perdida asociada?',
+    'Para responder “Que información concreta debe registrarse para medir ventas, costos, rentabilidad, liquidez y perdida asociada”, concéntrese en medir ventas, costos, rentabilidad, liquidez y perdida asociada. Use datos correspondientes a perspectiva financiera, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En perspectiva financiera, se registrará la situación actual, el periodo analizado y la evidencia disponible para medir ventas, costos, rentabilidad, liquidez y perdida asociada.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a perspectiva financiera y no duplicar contenido de otro apartado.'
+),
+(156,
+    '¿Qué hechos, personas, periodo y evidencia respaldan perspectiva financiera?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan perspectiva financiera”, concéntrese en medir ventas, costos, rentabilidad, liquidez y perdida asociada. Use datos correspondientes a perspectiva financiera, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre perspectiva financiera.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a perspectiva financiera y no duplicar contenido de otro apartado.'
+),
+(156,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección perspectiva financiera?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección perspectiva financiera”, concéntrese en medir ventas, costos, rentabilidad, liquidez y perdida asociada. Use datos correspondientes a perspectiva financiera, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de perspectiva financiera se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a perspectiva financiera y no duplicar contenido de otro apartado.'
+),
+-- Perspectiva de clientes
+(157,
+    '¿Qué información concreta debe registrarse para medir satisfacción, reclamos, retención y cumplimiento?',
+    'Para responder “Que información concreta debe registrarse para medir satisfacción, reclamos, retención y cumplimiento”, concéntrese en medir satisfacción, reclamos, retención y cumplimiento. Use datos correspondientes a perspectiva de clientes, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En perspectiva de clientes, se registrará la situación actual, el periodo analizado y la evidencia disponible para medir satisfacción, reclamos, retención y cumplimiento.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a perspectiva de clientes y no duplicar contenido de otro apartado.'
+),
+(157,
+    '¿Qué hechos, personas, periodo y evidencia respaldan perspectiva de clientes?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan perspectiva de clientes”, concéntrese en medir satisfacción, reclamos, retención y cumplimiento. Use datos correspondientes a perspectiva de clientes, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre perspectiva de clientes.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a perspectiva de clientes y no duplicar contenido de otro apartado.'
+),
+(157,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección perspectiva de clientes?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección perspectiva de clientes”, concéntrese en medir satisfacción, reclamos, retención y cumplimiento. Use datos correspondientes a perspectiva de clientes, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de perspectiva de clientes se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a perspectiva de clientes y no duplicar contenido de otro apartado.'
+),
+-- Perspectiva de procesos
+(158,
+    '¿Qué información concreta debe registrarse para medir flujo, tiempos, errores, mermas, controles y cuellos de botella?',
+    'Para responder “Que información concreta debe registrarse para medir flujo, tiempos, errores, mermas, controles y cuellos de botella”, concéntrese en medir flujo, tiempos, errores, mermas, controles y cuellos de botella. Use datos correspondientes a perspectiva de procesos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En perspectiva de procesos, se registrará la situación actual, el periodo analizado y la evidencia disponible para medir flujo, tiempos, errores, mermas, controles y cuellos de botella.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a perspectiva de procesos y no duplicar contenido de otro apartado.'
+),
+(158,
+    '¿Qué hechos, personas, periodo y evidencia respaldan perspectiva de procesos?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan perspectiva de procesos”, concéntrese en medir flujo, tiempos, errores, mermas, controles y cuellos de botella. Use datos correspondientes a perspectiva de procesos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre perspectiva de procesos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a perspectiva de procesos y no duplicar contenido de otro apartado.'
+),
+(158,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección perspectiva de procesos?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección perspectiva de procesos”, concéntrese en medir flujo, tiempos, errores, mermas, controles y cuellos de botella. Use datos correspondientes a perspectiva de procesos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de perspectiva de procesos se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a perspectiva de procesos y no duplicar contenido de otro apartado.'
+),
+-- Perspectiva de capacidades
+(159,
+    '¿Qué información concreta debe registrarse para evaluar personas, competencias, tecnología, infraestructura y cultura?',
+    'Para responder “Que información concreta debe registrarse para evaluar personas, competencias, tecnología, infraestructura y cultura”, concéntrese en evaluar personas, competencias, tecnología, infraestructura y cultura. Use datos correspondientes a perspectiva de capacidades, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En perspectiva de capacidades, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar personas, competencias, tecnología, infraestructura y cultura.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a perspectiva de capacidades y no duplicar contenido de otro apartado.'
+),
+(159,
+    '¿Qué hechos, personas, periodo y evidencia respaldan perspectiva de capacidades?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan perspectiva de capacidades”, concéntrese en evaluar personas, competencias, tecnología, infraestructura y cultura. Use datos correspondientes a perspectiva de capacidades, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre perspectiva de capacidades.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a perspectiva de capacidades y no duplicar contenido de otro apartado.'
+),
+(159,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección perspectiva de capacidades?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección perspectiva de capacidades”, concéntrese en evaluar personas, competencias, tecnología, infraestructura y cultura. Use datos correspondientes a perspectiva de capacidades, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de perspectiva de capacidades se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a perspectiva de capacidades y no duplicar contenido de otro apartado.'
+),
+-- Diagnostico FODA
+(160,
+    '¿Qué información concreta debe registrarse para integrar factores internos y externos realmente demostrados?',
+    'Para responder “Que información concreta debe registrarse para integrar factores internos y externos realmente demostrados”, concéntrese en integrar factores internos y externos realmente demostrados. Use datos correspondientes a diagnostico toda, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En diagnostico toda, se registrará la situación actual, el periodo analizado y la evidencia disponible para integrar factores internos y externos realmente demostrados.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a diagnostico toda y no duplicar contenido de otro apartado.'
+),
+(160,
+    '¿Qué hechos, personas, periodo y evidencia respaldan diagnostico toda?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan diagnostico toda”, concéntrese en integrar factores internos y externos realmente demostrados. Use datos correspondientes a diagnostico toda, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre diagnostico toda.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a diagnostico toda y no duplicar contenido de otro apartado.'
+),
+(160,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección diagnostico toda?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección diagnostico toda”, concéntrese en integrar factores internos y externos realmente demostrados. Use datos correspondientes a diagnostico toda, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de diagnóstico toda se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a diagnostico toda y no duplicar contenido de otro apartado.'
+),
+-- Línea base
+(161,
+    '¿Qué información concreta debe registrarse para establecer indicadores, formulas, fuentes, responsables y valores actuales?',
+    'Para responder “Que información concreta debe registrarse para establecer indicadores, formulas, fuentes, responsables y valores actuales”, concéntrese en establecer indicadores, formulas, fuentes, responsables y valores actuales. Use datos correspondientes a línea base, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En línea base, se registrará la situación actual, el periodo analizado y la evidencia disponible para establecer indicadores, formulas, fuentes, responsables y valores actuales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a línea base y no duplicar contenido de otro apartado.'
+),
+(161,
+    '¿Qué hechos, personas, periodo y evidencia respaldan línea base?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan línea base”, concéntrese en establecer indicadores, formulas, fuentes, responsables y valores actuales. Use datos correspondientes a línea base, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre línea base.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a línea base y no duplicar contenido de otro apartado.'
+),
+(161,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección línea base?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección línea base”, concéntrese en establecer indicadores, formulas, fuentes, responsables y valores actuales. Use datos correspondientes a línea base, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de línea base se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a línea base y no duplicar contenido de otro apartado.'
+),
+-- Síntesis del diagnostico
+(162,
+    '¿Qué información concreta debe registrarse para consolidar hallazgos, impacto, evidencia, prioridad e incertidumbre?',
+    'Para responder “Que información concreta debe registrarse para consolidar hallazgos, impacto, evidencia, prioridad e incertidumbre”, concéntrese en consolidar hallazgos, impacto, evidencia, prioridad e incertidumbre. Use datos correspondientes a síntesis del diagnóstico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En síntesis del diagnóstico, se registrará la situación actual, el periodo analizado y la evidencia disponible para consolidar hallazgos, impacto, evidencia, prioridad e incertidumbre.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a síntesis del diagnóstico y no duplicar contenido de otro apartado.'
+),
+(162,
+    '¿Qué hechos, personas, periodo y evidencia respaldan síntesis del diagnóstico?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan síntesis del diagnóstico”, concéntrese en consolidar hallazgos, impacto, evidencia, prioridad e incertidumbre. Use datos correspondientes a síntesis del diagnóstico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre síntesis del diagnóstico.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a síntesis del diagnóstico y no duplicar contenido de otro apartado.'
+),
+(162,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección síntesis del diagnóstico?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección síntesis del diagnóstico”, concéntrese en consolidar hallazgos, impacto, evidencia, prioridad e incertidumbre. Use datos correspondientes a síntesis del diagnóstico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de síntesis del diagnóstico se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a síntesis del diagnóstico y no duplicar contenido de otro apartado.'
+),
+-- Área o proceso critico
+(164,
+    '¿Qué información concreta debe registrarse para delimitar el proceso de intervención y sus interfaces?',
+    'Para responder “Que información concreta debe registrarse para delimitar el proceso de intervención y sus interfaces”, concéntrese en delimitar el proceso de intervención y sus interfaces. Use datos correspondientes a área o proceso crítico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En área o proceso crítico, se registrará la situación actual, el periodo analizado y la evidencia disponible para delimitar el proceso de intervención y sus interfaces.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a área o proceso crítico y no duplicar contenido de otro apartado.'
+),
+(164,
+    '¿Qué hechos, personas, periodo y evidencia respaldan área o proceso critico?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan área o proceso crítico”, concéntrese en delimitar el proceso de intervención y sus interfaces. Use datos correspondientes a área o proceso crítico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre área o proceso crítico.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a área o proceso crítico y no duplicar contenido de otro apartado.'
+),
+(164,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección área o proceso critico?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección área o proceso crítico”, concéntrese en delimitar el proceso de intervención y sus interfaces. Use datos correspondientes a área o proceso crítico, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de área o proceso critico se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a área o proceso crítico y no duplicar contenido de otro apartado.'
+),
+-- Formulación del problema
+(165,
+    '¿Qué información concreta debe registrarse para definir brecha medible, afectados, periodo y evidencia?',
+    'Para responder “Que información concreta debe registrarse para definir brecha medible, afectados, periodo y evidencia”, concéntrese en definir brecha medible, afectados, periodo y evidencia. Use datos correspondientes a formulación del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En formulación del problema, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir brecha medible, afectados, periodo y evidencia.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a formulación del problema y no duplicar contenido de otro apartado.'
+),
+(165,
+    '¿Qué hechos, personas, periodo y evidencia respaldan formulación del problema?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan formulación del problema”, concéntrese en definir brecha medible, afectados, periodo y evidencia. Use datos correspondientes a formulación del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre formulación del problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a formulación del problema y no duplicar contenido de otro apartado.'
+),
+(165,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección formulación del problema?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección formulación del problema”, concéntrese en definir brecha medible, afectados, periodo y evidencia. Use datos correspondientes a formulación del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de formulación del problema se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a formulación del problema y no duplicar contenido de otro apartado.'
+),
+-- Efectos y consecuencias
+(166,
+    '¿Qué información concreta debe registrarse para cuantificar impactos sobre costo, tiempo, calidad, clientes, personas y riesgo?',
+    'Para responder “Que información concreta debe registrarse para cuantificar impactos sobre costo, tiempo, calidad, clientes, personas y riesgo”, concéntrese en cuantificar impactos sobre costo, tiempo, calidad, clientes, personas y riesgo. Use datos correspondientes a efectos y consecuencias, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En efectos y consecuencias, se registrará la situación actual, el periodo analizado y la evidencia disponible para cuantificar impactos sobre costo, tiempo, calidad, clientes, personas y riesgo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a efectos y consecuencias y no duplicar contenido de otro apartado.'
+),
+(166,
+    '¿Qué hechos, personas, periodo y evidencia respaldan efectos y consecuencias?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan efectos y consecuencias”, concéntrese en cuantificar impactos sobre costo, tiempo, calidad, clientes, personas y riesgo. Use datos correspondientes a efectos y consecuencias, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre efectos y consecuencias.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a efectos y consecuencias y no duplicar contenido de otro apartado.'
+),
+(166,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección efectos y consecuencias?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección efectos y consecuencias”, concéntrese en cuantificar impactos sobre costo, tiempo, calidad, clientes, personas y riesgo. Use datos correspondientes a efectos y consecuencias, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de efectos y consecuencias se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a efectos y consecuencias y no duplicar contenido de otro apartado.'
+),
+-- Diagrama de Ishikawa
+(167,
+    '¿Qué información concreta debe registrarse para organizar causas posibles por categorías y evidencia?',
+    'Para responder “Que información concreta debe registrarse para organizar causas posibles por categorías y evidencia”, concéntrese en organizar causas posibles por categorías y evidencia. Use datos correspondientes a diagrama de Ishikawa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En diagrama de Ishikawa, se registrará la situación actual, el periodo analizado y la evidencia disponible para organizar causas posibles por categorías y evidencia.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a diagrama de ishikawa y no duplicar contenido de otro apartado.'
+),
+(167,
+    '¿Qué hechos, personas, periodo y evidencia respaldan diagrama de ishikawa?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan diagrama de ishikawa”, concéntrese en organizar causas posibles por categorías y evidencia. Use datos correspondientes a diagrama de ishikawa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre diagrama de Ishikawa.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a diagrama de Ishikawa y no duplicar contenido de otro apartado.'
+),
+(167,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección diagrama de Ishikawa?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección diagrama de Ishikawa”, concéntrese en organizar causas posibles por categorías y evidencia. Use datos correspondientes a diagrama de Ishikawa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de diagrama de Ishikawa se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a diagrama de Ishikawa y no duplicar contenido de otro apartado.'
+),
+-- Cinco porques
+(168,
+    '¿Qué información concreta debe registrarse para profundizar hasta una causa raíz controlable?',
+    'Para responder “Que información concreta debe registrarse para profundizar hasta una causa raíz controlable”, concéntrese en profundizar hasta una causa raíz controlable. Use datos correspondientes a cinco porques, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En cinco porques, se registrará la situación actual, el periodo analizado y la evidencia disponible para profundizar hasta una causa raíz controlable.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a cinco porques y no duplicar contenido de otro apartado.'
+),
+(168,
+    '¿Qué hechos, personas, periodo y evidencia respaldan cinco porques?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan cinco porques”, concéntrese en profundizar hasta una causa raíz controlable. Use datos correspondientes a cinco porques, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre cinco porques.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a cinco porques y no duplicar contenido de otro apartado.'
+),
+(168,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección cinco porques?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección cinco porques”, concéntrese en profundizar hasta una causa raíz controlable. Use datos correspondientes a cinco porques, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de cinco porques se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a cinco porques y no duplicar contenido de otro apartado.'
+),
+-- Análisis de Pareto
+(169,
+    '¿Qué información concreta debe registrarse para priorizar categorías por frecuencia, costo o impacto?',
+    'Para responder “Que información concreta debe registrarse para priorizar categorías por frecuencia, costo o impacto”, concéntrese en priorizar categorías por frecuencia, costo o impacto. Use datos correspondientes a análisis de Pareto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En análisis de Pareto, se registrará la situación actual, el periodo analizado y la evidencia disponible para priorizar categorías por frecuencia, costo o impacto.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a análisis de Pareto y no duplicar contenido de otro apartado.'
+),
+(169,
+    '¿Qué hechos, personas, periodo y evidencia respaldan análisis de Pareto?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan análisis de Pareto”, concéntrese en priorizar categorías por frecuencia, costo o impacto. Use datos correspondientes a análisis de Pareto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre análisis de Pareto.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a análisis de Pareto y no duplicar contenido de otro apartado.'
+),
+(169,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección análisis de Pareto?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección análisis de Pareto”, concéntrese en priorizar categorías por frecuencia, costo o impacto. Use datos correspondientes a análisis de Pareto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de análisis de Pareto se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a análisis de Pareto y no duplicar contenido de otro apartado.'
+),
+-- Árbol del problema
+(170,
+    '¿Qué información concreta debe registrarse para relacionar problema central, causas y efectos?',
+    'Para responder “Que información concreta debe registrarse para relacionar problema central, causas y efectos”, concéntrese en relacionar problema central, causas y efectos. Use datos correspondientes a árbol del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En árbol del problema, se registrará la situación actual, el periodo analizado y la evidencia disponible para relacionar problema central, causas y efectos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a árbol del problema y no duplicar contenido de otro apartado.'
+),
+(170,
+    '¿Qué hechos, personas, periodo y evidencia respaldan árbol del problema?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan árbol del problema”, concéntrese en relacionar problema central, causas y efectos. Use datos correspondientes a árbol del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre árbol del problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a árbol del problema y no duplicar contenido de otro apartado.'
+),
+(170,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección árbol del problema?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección árbol del problema”, concéntrese en relacionar problema central, causas y efectos. Use datos correspondientes a árbol del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de árbol del problema se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a árbol del problema y no duplicar contenido de otro apartado.'
+),
+-- Puntos críticos
+(171,
+    '¿Qué información concreta debe registrarse para seleccionar causas directas, relevantes y controlables?',
+    'Para responder “Que información concreta debe registrarse para seleccionar causas directas, relevantes y controlables”, concéntrese en seleccionar causas directas, relevantes y controlables. Use datos correspondientes a puntos críticos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En puntos críticos, se registrará la situación actual, el periodo analizado y la evidencia disponible para seleccionar causas directas, relevantes y controlables.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a puntos críticos y no duplicar contenido de otro apartado.'
+),
+(171,
+    '¿Qué hechos, personas, periodo y evidencia respaldan puntos críticos?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan puntos críticos”, concéntrese en seleccionar causas directas, relevantes y controlables. Use datos correspondientes a puntos críticos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre puntos críticos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a puntos críticos y no duplicar contenido de otro apartado.'
+),
+(171,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección puntos críticos?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección puntos críticos”, concéntrese en seleccionar causas directas, relevantes y controlables. Use datos correspondientes a puntos críticos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de puntos críticos se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a puntos críticos y no duplicar contenido de otro apartado.'
+),
+-- Matriz de priorización
+(172,
+    '¿Qué información concreta debe registrarse para ordenar puntos mediante criterios, pesos, escalas y sensibilidad?',
+    'Para responder “Que información concreta debe registrarse para ordenar puntos mediante criterios, pesos, escalas y sensibilidad”, concéntrese en ordenar puntos mediante criterios, pesos, escalas y sensibilidad. Use datos correspondientes a matriz de priorización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En matriz de priorización, se registrará la situación actual, el periodo analizado y la evidencia disponible para ordenar puntos mediante criterios, pesos, escalas y sensibilidad.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a matriz de priorización y no duplicar contenido de otro apartado.'
+),
+(172,
+    '¿Qué hechos, personas, periodo y evidencia respaldan matriz de priorización?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan matriz de priorización”, concéntrese en ordenar puntos mediante criterios, pesos, escalas y sensibilidad. Use datos correspondientes a matriz de priorización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre matriz de priorización.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a matriz de priorización y no duplicar contenido de otro apartado.'
+),
+(172,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección matriz de priorización?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección matriz de priorización”, concéntrese en ordenar puntos mediante criterios, pesos, escalas y sensibilidad. Use datos correspondientes a matriz de priorización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de matriz de priorización se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a matriz de priorización y no duplicar contenido de otro apartado.'
+),
+-- Oportunidad de mejora
+(173,
+    '¿Qué información concreta debe registrarse para convertir la brecha en un resultado potencial y condicionado?',
+    'Para responder “Que información concreta debe registrarse para convertir la brecha en un resultado potencial y condicionado”, concéntrese en convertir la brecha en un resultado potencial y condicionado. Use datos correspondientes a oportunidad de mejora, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En oportunidad de mejora, se registrará la situación actual, el periodo analizado y la evidencia disponible para convertir la brecha en un resultado potencial y condicionado.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a oportunidad de mejora y no duplicar contenido de otro apartado.'
+),
+(173,
+    '¿Qué hechos, personas, periodo y evidencia respaldan oportunidad de mejora?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan oportunidad de mejora”, concéntrese en convertir la brecha en un resultado potencial y condicionado. Use datos correspondientes a oportunidad de mejora, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre oportunidad de mejora.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a oportunidad de mejora y no duplicar contenido de otro apartado.'
+),
+(173,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección oportunidad de mejora?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección oportunidad de mejora”, concéntrese en convertir la brecha en un resultado potencial y condicionado. Use datos correspondientes a oportunidad de mejora, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de oportunidad de mejora se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a oportunidad de mejora y no duplicar contenido de otro apartado.'
+),
+-- Criterios de éxito
+(174,
+    '¿Qué información concreta debe registrarse para definir metas, tolerancias y condiciones de aprobación?',
+    'Para responder “Que información concreta debe registrarse para definir metas, tolerancias y condiciones de aprobación”, concéntrese en definir metas, tolerancias y condiciones de aprobación. Use datos correspondientes a criterios de éxito, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En criterios de éxito, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir metas, tolerancias y condiciones de aprobación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a criterios de éxito y no duplicar contenido de otro apartado.'
+),
+(174,
+    '¿Qué hechos, personas, periodo y evidencia respaldan criterios de éxito?',
+    'Para responder “Que, hechos, personas, periodo y evidencia respaldan criterios de éxito”, concéntrese en definir metas, tolerancias y condiciones de aprobación. Use datos correspondientes a criterios de éxito, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre criterios de éxito.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a criterios de éxito y no duplicar contenido de otro apartado.'
+),
+(174,
+    '¿Qué dato falta para considerar completa y bien delimitada la sección criterios de éxito?',
+    'Para responder “Que dato falta para considerar completa y bien delimitada la sección criterios de éxito”, concéntrese en definir metas, tolerancias y condiciones de aprobación. Use datos correspondientes a criterios de éxito, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de criterios de éxito se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a criterios de éxito y no duplicar contenido de otro apartado.'
+),
+-- Justificación de la propuesta
+(176,
+    '¿Que debe incluir justificación de la propuesta para atender las causas priorizadas?',
+    'Para responder “Que debe incluir justificación de la propuesta para atender las causas priorizadas”, concéntrese en demostrar relación entre causas, solución, beneficios y estrategia. Use datos correspondientes a justificación de la propuesta, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En justificación de la propuesta, se registrará la situación actual, el periodo analizado y la evidencia disponible para demostrar relación entre causas, solución, beneficios y estrategia.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a justificación de la propuesta y no duplicar contenido de otro apartado.'
+),
+(176,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en justificación de la propuesta?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en justificación de la propuesta”, concéntrese en demostrar relación entre causas, solución, beneficios y estrategia. Use datos correspondientes a justificación de la propuesta, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre justificación de la propuesta.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a justificación de la propuesta y no duplicar contenido de otro apartado.'
+),
+(176,
+    '¿Como se validará que justificación de la propuesta es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que justificación de la propuesta es efectiva, viable y coherente con los objetivos”, concéntrese en demostrar relación entre causas, solución, beneficios y estrategia. Use datos correspondientes a justificación de la propuesta, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de justificación de la propuesta se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a justificación de la propuesta y no duplicar contenido de otro apartado.'
+),
+-- Objetivo general de mejora
+(177,
+    '¿Que debe incluir objetivo general de mejora para atender las causas priorizadas?',
+    'Para responder “Que debe incluir objetivo general de mejora para atender las causas priorizadas”, concéntrese en definir resultado SMART con línea base, meta, plazo y ámbito. Use datos correspondientes a objetivo general de mejora, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En objetivo general de mejora, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir resultado SMART con línea base, meta, plazo y ámbito.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a objetivo general de mejora y no duplicar contenido de otro apartado.'
+),
+(177,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en objetivo general de mejora?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en objetivo general de mejora”, concéntrese en definir resultado SMART con línea base, meta, plazo y ámbito. Use datos correspondientes a objetivo general de mejora, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre objetivo general de mejora.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a objetivo general de mejora y no duplicar contenido de otro apartado.'
+),
+(177,
+    '¿Como se validará que objetivo general de mejora es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que objetivo general de mejora es efectiva, viable y coherente con los objetivos”, concéntrese en definir resultado SMART con línea base, meta, plazo y ámbito. Use datos correspondientes a objetivo general de mejora, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de objetivo general de mejora se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a objetivo general de mejora y no duplicar contenido de otro apartado.'
+),
+-- Objetivos específicos
+(178,
+    '¿Que debe incluir objetivos específicos para atender las causas priorizadas?',
+    'Para responder “Que debe incluir objetivos específicos para atender las causas priorizadas”, concéntrese en desglosar resultados vinculados con causas e indicadores. Use datos correspondientes a objetivos específicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En objetivos específicos, se registrará la situación actual, el periodo analizado y la evidencia disponible para desglosar resultados vinculados con causas e indicadores.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a objetivos específicos y no duplicar contenido de otro apartado.'
+),
+(178,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en objetivos específicos?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en objetivos específicos”, concéntrese en desglosar resultados vinculados con causas e indicadores. Use datos correspondientes a objetivos específicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre objetivos específicos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a objetivos específicos y no duplicar contenido de otro apartado.'
+),
+(178,
+    '¿Como se validará que objetivos específicos es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que objetivos específicos es efectiva, viable y coherente con los objetivos”, concéntrese en desglosar resultados vinculados con causas e indicadores. Use datos correspondientes a objetivos específicos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de objetivos específicos se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a objetivos específicos y no duplicar contenido de otro apartado.'
+),
+-- Generación de alternativas
+(179,
+    '¿Que debe incluir generación de alternativas para atender las causas priorizadas?',
+    'Para responder “Que debe incluir generación de alternativas para atender las causas priorizadas”, concéntrese en crear alternativas distintas, incluida la no intervención. Use datos correspondientes a generación de alternativas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En generación de alternativas, se registrará la situación actual, el periodo analizado y la evidencia disponible para crear alternativas distintas, incluida la no intervención.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a generación de alternativas y no duplicar contenido de otro apartado.'
+),
+(179,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en generación de alternativas?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en generación de alternativas”, concéntrese en crear alternativas distintas, incluida la no intervención. Use datos correspondientes a generación de alternativas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre generación de alternativas.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a generación de alternativas y no duplicar contenido de otro apartado.'
+),
+(179,
+    '¿Como se validará que generación de alternativas es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que generación de alternativas es efectiva, viable y coherente con los objetivos”, concéntrese en crear alternativas distintas, incluida la no intervención. Use datos correspondientes a generación de alternativas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de generación de alternativas se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a generación de alternativas y no duplicar contenido de otro apartado.'
+),
+-- Evaluación de alternativas
+(180,
+    '¿Que debe incluir evaluación de alternativas para atender las causas priorizadas?',
+    'Para responder “Que debe incluir evaluación de alternativas para atender las causas priorizadas”, concéntrese en comparar efectividad, costo, tiempo, riesgo, sostenibilidad y aceptación. Use datos correspondientes a evaluación de alternativas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En evaluación de alternativas, se registrará la situación actual, el periodo analizado y la evidencia disponible para comparar efectividad, costo, tiempo, riesgo, sostenibilidad y aceptación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a evaluación de alternativas y no duplicar contenido de otro apartado.'
+),
+(180,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en evaluación de alternativas?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en evaluación de alternativas”, concéntrese en comparar efectividad, costo, tiempo, riesgo, sostenibilidad y aceptación. Use datos correspondientes a evaluación de alternativas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre evaluación de alternativas.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a evaluación de alternativas y no duplicar contenido de otro apartado.'
+),
+(180,
+    '¿Como se validará que evaluación de alternativas es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que evaluación de alternativas es efectiva, viable y coherente con los objetivos”, concéntrese en comparar efectividad, costo, tiempo, riesgo, sostenibilidad y aceptación. Use datos correspondientes a evaluación de alternativas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de evaluación de alternativas se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a evaluación de alternativas y no duplicar contenido de otro apartado.'
+)   ,
+-- Descripción técnica de la solución
+(181,
+    '¿Que debe incluir descripción técnica de la solución para atender las causas priorizadas?',
+    'Para responder “Que debe incluir descripción técnica de la solución para atender las causas priorizadas”, concéntrese en explicar componentes, usuarios, datos, procesos, reglas y controles. Use datos correspondientes a descripción técnica de la solución, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En descripción técnica de la solución, se registrará la situación actual, el periodo analizado y la evidencia disponible para explicar componentes, usuarios, datos, procesos, reglas y controles.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a descripción técnica de la solución y no duplicar contenido de otro apartado.'
+),
+(181,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en descripción técnica de la solución?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en descripción técnica de la solución”, concéntrese en explicar componentes, usuarios, datos, procesos, reglas y controles. Use datos correspondientes a descripción técnica de la solución, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre descripción técnica de la solución.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a descripción técnica de la solución y no duplicar contenido de otro apartado.'
+),
+(181,
+    '¿Como se validará que descripción técnica de la solución es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que descripción técnica de la solución es efectiva, viable y coherente con los objetivos”, concéntrese en explicar componentes, usuarios, datos, procesos, reglas y controles. Use datos correspondientes a descripción técnica de la solución, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de descripción técnica de la solución se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a descripción técnica de la solución y no duplicar contenido de otro apartado.'
+),
+-- Proceso AS-IS y TO-BE
+(182,
+    '¿Que debe incluir proceso as-is y to-be para atender las causas priorizadas?',
+    'Para responder “Que debe incluir proceso as-is y to-be para atender las causas priorizadas”, concéntrese en comparar proceso actual y futuro con cambios medibles. Use datos correspondientes a proceso as-is y to-be, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En proceso as-is y to-be, se registrará la situación actual, el periodo analizado y la evidencia disponible para comparar proceso actual y futuro con cambios medibles.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a proceso as-is y to-be y no duplicar contenido de otro apartado.'
+),
+(182,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en proceso as-is y to-be?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en proceso as-is y to-be”, concéntrese en comparar proceso actual y futuro con cambios medibles. Use datos correspondientes a proceso as-is y to-be, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre proceso as-is y to-be.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a proceso as-is y to-be y no duplicar contenido de otro apartado.'
+),
+(182,
+    '¿Como se validará que proceso as-is y to-be es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que proceso as-is y to-be es efectiva, viable y coherente con los objetivos”, concéntrese en comparar proceso actual y futuro con cambios medibles. Use datos correspondientes a proceso as-is y to-be, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de proceso as-is y to-be se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a proceso as-is y to-be y no duplicar contenido de otro apartado.'
+),
+-- Estrategia operativa
+(183,
+    '¿Que debe incluir estrategia operativa para atender las causas priorizadas?',
+    'Para responder “Que debe incluir estrategia operativa para atender las causas priorizadas”, concéntrese en definir procedimientos, estándares, roles y controles. Use datos correspondientes a estrategia operativa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En estrategia operativa, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir procedimientos, estándares, roles y controles.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a estrategia operativa y no duplicar contenido de otro apartado.'
+),
+(183,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en estrategia operativa?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en estrategia operativa”, concéntrese en definir procedimientos, estándares, roles y controles. Use datos correspondientes a estrategia operativa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre estrategia operativa.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a estrategia operativa y no duplicar contenido de otro apartado.'
+),
+(183,
+    '¿Como se validará que estrategia operativa es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que estrategia operativa es efectiva, viable y coherente con los objetivos”, concéntrese en definir procedimientos, estándares, roles y controles. Use datos correspondientes a estrategia operativa, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de estrategia operativa se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a estrategia operativa y no duplicar contenido de otro apartado.'
+),
+-- Estrategia tecnológica
+(184,
+    '¿Que debe incluir estrategia tecnológica para atender las causas priorizadas?',
+    'Para responder “Que debe incluir estrategia tecnológica para atender las causas priorizadas”, concéntrese en definir herramienta, requisitos, integración, seguridad y soporte. Use datos correspondientes a estrategia tecnológica, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En estrategia tecnológica, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir herramienta, requisitos, integración, seguridad y soporte.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a estrategia tecnológica y no duplicar contenido de otro apartado.'
+),
+(184,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en estrategia tecnológica?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en estrategia tecnológica”, concéntrese en definir herramienta, requisitos, integración, seguridad y soporte. Use datos correspondientes a estrategia tecnológica, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre estrategia tecnológica.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a estrategia tecnológica y no duplicar contenido de otro apartado.'
+),
+(184,
+    '¿Como se validará que estrategia tecnológica es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que estrategia tecnológica es efectiva, viable y coherente con los objetivos”, concéntrese en definir herramienta, requisitos, integración, seguridad y soporte. Use datos correspondientes a estrategia tecnológica, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de estrategia tecnológica se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a estrategia tecnológica y no duplicar contenido de otro apartado.'
+),
+-- Estrategia comercial o de clientes
+(185,
+    '¿Que debe incluir estrategia comercial o de clientes para atender las causas priorizadas?',
+    'Para responder “Que debe incluir estrategia comercial o de clientes para atender las causas priorizadas”, concéntrese en mejorar oferta, canal, experiencia o posicionamiento cuando corresponda. Use datos correspondientes a estrategia comercial o de clientes, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En estrategia comercial o de clientes, se registrará la situación actual, el periodo analizado y la evidencia disponible para mejorar oferta, canal, experiencia o posicionamiento cuando corresponda.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a estrategia comercial o de clientes y no duplicar contenido de otro apartado.'
+),
+(185,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en estrategia comercial o de clientes?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en estrategia comercial o de clientes”, concéntrese en mejorar oferta, canal, experiencia o posicionamiento cuando corresponda. Use datos correspondientes a estrategia comercial o de clientes, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre estrategia comercial o de clientes.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a estrategia comercial o de clientes y no duplicar contenido de otro apartado.'
+),
+(185,
+    '¿Como se validará que estrategia comercial o de clientes es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que estrategia comercial o de clientes es efectiva, viable y coherente con los objetivos”, concéntrese en mejorar oferta, canal, experiencia o posicionamiento cuando corresponda. Use datos correspondientes a estrategia comercial o de clientes, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de estrategia comercial o de clientes se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a estrategia comercial o de clientes y no duplicar contenido de otro apartado.'
+),
+-- Estrategia de personas y capacitación
+(186,
+    '¿Que debe incluir estrategia de personas y capacitación para atender las causas priorizadas?',
+    'Para responder “Que debe incluir estrategia de personas y capacitación para atender las causas priorizadas”, concéntrese en cerrar brechas de competencia y conducta. Use datos correspondientes a estrategia de personas y capacitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En estrategia de personas y capacitación, se registrará la situación actual, el periodo analizado y la evidencia disponible para cerrar brechas de competencia y conducta.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a estrategia de personas y capacitación y no duplicar contenido de otro apartado.'
+),
+(186,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en estrategia de personas y capacitación?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en estrategia de personas y capacitación”, concéntrese en cerrar brechas de competencia y conducta. Use datos correspondientes a estrategia de personas y capacitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre estrategia de personas y capacitación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a estrategia de personas y capacitación y no duplicar contenido de otro apartado.'
+),
+(186,
+    '¿Como se validará que estrategia de personas y capacitación es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que estrategia de personas y capacitación es efectiva, viable y coherente con los objetivos”, concéntrese en cerrar brechas de competencia y conducta. Use datos correspondientes a estrategia de personas y capacitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de estrategia de personas y capacitación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a estrategia de personas y capacitación y no duplicar contenido de otro apartado.'
+),
+-- Gestión del cambio
+(187,
+    '¿Que debe incluir gestión del cambio para atender las causas priorizadas?',
+    'Para responder “Que debe incluir gestión del cambio para atender las causas priorizadas”, concéntrese en gestionar patrocinio, resistencia, participación y adopción. Use datos correspondientes a gestión del cambio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En gestión del cambio, se registrará la situación actual, el periodo analizado y la evidencia disponible para gestionar patrocinio, resistencia, participación y adopción.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a gestión del cambio y no duplicar contenido de otro apartado.'
+),
+(187,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en gestión del cambio?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en gestión del cambio”, concéntrese en gestionar patrocinio, resistencia, participación y adopción. Use datos correspondientes a gestión del cambio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre gestión del cambio.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a gestión del cambio y no duplicar contenido de otro apartado.'
+),
+(187,
+    '¿Como se validará que gestión del cambio es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que gestión del cambio es efectiva, viable y coherente con los objetivos”, concéntrese en gestionar patrocinio, resistencia, participación y adopción. Use datos correspondientes a gestión del cambio, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de gestión del cambio se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a gestión del cambio y no duplicar contenido de otro apartado.'
+),
+-- Registros y controles
+(188,
+    '¿Que debe incluir registros y controles para atender las causas priorizadas?',
+    'Para responder “Que debe incluir registros y controles para atender las causas priorizadas”, concéntrese en crear datos, formatos, responsables, frecuencia y conservación. Use datos correspondientes a registros y controles, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En registros y controles, se registrará la situación actual, el periodo analizado y la evidencia disponible para crear datos, formatos, responsables, frecuencia y conservación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a registros y controles y no duplicar contenido de otro apartado.'
+),
+(188,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en registros y controles?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en registros y controles”, concéntrese en crear datos, formatos, responsables, frecuencia y conservación. Use datos correspondientes a registros y controles, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre registros y controles.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a registros y controles y no duplicar contenido de otro apartado.'
+),
+(188,
+    '¿Como se validará que registros y controles es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que registros y controles es efectiva, viable y coherente con los objetivos”, concéntrese en crear datos, formatos, responsables, frecuencia y conservación. Use datos correspondientes a registros y controles, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de registros y controles se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a registros y controles y no duplicar contenido de otro apartado.'
+),
+-- Gestión de riesgos
+(189,
+    '¿Que debe incluir gestión de riesgos para atender las causas priorizadas?',
+    'Para responder “Que debe incluir gestión de riesgos para atender las causas priorizadas”, concéntrese en valorar probabilidad, impacto, prevención, contingencia y responsable. Use datos correspondientes a gestión de riesgos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En gestión de riesgos, se registrará la situación actual, el periodo analizado y la evidencia disponible para valorar probabilidad, impacto, prevención, contingencia y responsable.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a gestión de riesgos y no duplicar contenido de otro apartado.'
+),
+(189,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en gestión de riesgos?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en gestión de riesgos”, concéntrese en valorar probabilidad, impacto, prevención, contingencia y responsable. Use datos correspondientes a gestión de riesgos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre gestión de riesgos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a gestión de riesgos y no duplicar contenido de otro apartado.'
+),
+(189,
+    '¿Como se validará que gestión de riesgos es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que gestión de riesgos es efectiva, viable y coherente con los objetivos”, concéntrese en valorar probabilidad, impacto, prevención, contingencia y responsable. Use datos correspondientes a gestión de riesgos, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de gestión de riesgos se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a gestión de riesgos y no duplicar contenido de otro apartado.'
+),
+-- Factores favorables y desfavorables
+(190,
+    '¿Que debe incluir factores favorables y desfavorables para atender las causas priorizadas?',
+    'Para responder “Que debe incluir factores favorables y desfavorables para atender las causas priorizadas”, concéntrese en reconocer condiciones que impulsan o dificultan la propuesta. Use datos correspondientes a factores favorables y desfavorables, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En factores favorables y desfavorables, se registrará la situación actual, el periodo analizado y la evidencia disponible para reconocer condiciones que impulsan o dificultan la propuesta.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a factores favorables y desfavorables y no duplicar contenido de otro apartado.'
+),
+(190,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en factores favorables y desfavorables?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en factores favorables y desfavorables”, concéntrese en reconocer condiciones que impulsan o dificultan la propuesta. Use datos correspondientes a factores favorables y desfavorables, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre factores favorables y desfavorables.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a factores favorables y desfavorables y no duplicar contenido de otro apartado.'
+),
+(190,
+    '¿Como se validará que factores favorables y desfavorables es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que factores favorables y desfavorables es efectiva, viable y coherente con los objetivos”, concéntrese en reconocer condiciones que impulsan o dificultan la propuesta. Use datos correspondientes a factores favorables y desfavorables, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de factores favorables y desfavorables se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a factores favorables y desfavorables y no duplicar contenido de otro apartado.'
+),
+-- Sostenibilidad de la solución
+(191,
+    '¿Que debe incluir sostenibilidad de la solución para atender las causas priorizadas?',
+    'Para responder “Que debe incluir sostenibilidad de la solución para atender las causas priorizadas”, concéntrese en asegurar mantenimiento, presupuesto, auditoria y escalamiento. Use datos correspondientes a sostenibilidad de la solución, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En sostenibilidad de la solución, se registrará la situación actual, el periodo analizado y la evidencia disponible para asegurar mantenimiento, presupuesto, auditoria y escalamiento.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a sostenibilidad de la solución y no duplicar contenido de otro apartado.'
+),
+(191,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en sostenibilidad de la solución?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en sostenibilidad de la solución”, concéntrese en asegurar mantenimiento, presupuesto, auditoria y escalamiento. Use datos correspondientes a sostenibilidad de la solución, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre sostenibilidad de la solución.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a sostenibilidad de la solución y no duplicar contenido de otro apartado.'
+),
+(191,
+    '¿Como se validará que sostenibilidad de la solución es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que sostenibilidad de la solución es efectiva, viable y coherente con los objetivos”, concéntrese en asegurar mantenimiento, presupuesto, auditoria y escalamiento. Use datos correspondientes a sostenibilidad de la solución, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de sostenibilidad de la solución se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a sostenibilidad de la solución y no duplicar contenido de otro apartado.'
+),
+-- Presupuesto de implementación
+(193,
+    '¿Que debe incluir presupuesto de implementación para atender las causas priorizadas?',
+    'Para responder “Que debe incluir presupuesto de implementación para atender las causas priorizadas”, concéntrese en cuantificar inversión, costos recurrentes y contingencia. Use datos correspondientes a presupuesto de implementación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En presupuesto de implementación, se registrará la situación actual, el periodo analizado y la evidencia disponible para cuantificar inversión, costos recurrentes y contingencia.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a presupuesto de implementación y no duplicar contenido de otro apartado.'
+),
+(193,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en presupuesto de implementación?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en presupuesto de implementación”, concéntrese en cuantificar inversión, costos recurrentes y contingencia. Use datos correspondientes a presupuesto de implementación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre presupuesto de implementación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a presupuesto de implementación y no duplicar contenido de otro apartado.'
+),
+(193,
+    '¿Como se validará que presupuesto de implementación es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que presupuesto de implementación es efectiva, viable y coherente con los objetivos”, concéntrese en cuantificar inversión, costos recurrentes y contingencia. Use datos correspondientes a presupuesto de implementación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de presupuesto de implementación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a presupuesto de implementación y no duplicar contenido de otro apartado.'
+),
+-- Costos actuales del problema
+(194,
+    '¿Que debe incluir costos actuales del problema para atender las causas priorizadas?',
+    'Para responder “Que debe incluir costos actuales del problema para atender las causas priorizadas”, concéntrese en monetizar errores, retrabajos, mermas, penalidades y riesgos. Use datos correspondientes a costos actuales del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En costos actuales del problema, se registrará la situación actual, el periodo analizado y la evidencia disponible para monetizar errores, retrabajos, mermas, penalidades y riesgos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a costos actuales del problema y no duplicar contenido de otro apartado.'
+),
+(194,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en costos actuales del problema?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en costos actuales del problema”, concéntrese en monetizar errores, retrabajos, mermas, penalidades y riesgos. Use datos correspondientes a costos actuales del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre costos actuales del problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a costos actuales del problema y no duplicar contenido de otro apartado.'
+),
+(194,
+    '¿Como se validará que costos actuales del problema es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que costos actuales del problema es efectiva, viable y coherente con los objetivos”, concéntrese en monetizar errores, retrabajos, mermas, penalidades y riesgos. Use datos correspondientes a costos actuales del problema, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de costos actuales del problema se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a costos actuales del problema y no duplicar contenido de otro apartado.'
+),
+-- Beneficios esperados
+(195,
+    '¿Que debe incluir beneficios esperados para atender las causas priorizadas?',
+    'Para responder “Que debe incluir beneficios esperados para atender las causas priorizadas”, concéntrese en estimar ahorro, ingreso incremental y beneficios no monetarios. Use datos correspondientes a beneficios esperados, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En beneficios esperados, se registrará la situación actual, el periodo analizado y la evidencia disponible para estimar ahorro, ingreso incremental y beneficios no monetarios.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a beneficios esperados y no duplicar contenido de otro apartado.'
+),
+(195,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en beneficios esperados?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en beneficios esperados”, concéntrese en estimar ahorro, ingreso incremental y beneficios no monetarios. Use datos correspondientes a beneficios esperados, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre beneficios esperados.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a beneficios esperados y no duplicar contenido de otro apartado.'
+),
+(195,
+    '¿Como se validará que beneficios esperados es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que beneficios esperados es efectiva, viable y coherente con los objetivos”, concéntrese en estimar ahorro, ingreso incremental y beneficios no monetarios. Use datos correspondientes a beneficios esperados, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de beneficios esperados se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a beneficios esperados y no duplicar contenido de otro apartado.'
+),
+-- Flujo incremental
+(196,
+    '¿Que debe incluir flujo incremental para atender las causas priorizadas?',
+    'Para responder “Que debe incluir flujo incremental para atender las causas priorizadas”, concéntrese en comparar situación sin mejora y con mejora por periodo. Use datos correspondientes a flujo incremental, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En flujo incremental, se registrará la situación actual, el periodo analizado y la evidencia disponible para comparar situación sin mejora y con mejora por periodo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a flujo incremental y no duplicar contenido de otro apartado.'
+),
+(196,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en flujo incremental?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en flujo incremental”, concéntrese en comparar situación sin mejora y con mejora por periodo. Use datos correspondientes a flujo incremental, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre flujo incremental.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a flujo incremental y no duplicar contenido de otro apartado.'
+),
+(196,
+    '¿Como se validará que flujo incremental es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que flujo incremental es efectiva, viable y coherente con los objetivos”, concéntrese en comparar situación sin mejora y con mejora por periodo. Use datos correspondientes a flujo incremental, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de flujo incremental se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a flujo incremental y no duplicar contenido de otro apartado.'
+),
+-- Relación beneficio-costo
+(197,
+    '¿Que debe incluir relación beneficio-costo para atender las causas priorizadas?',
+    'Para responder “Que debe incluir relación beneficio-costo para atender las causas priorizadas”, concéntrese en comparar beneficios y costos incrementales con criterio correcto. Use datos correspondientes a relación beneficio-costo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En relación beneficio-costo, se registrará la situación actual, el periodo analizado y la evidencia disponible para comparar beneficios y costos incrementales con criterio correcto.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a relación beneficio-costo y no duplicar contenido de otro apartado.'
+),
+(197,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en relación beneficio-costo?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en relación beneficio-costo”, concéntrese en comparar beneficios y costos incrementales con criterio correcto. Use datos correspondientes a relación beneficio-costo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre relación beneficio-costo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a relación beneficio-costo y no duplicar contenido de otro apartado.'
+),
+(197,
+    '¿Como se validará que relación beneficio-costo es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que relación beneficio-costo es efectiva, viable y coherente con los objetivos”, concéntrese en comparar beneficios y costos incrementales con criterio correcto. Use datos correspondientes a relación beneficio-costo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de relación beneficio-costo se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a relación beneficio-costo y no duplicar contenido de otro apartado.'
+),
+-- Retorno sobre la inversión
+(198,
+    '¿Que debe incluir retorno sobre la inversión para atender las causas priorizadas?',
+    'Para responder “Que debe incluir retorno sobre la inversión para atender las causas priorizadas”, concéntrese en medir beneficio neto frente a inversión. Use datos correspondientes a retorno sobre la inversión, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En retorno sobre la inversión, se registrará la situación actual, el periodo analizado y la evidencia disponible para medir beneficio neto frente a inversión.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a retorno sobre la inversión y no duplicar contenido de otro apartado.'
+),
+(198,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en retorno sobre la inversión?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en retorno sobre la inversión”, concéntrese en medir beneficio neto frente a inversión. Use datos correspondientes a retorno sobre la inversión, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre retorno sobre la inversión.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a retorno sobre la inversión y no duplicar contenido de otro apartado.'
+),
+(198,
+    '¿Como se validará que retorno sobre la inversión es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que retorno sobre la inversión es efectiva, viable y coherente con los objetivos”, concéntrese en medir beneficio neto frente a inversión. Use datos correspondientes a retorno sobre la inversión, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de retorno sobre la inversión se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a retorno sobre la inversión y no duplicar contenido de otro apartado.'
+),
+-- Periodo de recuperación
+(199,
+    '¿Que debe incluir periodo de recuperación para atender las causas priorizadas?',
+    'Para responder “Que debe incluir periodo de recuperación para atender las causas priorizadas”, concéntrese en determinar cuándo se recupera la inversión. Use datos correspondientes a periodo de recuperación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En periodo de recuperación, se registrará la situación actual, el periodo analizado y la evidencia disponible para determinar cuándo se recupera la inversión.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a periodo de recuperación y no duplicar contenido de otro apartado.'
+),
+(199,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en periodo de recuperación?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en periodo de recuperación”, concéntrese en determinar cuándo se recupera la inversión. Use datos correspondientes a periodo de recuperación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre periodo de recuperación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a periodo de recuperación y no duplicar contenido de otro apartado.'
+),
+(199,
+    '¿Como se validará que periodo de recuperación es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que periodo de recuperación es efectiva, viable y coherente con los objetivos”, concéntrese en determinar cuándo se recupera la inversión. Use datos correspondientes a periodo de recuperación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de periodo de recuperación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a periodo de recuperación y no duplicar contenido de otro apartado.'
+),
+-- VAN y TIR
+(200,
+    '¿Que debe incluir van y tir para atender las causas priorizadas?',
+    'Para responder “Que debe incluir van y tir para atender las causas priorizadas”, concéntrese en evaluar inversiones de varios periodos cuando corresponda. Use datos correspondientes a van y tir, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En van y tir, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar inversiones de varios periodos cuando corresponda.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a van y tir y no duplicar contenido de otro apartado.'
+),
+(200,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en van y tir?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en van y tir”, concéntrese en evaluar inversiones de varios periodos cuando corresponda. Use datos correspondientes a van y tir, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre van y tir.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a van y tir y no duplicar contenido de otro apartado.'
+),
+(200,
+    '¿Como se validará que van y tir es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que van y tir es efectiva, viable y coherente con los objetivos”, concéntrese en evaluar inversiones de varios periodos cuando corresponda. Use datos correspondientes a van y tir, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de van y tir se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a van y tir y no duplicar contenido de otro apartado.'
+),
+-- Escenario probable
+(201,
+    '¿Que debe incluir escenario probable para atender las causas priorizadas?',
+    'Para responder “Que debe incluir escenario probable para atender las causas priorizadas”, concéntrese en establecer valores más plausibles y su evidencia. Use datos correspondientes a escenario probable, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En escenario probable, se registrará la situación actual, el periodo analizado y la evidencia disponible para establecer valores más plausibles y su evidencia.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a escenario probable y no duplicar contenido de otro apartado.'
+),
+(201,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en escenario probable?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en escenario probable”, concéntrese en establecer valores más plausibles y su evidencia. Use datos correspondientes a escenario probable, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre escenario probable.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a escenario probable y no duplicar contenido de otro apartado.'
+),
+(201,
+    '¿Como se validará que escenario probable es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que escenario probable es efectiva, viable y coherente con los objetivos”, concéntrese en establecer valores más plausibles y su evidencia. Use datos correspondientes a escenario probable, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de escenario probable se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a escenario probable y no duplicar contenido de otro apartado.'
+),
+-- Escenario optimista
+(202,
+    '¿Que debe incluir escenario optimista para atender las causas priorizadas?',
+    'Para responder “Que debe incluir escenario optimista para atender las causas priorizadas”, concéntrese en evaluar mejor caso plausible sin convertirlo en promesa. Use datos correspondientes a escenario optimista, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En escenario optimista, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar mejor caso plausible sin convertirlo en promesa.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a escenario optimista y no duplicar contenido de otro apartado.'
+),
+(202,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en escenario optimista?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en escenario optimista”, concéntrese en evaluar mejor caso plausible sin convertirlo en promesa. Use datos correspondientes a escenario optimista, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre escenario optimista.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a escenario optimista y no duplicar contenido de otro apartado.'
+),
+(202,
+    '¿Como se validará que escenario optimista es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que escenario optimista es efectiva, viable y coherente con los objetivos”, concéntrese en evaluar mejor caso plausible sin convertirlo en promesa. Use datos correspondientes a escenario optimista, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de escenario optimista se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a escenario optimista y no duplicar contenido de otro apartado.'
+),
+-- Escenario pesimista
+(203,
+    '¿Que debe incluir escenario pesimista para atender las causas priorizadas?',
+    'Para responder “Que debe incluir escenario pesimista para atender las causas priorizadas”, concéntrese en evaluar menor adopción, retrasos y sobrecostos. Use datos correspondientes a escenario pesimista, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En escenario pesimista, se registrará la situación actual, el periodo analizado y la evidencia disponible para evaluar menor adopción, retrasos y sobrecostos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a escenario pesimista y no duplicar contenido de otro apartado.'
+),
+(203,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en escenario pesimista?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en escenario pesimista”, concéntrese en evaluar menor adopción, retrasos y sobrecostos. Use datos correspondientes a escenario pesimista, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre escenario pesimista.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a escenario pesimista y no duplicar contenido de otro apartado.'
+),
+(203,
+    '¿Como se validará que escenario pesimista es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que escenario pesimista es efectiva, viable y coherente con los objetivos”, concéntrese en evaluar menor adopción, retrasos y sobrecostos. Use datos correspondientes a escenario pesimista, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de escenario pesimista se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a escenario pesimista y no duplicar contenido de otro apartado.'
+),
+-- Análisis de sensibilidad
+(204,
+    '¿Que debe incluir análisis de sensibilidad para atender las causas priorizadas?',
+    'Para responder “Que debe incluir análisis de sensibilidad para atender las causas priorizadas”, concéntrese en identificar variables críticas y umbrales. Use datos correspondientes a análisis de sensibilidad, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En análisis de sensibilidad, se registrará la situación actual, el periodo analizado y la evidencia disponible para identificar variables críticas y umbrales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a análisis de sensibilidad y no duplicar contenido de otro apartado.'
+),
+(204,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en análisis de sensibilidad?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en análisis de sensibilidad”, concéntrese en identificar variables críticas y umbrales. Use datos correspondientes a análisis de sensibilidad, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre análisis de sensibilidad.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a análisis de sensibilidad y no duplicar contenido de otro apartado.'
+),
+(204,
+    '¿Como se validará que análisis de sensibilidad es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que análisis de sensibilidad es efectiva, viable y coherente con los objetivos”, concéntrese en identificar variables críticas y umbrales. Use datos correspondientes a análisis de sensibilidad, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de análisis de sensibilidad se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a análisis de sensibilidad y no duplicar contenido de otro apartado.'
+),
+-- Viabilidad técnica
+(205,
+    '¿Que debe incluir viabilidad técnica para atender las causas priorizadas?',
+    'Para responder “Que debe incluir viabilidad técnica para atender las causas priorizadas”, concéntrese en comprobar infraestructura, compatibilidad, capacidad y soporte. Use datos correspondientes a viabilidad técnica, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En viabilidad técnica, se registrará la situación actual, el periodo analizado y la evidencia disponible para comprobar infraestructura, compatibilidad, capacidad y soporte.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a viabilidad técnica y no duplicar contenido de otro apartado.'
+),
+(205,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en viabilidad técnica?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en viabilidad técnica”, concéntrese en comprobar infraestructura, compatibilidad, capacidad y soporte. Use datos correspondientes a viabilidad técnica, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre viabilidad técnica.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a viabilidad técnica y no duplicar contenido de otro apartado.'
+),
+(205,
+    '¿Como se validará que viabilidad técnica es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que viabilidad técnica es efectiva, viable y coherente con los objetivos”, concéntrese en comprobar infraestructura, compatibilidad, capacidad y soporte. Use datos correspondientes a viabilidad técnica, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de viabilidad técnica se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a viabilidad técnica y no duplicar contenido de otro apartado.'
+),
+-- Viabilidad operativa y organizacional
+(206,
+    '¿Que debe incluir viabilidad operativa y organizacional para atender las causas priorizadas?',
+    'Para responder “Que debe incluir viabilidad operativa y organizacional para atender las causas priorizadas”, concéntrese en comprobar roles, competencias, carga, cultura y respaldo. Use datos correspondientes a viabilidad operativa y organizacional, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En viabilidad operativa y organizacional, se registrará la situación actual, el periodo analizado y la evidencia disponible para comprobar roles, competencias, carga, cultura y respaldo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a viabilidad operativa y organizacional y no duplicar contenido de otro apartado.'
+),
+(206,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en viabilidad operativa y organizacional?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en viabilidad operativa y organizacional”, concéntrese en comprobar roles, competencias, carga, cultura y respaldo. Use datos correspondientes a viabilidad operativa y organizacional, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre viabilidad operativa y organizacional.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a viabilidad operativa y organizacional y no duplicar contenido de otro apartado.'
+),
+(206,
+    '¿Como se validará que viabilidad operativa y organizacional es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que viabilidad operativa y organizacional es efectiva, viable y coherente con los objetivos”, concéntrese en comprobar roles, competencias, carga, cultura y respaldo. Use datos correspondientes a viabilidad operativa y organizacional, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de viabilidad operativa y organizacional se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a viabilidad operativa y organizacional y no duplicar contenido de otro apartado.'
+),
+-- Viabilidad integral
+(207,
+    '¿Que debe incluir viabilidad integral para atender las causas priorizadas?',
+    'Para responder “Que debe incluir viabilidad integral para atender las causas priorizadas”, concéntrese en integrar viabilidad económica, legal, ambiental, temporal y organizacional. Use datos correspondientes a viabilidad integral, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En viabilidad integral, se registrará la situación actual, el periodo analizado y la evidencia disponible para integrar viabilidad económica, legal, ambiental, temporal y organizacional.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a viabilidad integral y no duplicar contenido de otro apartado.'
+),
+(207,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en viabilidad integral?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en viabilidad integral”, concéntrese en integrar viabilidad económica, legal, ambiental, temporal y organizacional. Use datos correspondientes a viabilidad integral, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre viabilidad integral.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a viabilidad integral y no duplicar contenido de otro apartado.'
+),
+(207,
+    '¿Como se validará que viabilidad integral es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que viabilidad integral es efectiva, viable y coherente con los objetivos”, concéntrese en integrar viabilidad económica, legal, ambiental, temporal y organizacional. Use datos correspondientes a viabilidad integral, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de viabilidad integral se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a viabilidad integral y no duplicar contenido de otro apartado.'
+),
+-- Estrategia de implementación
+(209,
+    '¿Que debe incluir estrategia de implementación para atender las causas priorizadas?',
+    'Para responder “Que debe incluir estrategia de implementación para atender las causas priorizadas”, concéntrese en definir despliegue total, por fases o piloto, dependencias e hitos. Use datos correspondientes a estrategia de implementación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En estrategia de implementación, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir despliegue total, por fases o piloto, dependencias e hitos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a estrategia de implementación y no duplicar contenido de otro apartado.'
+),
+(209,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en estrategia de implementación?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en estrategia de implementación”, concéntrese en definir despliegue total, por fases o piloto, dependencias e hitos. Use datos correspondientes a estrategia de implementación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre estrategia de implementación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a estrategia de implementación y no duplicar contenido de otro apartado.'
+),
+(209,
+    '¿Como se validará que estrategia de implementación es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que estrategia de implementación es efectiva, viable y coherente con los objetivos”, concéntrese en definir despliegue total, por fases o piloto, dependencias e hitos. Use datos correspondientes a estrategia de implementación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de estrategia de implementación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a estrategia de implementación y no duplicar contenido de otro apartado.'
+),
+-- Plan de acción
+(210,
+    '¿Que debe incluir plan de acción para atender las causas priorizadas?',
+    'Para responder “Que debe incluir plan de acción para atender las causas priorizadas”, concéntrese en traducir estrategias en actividades, entregables, responsables, recursos y costos. Use datos correspondientes a plan de acción, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En plan de acción, se registrará la situación actual, el periodo analizado y la evidencia disponible para traducir estrategias en actividades, entregables, responsables, recursos y costos.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a plan de acción y no duplicar contenido de otro apartado.'
+),
+(210,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en plan de acción?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en plan de acción”, concéntrese en traducir estrategias en actividades, entregables, responsables, recursos y costos. Use datos correspondientes a plan de acción, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre plan de acción.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a plan de acción y no duplicar contenido de otro apartado.'
+),
+(210,
+    '¿Como se validará que plan de acción es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que plan de acción es efectiva, viable y coherente con los objetivos”, concéntrese en traducir estrategias en actividades, entregables, responsables, recursos y costos. Use datos correspondientes a plan de acción, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de plan de acción se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a plan de acción y no duplicar contenido de otro apartado.'
+),
+-- Cronograma Gantt
+(211,
+    '¿Que debe incluir cronograma Gantt para atender las causas priorizadas?',
+    'Para responder “Que debe incluir cronograma Gantt para atender las causas priorizadas”, concéntrese en secuenciar fechas, duraciones, dependencias, hitos y ruta crítica. Use datos correspondientes a cronograma Gantt, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En cronograma Gantt, se registrará la situación actual, el periodo analizado y la evidencia disponible para secuenciar fechas, duraciones, dependencias, hitos y ruta crítica.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a cronograma Gantt y no duplicar contenido de otro apartado.'
+),
+(211,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en cronograma Gantt?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en cronograma Gantt”, concéntrese en secuenciar fechas, duraciones, dependencias, hitos y ruta crítica. Use datos correspondientes a cronograma Gantt, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre cronograma Gantt.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a cronograma Gantt y no duplicar contenido de otro apartado.'
+),
+(211,
+    '¿Como se validará que cronograma Gantt es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que cronograma Gantt es efectiva, viable y coherente con los objetivos”, concéntrese en secuenciar fechas, duraciones, dependencias, hitos y ruta crítica. Use datos correspondientes a cronograma Gantt, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de cronograma Gantt se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a cronograma Gantt y no duplicar contenido de otro apartado.'
+),
+-- Matriz RACI
+(212,
+    '¿Que debe incluir matriz raci para atender las causas priorizadas?',
+    'Para responder “Que debe incluir matriz raci para atender las causas priorizadas”, concéntrese en aclarar quien ejecuta, aprueba, consulta e informa. Use datos correspondientes a matriz raci, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En matriz raci, se registrará la situación actual, el periodo analizado y la evidencia disponible para aclarar quien ejecuta, aprueba, consulta e informa.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a matriz raci y no duplicar contenido de otro apartado.'
+),
+(212,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en matriz raci?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en matriz raci”, concéntrese en aclarar quien ejecuta, aprueba, consulta e informa. Use datos correspondientes a matriz raci, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre matriz raci.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a matriz raci y no duplicar contenido de otro apartado.'
+),
+(212,
+    '¿Como se validará que matriz raci es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que matriz raci es efectiva, viable y coherente con los objetivos”, concéntrese en aclarar quien ejecuta, aprueba, consulta e informa. Use datos correspondientes a matriz raci, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de matriz raci se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a matriz raci y no duplicar contenido de otro apartado.'
+),
+-- Plan de capacitación
+(213,
+    '¿Que debe incluir plan de capacitación para atender las causas priorizadas?',
+    'Para responder “Que debe incluir plan de capacitación para atender las causas priorizadas”, concéntrese en programar público, brechas, temas, método, evaluación y costo. Use datos correspondientes a plan de capacitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En plan de capacitación, se registrará la situación actual, el periodo analizado y la evidencia disponible para programar público, brechas, temas, método, evaluación y costo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a plan de capacitación y no duplicar contenido de otro apartado.'
+),
+(213,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en plan de capacitación?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en plan de capacitación”, concéntrese en programar público, brechas, temas, método, evaluación y costo. Use datos correspondientes a plan de capacitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre plan de capacitación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a plan de capacitación y no duplicar contenido de otro apartado.'
+),
+(213,
+    '¿Como se validará que plan de capacitación es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que plan de capacitación es efectiva, viable y coherente con los objetivos”, concéntrese en programar público, brechas, temas, método, evaluación y costo. Use datos correspondientes a plan de capacitación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de plan de capacitación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a plan de capacitación y no duplicar contenido de otro apartado.'
+),
+-- Plan de comunicación
+(214,
+    '¿Que debe incluir plan de comunicación para atender las causas priorizadas?',
+    'Para responder “Que debe incluir plan de comunicación para atender las causas priorizadas”, concéntrese en definir grupos, mensajes, canales, fechas y retroalimentación. Use datos correspondientes a plan de comunicación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En plan de comunicación, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir grupos, mensajes, canales, fechas y retroalimentación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a plan de comunicación y no duplicar contenido de otro apartado.'
+),
+(214,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en plan de comunicación?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en plan de comunicación”, concéntrese en definir grupos, mensajes, canales, fechas y retroalimentación. Use datos correspondientes a plan de comunicación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre plan de comunicación.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a plan de comunicación y no duplicar contenido de otro apartado.'
+),
+(214,
+    '¿Como se validará que plan de comunicación es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que plan de comunicación es efectiva, viable y coherente con los objetivos”, concéntrese en definir grupos, mensajes, canales, fechas y retroalimentación. Use datos correspondientes a plan de comunicación, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de plan de comunicación se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a plan de comunicación y no duplicar contenido de otro apartado.'
+),
+-- Gestión de resistencia
+(215,
+    '¿Que debe incluir gestión de resistencia para atender las causas priorizadas?',
+    'Para responder “Que debe incluir gestión de resistencia para atender las causas priorizadas”, concéntrese en identificar resistencias, causas y respuestas. Use datos correspondientes a gestión de resistencia, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En gestión de resistencia, se registrará la situación actual, el periodo analizado y la evidencia disponible para identificar resistencias, causas y respuestas.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a gestión de resistencia y no duplicar contenido de otro apartado.'
+),
+(215,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en gestión de resistencia?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en gestión de resistencia”, concéntrese en identificar resistencias, causas y respuestas. Use datos correspondientes a gestión de resistencia, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre gestión de resistencia.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a gestión de resistencia y no duplicar contenido de otro apartado.'
+),
+(215,
+    '¿Como se validará que gestión de resistencia es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que gestión de resistencia es efectiva, viable y coherente con los objetivos”, concéntrese en identificar resistencias, causas y respuestas. Use datos correspondientes a gestión de resistencia, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de gestión de resistencia se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a gestión de resistencia y no duplicar contenido de otro apartado.'
+),
+-- Diseño del piloto
+(216,
+    '¿Que debe incluir diseño del piloto para atender las causas priorizadas?',
+    'Para responder “Que debe incluir diseño del piloto para atender las causas priorizadas”, concéntrese en definir alcance, duración, participantes, datos, criterios y reversa. Use datos correspondientes a diseño del piloto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En diseño del piloto, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir alcance, duración, participantes, datos, criterios y reversa.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a diseño del piloto y no duplicar contenido de otro apartado.'
+),
+(216,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en diseño del piloto?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en diseño del piloto”, concéntrese en definir alcance, duración, participantes, datos, criterios y reversa. Use datos correspondientes a diseño del piloto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre diseño del piloto.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a diseño del piloto y no duplicar contenido de otro apartado.'
+),
+(216,
+    '¿Como se validará que diseño del piloto es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que diseño del piloto es efectiva, viable y coherente con los objetivos”, concéntrese en definir alcance, duración, participantes, datos, criterios y reversa. Use datos correspondientes a diseño del piloto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de diseño del piloto se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a diseño del piloto y no duplicar contenido de otro apartado.'
+),
+-- Ejecución y resultados del piloto
+(217,
+    '¿Que debe incluir ejecución y resultados del piloto para atender las causas priorizadas?',
+    'Para responder “Que debe incluir ejecución y resultados del piloto para atender las causas priorizadas”, concéntrese en documentar incidencias, resultados, aprendizaje y ajustes. Use datos correspondientes a ejecución y resultados del piloto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En ejecución y resultados del piloto, se registrará la situación actual, el periodo analizado y la evidencia disponible para documentar incidencias, resultados, aprendizaje y ajustes.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a ejecución y resultados del piloto y no duplicar contenido de otro apartado.'
+),
+(217,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en ejecución y resultados del piloto?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en ejecución y resultados del piloto”, concéntrese en documentar incidencias, resultados, aprendizaje y ajustes. Use datos correspondientes a ejecución y resultados del piloto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre ejecución y resultados del piloto.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a ejecución y resultados del piloto y no duplicar contenido de otro apartado.'
+),
+(217,
+    '¿Como se validará que ejecución y resultados del piloto es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que ejecución y resultados del piloto es efectiva, viable y coherente con los objetivos”, concéntrese en documentar incidencias, resultados, aprendizaje y ajustes. Use datos correspondientes a ejecución y resultados del piloto, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de ejecución y resultados del piloto se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a ejecución y resultados del piloto y no duplicar contenido de otro apartado.'
+),
+-- Sistema de monitoreo
+(218,
+    '¿Que debe incluir sistema de monitoreo para atender las causas priorizadas?',
+    'Para responder “Que debe incluir sistema de monitoreo para atender las causas priorizadas”, concéntrese en definir datos, instrumentos, frecuencia, responsable y almacenamiento. Use datos correspondientes a sistema de monitoreo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En sistema de monitoreo, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir datos, instrumentos, frecuencia, responsable y almacenamiento.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    '“En sistema de monitoreo, se registrará la situación actual, el periodo analizado y la evidencia disponible para definir datos, instrumentos, frecuencia, responsable y almacenamiento.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.'
+),
+(218,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en sistema de monitoreo?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en sistema de monitoreo”, concéntrese en definir datos, instrumentos, frecuencia, responsable y almacenamiento. Use datos correspondientes a sistema de monitoreo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre sistema de monitoreo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a sistema de monitoreo y no duplicar contenido de otro apartado.'
+),
+(218,
+    '¿Como se validará que sistema de monitoreo es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que sistema de monitoreo es efectiva, viable y coherente con los objetivos”, concéntrese en definir datos, instrumentos, frecuencia, responsable y almacenamiento. Use datos correspondientes a sistema de monitoreo, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de sistema de monitoreo se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a sistema de monitoreo y no duplicar contenido de otro apartado.'
+),
+-- Definición de KPI
+(219,
+    '¿Que debe incluir definición de kpi para atender las causas priorizadas?',
+    'Para responder “Que debe incluir definición de kpi para atender las causas priorizadas”, concéntrese en crear ficha completa de indicador y semáforo. Use datos correspondientes a definición de kpi, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En definición de kpi, se registrará la situación actual, el periodo analizado y la evidencia disponible para crear ficha completa de indicador y semáforo.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a definición de kpi y no duplicar contenido de otro apartado.'
+),
+(219,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en definición de kpi?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en definición de kpi”, concéntrese en crear ficha completa de indicador y semáforo. Use datos correspondientes a definición de kpi, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre definición de kpi.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a definición de kpi y no duplicar contenido de otro apartado.'
+),
+(219,
+    '¿Como se validará que definición de kpi es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que definición de kpi es efectiva, viable y coherente con los objetivos”, concéntrese en crear ficha completa de indicador y semáforo. Use datos correspondientes a definición de kpi, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de definición de kpi se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a definición de kpi y no duplicar contenido de otro apartado.'
+),
+-- Acciones correctivas
+(220,
+    '¿Que debe incluir acciones correctivas para atender las causas priorizadas?',
+    'Para responder “Que debe incluir acciones correctivas para atender las causas priorizadas”, concéntrese en establecer alertas, análisis, acción, plazo y cierre. Use datos correspondientes a acciones correctivas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En acciones correctivas, se registrará la situación actual, el periodo analizado y la evidencia disponible para establecer alertas, análisis, acción, plazo y cierre.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a acciones correctivas y no duplicar contenido de otro apartado.'
+),
+(220,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en acciones correctivas?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en acciones correctivas”, concéntrese en establecer alertas, análisis, acción, plazo y cierre. Use datos correspondientes a acciones correctivas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre acciones correctivas.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a acciones correctivas y no duplicar contenido de otro apartado.'
+),
+(220,
+    '¿Como se validará que acciones correctivas es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que acciones correctivas es efectiva, viable y coherente con los objetivos”, concéntrese en establecer alertas, análisis, acción, plazo y cierre. Use datos correspondientes a acciones correctivas, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de acciones correctivas se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a acciones correctivas y no duplicar contenido de otro apartado.'
+),
+-- Evaluación antes-después
+(221,
+    '¿Que debe incluir evaluación antes-después para atender las causas priorizadas?',
+    'Para responder “Que debe incluir evaluación antes-después para atender las causas priorizadas”, concéntrese en comparar periodos equivalentes y atribución razonable. Use datos correspondientes a evaluación antes-después, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En evaluación antes-después, se registrará la situación actual, el periodo analizado y la evidencia disponible para comparar periodos equivalentes y atribución razonable.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a evaluación antes-después y no duplicar contenido de otro apartado.'
+),
+(221,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en evaluación antes-después?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en evaluación antes-después”, concéntrese en comparar periodos equivalentes y atribución razonable. Use datos correspondientes a evaluación antes-después, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre evaluación antes-después.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a evaluación antes-después y no duplicar contenido de otro apartado.'
+),
+(221,
+    '¿Como se validará que evaluación antes-después es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que evaluación antes-después es efectiva, viable y coherente con los objetivos”, concéntrese en comparar periodos equivalentes y atribución razonable. Use datos correspondientes a evaluación antes-después, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de evaluación antes-después se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a evaluación antes-después y no duplicar contenido de otro apartado.'
+),
+-- Beneficios reales y lecciones
+(222,
+    '¿Que debe incluir beneficios reales y lecciones para atender las causas priorizadas?',
+    'Para responder “Que debe incluir beneficios reales y lecciones para atender las causas priorizadas”, concéntrese en registrar costos, beneficios, desviaciones y aprendizaje reales. Use datos correspondientes a beneficios reales y lecciones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En beneficios reales y lecciones, se registrará la situación actual, el periodo analizado y la evidencia disponible para registrar costos, beneficios, desviaciones y aprendizaje reales.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a beneficios reales y lecciones y no duplicar contenido de otro apartado.'
+),
+(222,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en beneficios reales y lecciones?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en beneficios reales y lecciones”, concéntrese en registrar costos, beneficios, desviaciones y aprendizaje reales. Use datos correspondientes a beneficios reales y lecciones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre beneficios reales y lecciones.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a beneficios reales y lecciones y no duplicar contenido de otro apartado.'
+),
+(222,
+    '¿Como se validará que beneficios reales y lecciones es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que beneficios reales y lecciones es efectiva, viable y coherente con los objetivos”, concéntrese en registrar costos, beneficios, desviaciones y aprendizaje reales. Use datos correspondientes a beneficios reales y lecciones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de beneficios reales y lecciones se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a beneficios reales y lecciones y no duplicar contenido de otro apartado.'
+),
+-- Estandarización
+(223,
+    '¿Que debe incluir estandarización para atender las causas priorizadas?',
+    'Para responder “Que debe incluir estandarización para atender las causas priorizadas”, concéntrese en incorporar procedimientos, formatos, versionado y auditoria. Use datos correspondientes a estandarización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En estandarización, se registrará la situación actual, el periodo analizado y la evidencia disponible para incorporar procedimientos, formatos, versionado y auditoria.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a estandarización y no duplicar contenido de otro apartado.'
+),
+(223,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en estandarización?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en estandarización”, concéntrese en incorporar procedimientos, formatos, versionado y auditoria. Use datos correspondientes a estandarización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre estandarización.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a estandarización y no duplicar contenido de otro apartado.'
+),
+(223,
+    '¿Como se validará que estandarización es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que estandarización es efectiva, viable y coherente con los objetivos”, concéntrese en incorporar procedimientos, formatos, versionado y auditoria. Use datos correspondientes a estandarización, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de estandarización se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a estandarización y no duplicar contenido de otro apartado.'
+),
+-- Sostenibilidad y PHVA
+(224,
+    '¿Que debe incluir sostenibilidad y phva para atender las causas priorizadas?',
+    'Para responder “Que debe incluir sostenibilidad y phva para atender las causas priorizadas”, concéntrese en mantener la mejora mediante planear, hacer, verificar y actuar. Use datos correspondientes a sostenibilidad y phva, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En sostenibilidad y phva, se registrará la situación actual, el periodo analizado y la evidencia disponible para mantener la mejora mediante planear, hacer, verificar y actuar.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a sostenibilidad y phva y no duplicar contenido de otro apartado.'
+),
+(224,
+    '¿Qué recursos, responsables, reglas y riesgos intervienen en sostenibilidad y phva?',
+    'Para responder “Que recursos, responsables, reglas y riesgos intervienen en sostenibilidad y phva”, concéntrese en mantener la mejora mediante planear, hacer, verificar y actuar. Use datos correspondientes a sostenibilidad y phva, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre sostenibilidad y phva.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a sostenibilidad y phva y no duplicar contenido de otro apartado.'
+),
+(224,
+    '¿Como se validará que sostenibilidad y phva es efectiva, viable y coherente con los objetivos?',
+    'Para responder “Como se validará que sostenibilidad y phva es efectiva, viable y coherente con los objetivos”, concéntrese en mantener la mejora mediante planear, hacer, verificar y actuar. Use datos correspondientes a sostenibilidad y phva, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de sostenibilidad y phva se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a sostenibilidad y phva y no duplicar contenido de otro apartado.'
+),
+-- Conclusiones
+(225,
+    '¿Qué información aprobada debe incluir conclusiones?',
+    'Para responder “Que información aprobada debe incluir conclusiones”, concéntrese en responder objetivos con hallazgos, evidencia y limitaciones. Use datos correspondientes a conclusiones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En conclusiones, se registrará la situación actual, el periodo analizado y la evidencia disponible para responder objetivos con hallazgos, evidencia y limitaciones.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a conclusiones y no duplicar contenido de otro apartado.'
+),
+(225,
+    '¿Que evidencia y resultados sustentan conclusiones?',
+    'Para responder “Que evidencia y resultados sustentan conclusiones”, concéntrese en responder objetivos con hallazgos, evidencia y limitaciones. Use datos correspondientes a conclusiones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre conclusiones.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a conclusiones y no duplicar contenido de otro apartado.'
+),
+(225,
+    '¿Qué control de coherencia y calidad debe superar conclusiones?',
+    'Para responder “Que control de coherencia y calidad debe superar conclusiones”, concéntrese en responder objetivos con hallazgos, evidencia y limitaciones. Use datos correspondientes a conclusiones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de conclusiones se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a conclusiones y no duplicar contenido de otro apartado.'
+),
+-- Recomendaciones
+(226,
+    '¿Qué información aprobada debe incluir recomendaciones?',
+    'Para responder “Que información aprobada debe incluir recomendaciones”, concéntrese en proponer acciones derivadas con responsable, prioridad, plazo e indicador. Use datos correspondientes a recomendaciones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“En recomendaciones, se registrará la situación actual, el periodo analizado y la evidencia disponible para proponer acciones derivadas con responsable, prioridad, plazo e indicador.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No use afirmaciones generales sin delimitar empresa, área, proceso y periodo. Control especifico: la respuesta debe corresponder a recomendaciones y no duplicar contenido de otro apartado.'
+),
+(226,
+    '¿Que evidencia y resultados sustentan recomendaciones?',
+    'Para responder “Que evidencia y resultados sustentan recomendaciones”, concéntrese en proponer acciones derivadas con responsable, prioridad, plazo e indicador. Use datos correspondientes a recomendaciones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“La empresa cuenta con un dato confirmado y un supuesto pendiente; ambos se mostrarán por separado antes de concluir sobre recomendaciones.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No convierta opiniones, propuestas o datos externos en hechos internos sin validación. Control especifico: la respuesta debe corresponder a recomendaciones y no duplicar contenido de otro apartado.'
+),
+(226,
+    '¿Qué control de coherencia y calidad debe superar recomendaciones?',
+    'Para responder “Que control de coherencia y calidad debe superar recomendaciones”, concéntrese en proponer acciones derivadas con responsable, prioridad, plazo e indicador. Use datos correspondientes a recomendaciones, indique periodo y origen, y separe hechos comprobados, estimaciones y propuestas.',
+    '“El resultado de recomendaciones se expresará mediante una tabla o indicador verificable y una conclusión vinculada con el problema.” El ejemplo no corresponde a una ciudad especifica y debe adaptarse al proyecto.',
+    'No cierre la sección si existe una contradicción material, una cifra sin fuente o una evidencia pendiente. Control especifico: la respuesta debe corresponder a recomendaciones y no duplicar contenido de otro apartado.'
 );
-
-
-
-
-
-
-
-            
-
-

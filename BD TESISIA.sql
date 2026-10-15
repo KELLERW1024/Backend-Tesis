@@ -666,6 +666,10 @@ ADD COLUMN status_structure TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE plan_node
 ADD COLUMN execution_phase TINYINT NOT NULL DEFAULT 1;
 
+ALTER TABLE thesis_context
+ADD COLUMN assistant_context JSON NULL,
+ADD COLUMN plan_context JSON NULL;
+
 
 
 

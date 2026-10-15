@@ -75,40 +75,77 @@ class PromptService
 
 
         $sections[] = "
-            CRITERIOS DE EVALUACIÓN:
+            CRITERIOS DE EVALUACIÓN DE LA RESPUESTA DEL USUARIO:
 
-            Evalúa con la siguiente escala:
+Evalúa exclusivamente la calidad, pertinencia y suficiencia de la respuesta actual del usuario en relación con la pregunta formulada.
 
-            85
-            Directiva válida  para la  construcción de la respuesta
+La puntuación debe representar qué tan adecuada es la respuesta ORIGINAL del usuario, no qué tan bien podría redactarse o completarse posteriormente.
 
-            90-100:
-            Respuesta completa, académica, coherente y lista para integrarse en la tesis.
+ESCALA DE EVALUACIÓN:
 
-            85-89:
-            Respuesta válida, por lo que debes completar la información faltante tomando la data hitorica.
+90-100:
+La respuesta es correcta, pertinente, suficientemente desarrollada y coherente con la pregunta. Contiene la información necesaria para cumplir el objetivo solicitado y puede integrarse en la tesis con ajustes mínimos de redacción, si fueran necesarios.
 
-            75-84:
-            Respuesta parcialmente válida, por lo que debes completar la información faltante solo si tenemos la información disponible, recuerda que no debes inventar información.
+85-89
+Directiva válida  para la  construcción de la respuesta
 
-            0-74:
-            Respuesta inválida, no responde la pregunta o no tiene contenido suficiente.
+90-100:
+Respuesta completa, académica, coherente y lista para integrarse en la tesis.
 
+85-89:
+Respuesta válida, por lo que debes completar la información faltante tomando la data hitorica.
 
-            REGLAS IMPORTANTES:
+75-84:
+Respuesta parcialmente válida, por lo que debes completar la información faltante solo si tenemos la información disponible, recuerda que no debes inventar información.
 
-            - Usa el historial solamente como contexto de coherencia.
-            - El feedback debe ser corto, específico y orientado a mejorar la tesis.
-            - is_valid debe ser true únicamente cuando score sea igual o mayor a 75.
+0-74:
+Respuesta inválida, no responde la pregunta o no tiene contenido suficiente.
 
+REGLAS OBLIGATORIAS:
 
-            Devuelve únicamente JSON válido:
+Evalúa la respuesta de manera contextual, sin exigir una estructura rígida ni palabras específicas.
 
-            {
-                \"is_valid\": true,
-                \"score\": 85,
-                \"feedback\": \"La respuesta es válida, pero debe profundizar en...\"
-            }
+Interpreta la intención del usuario, incluso cuando se exprese informalmente, con frases breves, errores de redacción o ideas todavía poco desarrolladas.
+
+Considera que una respuesta breve puede ser válida si responde adecuadamente a lo solicitado.
+
+Utiliza el historial para comprender el negocio, recuperar datos ya proporcionados, resolver referencias ambiguas y completar información pertinente cuando sea posible.
+
+No penalices al usuario por omitir información que ya esté claramente disponible en el historial y que permita comprender su respuesta.
+
+Distingue entre una respuesta que necesita desarrollo académico y otra que realmente no responde a la pregunta.
+
+No exijas que el usuario proporcione todos los detalles en una sola respuesta si estos pueden obtenerse legítimamente del contexto disponible.
+
+No asignes automáticamente 85 puntos. La puntuación debe reflejar la calidad de la respuesta actual, considerando también la información contextual pertinente.
+
+Tampoco reduzcas excesivamente la puntuación por omisiones menores, falta de formalidad o ausencia de detalles que no sean esenciales.
+
+Si la respuesta contiene una idea válida, pero necesita mejoras, reconoce su valor y asigna una puntuación proporcional.
+
+Si faltan datos esenciales que no pueden recuperarse del historial, reduce la puntuación según su importancia.
+
+No inventes información para justificar una puntuación elevada.
+
+El feedback debe ser breve, constructivo y específico. Indica qué puede mejorarse sin descalificar innecesariamente al usuario.
+
+FORMATO DE SALIDA:
+
+is_valid debe ser true cuando score sea igual o mayor a 75, y false cuando sea inferior a 75.
+
+La validez indica si la respuesta tiene suficiente pertinencia y contenido aprovechable para continuar el proceso de elaboración de la tesis. No significa necesariamente que esté terminada ni que pueda incorporarse sin modificaciones.
+
+Devuelve únicamente un objeto JSON válido con esta estructura:
+
+{
+    \"is_valid\": false,
+    \"score\": 0,
+    \"feedback\": \"La respuesta no aborda los elementos esenciales solicitados.\"
+}
+
+El objeto anterior es exclusivamente un ejemplo de formato. No copies sus valores. Calcula is_valid, score y feedback de acuerdo con la respuesta real evaluada.
+
+No incluyas explicaciones, texto adicional, Markdown ni bloques de código fuera del JSON.
             ";
 
 
@@ -120,46 +157,62 @@ class PromptService
         $question = $data['question'] ?? '';
         $detail = $data['detail'] ?? '';
         $objective = $data['objective'] ?? '';
-        $historyThesis = json_encode($data['thesis_history'] ?? [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        $chatMessages = json_encode($data['chat_messages'] ?? [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $resumenGeneral = $data['resumen_general'] ?? 'No hay resumen consolidado previo.';
+        $assistantContext = json_encode($data['assistant_context'] ?? [], JSON_UNESCAPED_UNICODE);
+        $chatMessages = json_encode($data['chat_messages'] ?? [], JSON_UNESCAPED_UNICODE);
 
         return <<<PROMPT
-            Eres un asesor metodológico experto en formulación de planes de negocio y tesis de grado.
-            Tu objetivo es ayudar al tesista a responder una pregunta compleja de su plan mediante una ENTREVISTA CORTA Y GUIADA, construyendo progresivamente una respuesta formal para su documento.
+            Eres un consultor experto y redactor académico de tesis y planes de negocio, especializado en modelamiento cuantitativo, costos y capacidad operativa.
+            Tu misión es entrevistar al usuario paso a paso para co-crear la respuesta de la pregunta actual de forma profesional.
 
             INFORMACIÓN DE LA PREGUNTA ACTUAL:
             - Pregunta: {$question}
-            - Detalle / Criterio: {$detail}
-            - Objetivo de la sección: {$objective}
+            - Detalle / Guía: {$detail}
+            - Objetivo del nodo: {$objective}
 
-            HISTORIAL DE RESPUESTAS APROBADAS EN CAPÍTULOS ANTERIORES:
-            {$historyThesis}
+            RESUMEN GENERAL CONSOLIDADO DEL PROYECTO:
+            {$resumenGeneral}
 
-            HISTORIAL DEL CHAT DE ASISTENCIA ACTUAL:
+            DATOS CLAVE Y CUANTITATIVOS REGISTRADOS DEL PROYECTO:
+            {$assistantContext}
+
+            HISTORIAL DEL CHAT:
             {$chatMessages}
 
-            DIRECTRICES:
-            1. Rol: Asesor directo y empático. No hagas discursos largos.
-            2. Si el chat actual está vacío, saluda amablemente en 1 línea y haz 1 o máximo 2 preguntas clave sencillas para recopilar los datos esenciales.
-            3. Si el usuario responde con números o datos informales, tradúcelos al lenguaje técnico adecuado (fórmulas estadísticas, métricas financieras o metodológicas) sin exigirle que conozca la jerga.
-            4. "draft_text": Es la redacción académica formal acumulada y lista para la tesis. Con cada mensaje del usuario, enriquece este borrador haciéndolo más sólido y coherente con los capítulos anteriores.
-            5. "chat_message": Tu mensaje de respuesta en el diálogo. Debe ser breve, reconociendo el dato aportado y haciendo la siguiente repregunta puntual (si falta algo) o felicitándolo si la idea ya está completa.
-            6. "is_complete": false mientras falten datos esenciales; true cuando la respuesta tenga el rigor suficiente para ser aprobada.
-            7. "progress_percentage": Un entero entre 15 y 100 estimando el nivel de completitud de la respuesta.
-            8. "metrics_summary": Una cadena muy breve resumiendo variables numéricas clave si aplica (ej: "N = 450 | e = 5% | n = 207"), o null si no aplica.
+            INSTRUCCIONES:
+            1. "chat_message": Responde de forma amable, analítica y breve. Si faltan datos para estimar costos o capacidades, pídeselos de forma puntual.
+            2. "draft_text": Es el borrador formal de la respuesta técnica a la pregunta actual. Debe redactarse en tono académico/empresarial en tercera persona con cálculos si corresponde.
+            3. "progress_percentage": Estimación (0-100) de qué tan completa está la respuesta.
+            4. "is_complete": true si la respuesta ya está lista para usarse, false si falta afinar datos.
+            5. "updated_specific_data": Si en el chat identificas o confirmas algún dato clave cuantitativo o del proyecto, devuélvelo en este objeto. REGLA ESTRICTA DE INMUTABILIDAD: Si en DATOS CLAVE Y CUANTITATIVOS REGISTRADOS un campo YA TIENE un valor asignado, NO lo modifiques ni lo propongas de nuevo (déjalo null). Solo debes extraer datos para aquellos campos que actualmente estén en null o vacíos.:
+            - "nombre_proyecto_empresa"
+            - "alcance_geografico"
+            - "capacidad_operativa"
+            - "precio_o_tarifa"
+            - "costos_o_inversion"
+            - "demanda_o_volumen"
+            - "impacto_o_meta_financiera"
 
-            Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura:
+            RESPONDE ÚNICAMENTE CON ESTE FORMATO JSON:
             {
-                "chat_message": "string",
-                "draft_text": "string",
-                "is_complete": boolean,
-                "progress_percentage": number,
-                "metrics_summary": "string|null"
+                "chat_message": "...",
+                "draft_text": "...",
+                "progress_percentage": 20,
+                "is_complete": false,
+                "updated_specific_data": {
+                    "nombre_proyecto_empresa": null,
+                    "alcance_geografico": null,
+                    "capacidad_operativa": null,
+                    "precio_o_tarifa": null,
+                    "costos_o_inversion": null,
+                    "demanda_o_volumen": null,
+                    "impacto_o_meta_financiera": null
+                }
             }
             PROMPT;
     }
 
-   public function promptValidationRedundanceQuestion( array $history,  string $question  ): string {
+   public function promptValidationRedundanceQuestion( string|array $history,  string $question  ): string {
 
     $sections = [];
 
@@ -181,10 +234,9 @@ PROMPT;
 
     if (!empty($history)) {
 
-        $historyJson = json_encode(
-            $history,
-            JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
-        );
+        $historyContent = is_array($history)
+            ? json_encode($history, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+            : $history;
 
         $sections[] = <<<PROMPT
 HISTORIAL DE LA CONVERSACIÓN:
@@ -200,7 +252,7 @@ No completes información faltante mediante suposiciones.
 
 HISTORIAL:
 
-{$historyJson}
+{$historyContent}
 PROMPT;
     } else {
 

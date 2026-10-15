@@ -22,9 +22,13 @@ use Illuminate\Database\Eloquent\Collection;
 class ConversationService
 {
     public $excelService;
-    public function __construct(ExcelService $excelService)
+
+    protected AIService $aiService;
+
+    public function __construct(ExcelService $excelService, AIService   $aiService)
     {
         $this->excelService = $excelService;
+        $this->aiService = $aiService;
     }
 
     public function registerUserSuscription( $userId, $packageId ){
@@ -180,7 +184,7 @@ class ConversationService
     {
          return UserAnswers::where('conversation_id', $idConversation)
                 ->orderBy('created_at', 'desc')
-                ->limit(10)
+                ->limit(5)
                 ->get()
                 ->filter(function ($row) {
                     return !empty($row->answer_text);
@@ -292,18 +296,21 @@ class ConversationService
 
     }
 
-    public function saveUserAnswerAutomatic($conversationId, $questionId, $reply ){
-         UserAnswers::updateOrCreate(
-                [
-                    'conversation_id' => $conversationId,
-                    'question_id' => $questionId,
-                ],
-                [
-                    'user_id' => auth()->id(),
-                    // 'section_id' => $sectionId,
-                    'answer_text' => $reply,
-                ]
-            );
+    public function saveUserAnswerAutomatic($conversationId, $questionId, $reply)
+    {
+        UserAnswers::updateOrCreate(
+            [
+                'conversation_id' => $conversationId,
+                'question_id' => $questionId,
+            ],
+            [
+                'user_id' => auth()->id(),
+                'answer_text' => $reply,
+            ]
+        );
+
+        // Dispara la consolidación si esta respuesta automática completa el capítulo
+        $this->checkAndConsolidateChapter($conversationId, $questionId);
     }
 
     public function saveUserAnswer(
@@ -597,7 +604,25 @@ class ConversationService
                 }
             }
 
+                    // =========================================================================
+            // VERIFICACIÓN DE CAPÍTULO COMPLETADO PARA ACTUALIZAR THESIS_CONTEXT JSON
+            // =========================================================================
+            $this->checkAndConsolidateChapter($conversationId, $questionId);
+
             DB::commit();
+
+            /*$userAnswer = UserAnswers::updateOrCreate(
+                [
+                    'conversation_id' => $conversationId,
+                    'question_id' => $questionId,
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'answer_text' => $reply,
+                ]
+            );
+*/
+    
 
             return [
                 'success' => true,
@@ -611,7 +636,7 @@ class ConversationService
             \Log::error('saveUserAnswer ERROR', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
-            ]);
+            ]); 
 
             throw $e;
         }
@@ -714,5 +739,98 @@ class ConversationService
         return $allAnswered;
 
     }
-    
+
+    /*
+      Verifica si todas las preguntas del capítulo actual fueron respondidas
+      y dispara la consolidación progresiva en plan_context.
+    */
+    private function checkAndConsolidateChapter(int $conversationId, int $questionId): void
+    {
+        try {
+            $question = Question::find($questionId);
+            if (!$question || !$question->plan_node_id) return;
+
+            $currentNode = PlanNode::find($question->plan_node_id);
+            if (!$currentNode) return;
+
+            // 1. Determinar el nodo raíz del capítulo
+            $chapterNode = $currentNode;
+            while ($chapterNode->parent_id !== null) {
+                $parent = PlanNode::find($chapterNode->parent_id);
+                if (!$parent) break;
+                $chapterNode = $parent;
+            }
+
+            // 2. Obtener los IDs de subnodos del capítulo
+            $descendantIds = PlanNode::where('parent_id', $chapterNode->id)->pluck('id')->toArray();
+            $allNodeIds = array_unique(array_merge([$chapterNode->id], $descendantIds));
+
+            // Si existen sub-subnodos, los agregamos también
+            if (!empty($descendantIds)) {
+                $subDescendantIds = PlanNode::whereIn('parent_id', $descendantIds)->pluck('id')->toArray();
+                $allNodeIds = array_unique(array_merge($allNodeIds, $subDescendantIds));
+            }
+
+            // 3. Obtener todas las preguntas del capítulo
+            $chapterQuestions = Question::whereIn('plan_node_id', $allNodeIds)->get();
+            if ($chapterQuestions->isEmpty()) return;
+
+            $questionIds = $chapterQuestions->pluck('id');
+
+            // 4. Contar respuestas válidas del usuario en esta conversación
+            $answeredList = UserAnswers::where('conversation_id', $conversationId)
+                ->whereIn('question_id', $questionIds)
+                ->whereNotNull('answer_text')
+                ->where('answer_text', '!=', '')
+                ->get();
+
+            \Log::info("CHECK CONSOLIDATE", [
+                'capitulo_id' => $chapterNode->id,
+                'capitulo_titulo' => $chapterNode->titulo,
+                'preguntas_totales' => $questionIds->count(),
+                'respuestas_guardadas' => $answeredList->count(),
+            ]);
+
+            // 5. Si todas las preguntas del capítulo ya están respondidas
+            if ($answeredList->count() >= $questionIds->count()) {
+
+                // Obtenemos solo los capítulos (nivel 1) de este plan ordenados
+            $rootNodes = PlanNode::where('user_plan_id', $chapterNode->user_plan_id)
+                ->whereNull('parent_id')
+                ->where('execution_phase', 1)
+                ->orderBy('orden', 'asc')
+                ->orderBy('id', 'asc')
+                ->pluck('id')
+                ->toArray();
+
+            $index = array_search($chapterNode->id, $rootNodes);
+            $numeroCapitulo = ($index !== false) ? ($index + 1) : 1;
+
+                $qaData = [];
+                foreach ($chapterQuestions as $q) {
+                    $ans = $answeredList->firstWhere('question_id', $q->id);
+                    if ($ans) {
+                        $qaData[] = [
+                            'pregunta' => $q->question_text,
+                            'respuesta' => $ans->answer_text,
+                        ];
+                    }
+                }
+                \Log::info("DISPARANDO CONSOLIDACIÓN CAPÍTULO {$numeroCapitulo}", [
+                    'capitulo_id' => $chapterNode->id,
+                    'capitulo_titulo' => $chapterNode->titulo
+                ]);
+
+                // Disparamos la consolidación del plan_context
+                $this->aiService->consolidarCapituloPlanContext(
+                    $conversationId,
+                    $numeroCapitulo,
+                    $chapterNode->titulo ?? "Capítulo {$numeroCapitulo}",
+                    $qaData
+                );
+            }
+        } catch (\Throwable $e) {
+            \Log::error("Error en checkAndConsolidateChapter: " . $e->getMessage());
+        }
+    }
 }

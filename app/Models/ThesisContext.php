@@ -21,11 +21,15 @@ class ThesisContext extends Model
         'context_summary',
         'embedding',
         'confidence',
+        'assistant_context',
+        'plan_context',
     ];
 
     protected $casts = [
         'embedding' => 'array',
         'confidence' => 'decimal:2',
+        'assistant_context' => 'array',
+        'plan_context' => 'array',
     ];
 
     /**

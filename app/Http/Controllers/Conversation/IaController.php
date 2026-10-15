@@ -157,6 +157,10 @@ class IaController extends Controller
             ]);
 
             $result = $this->openAIService->json($prompt); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
+             \Log::info('RESULT IACONTROLLER', [
+                '$result => ' => $result ?? null 
+            ]);
+            
             $context = $this->thesisContextService->validateResponseAgainstContext( $data['idConversation'], $data['response']);
 
             if ( $result['is_valid'] == false ||  $context['is_inconsistent'] == true ) {
@@ -165,12 +169,18 @@ class IaController extends Controller
                 $result['images'] = [];
 
                  \Log::info('RESPONSE VALIDACION ', [
-                    '$result => ' => $result ?? null 
+                    '$result => ' => $result ?? null ,
+                    '$context => ' => $context ?? null
                 ]);
+                
                 if( $context['is_inconsistent'] == true ){
+                     $mensajeError = 'La respuesta no tiene congruencia con la información previamente registrada del proyecto.';
                      return response()->json([
-                        'is_valid' => false , 
-                        'response' => 'La respuesta no tiene congruencia con el tema.'
+                        'is_valid' => false,
+                        'score' => 0,
+                        'feedback' => $mensajeError,
+                        'message' => $mensajeError, 
+                        'response' => $mensajeError,
                     ]);
                 }
                
