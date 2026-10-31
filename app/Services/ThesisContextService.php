@@ -213,74 +213,46 @@ class ThesisContextService
             return trim($texto);
         }
 
+        // =========================================================================
+        // Incluir el Diagnóstico Inicial
+        // =========================================================================
+        $diagnosticoInicial = $context?->plan_context['diagnostico_inicial'] ?? [];
+        $textoDiagnostico = "";
+        
+        if (!empty($diagnosticoInicial)) {
+            $textoDiagnostico = "DIAGNÓSTICO INICIAL DEL PROYECTO (8 PREGUNTAS):\n";
+            foreach ($diagnosticoInicial as $diag) {
+                $textoDiagnostico .= "- P(id: {$diag['id_question']}): {$diag['answer']}\n";
+            }
+            $textoDiagnostico .= "\n";
+        }
+
+
         // Si estamos en el Capítulo 1 (aún no hay resumen general):
         // Obtenemos las últimas 5 respuestas usando ConversationService
         $conversationService = app(ConversationService::class);
         $historial5 = $conversationService->getHistoryLimit10($conversationId);
 
+        $textoHistorial = "";
         if (!empty($historial5)) {
-            $texto = "RESPUESTAS PREVIAS DADAS POR EL USUARIO (CAPÍTULO 1):\n";
+            $textoHistorial = "RESPUESTAS RECIENTES DADAS POR EL USUARIO (CAPÍTULO 1):\n";
             foreach ($historial5 as $item) {
-                $texto .= "- {$item['content']}\n\n";
+                $textoHistorial .= "- {$item['content']}\n\n";
             }
-            return trim($texto);
+        }
+
+        $textoCompleto = trim($textoDiagnostico . $textoHistorial);
+
+        if (!empty($textoCompleto)) {
+            return $textoCompleto;
         }
 
         return '';
     }
 
-    /**
-     * Convertir el contexto a un texto compacto.
-     *
-     * Este texto será útil para construir posteriormente
-     * el prompt de validación.
-     */
-    /*public function buildValidationText(
-        int $conversationId
-    ): string {
-        $context = $this->getContext($conversationId);
-
-        if (!$context) {
-            return '';
-        }
-
-        $lines = [];
-
-        if ($context->business_name) {
-            $lines[] = "Negocio: {$context->business_name}";
-        }
-
-        if ($context->business_sector) {
-            $lines[] = "Sector: {$context->business_sector}";
-        }
-
-        if ($context->product_service) {
-            $lines[] = "Producto o servicio: {$context->product_service}";
-        }
-
-        if ($context->target_customer) {
-            $lines[] = "Cliente objetivo: {$context->target_customer}";
-        }
-
-        if ($context->main_problem) {
-            $lines[] = "Problema principal: {$context->main_problem}";
-        }
-
-        if ($context->value_proposition) {
-            $lines[] = "Propuesta de valor: {$context->value_proposition}";
-        }
-
-        if ($context->context_summary) {
-            $lines[] = "Resumen: {$context->context_summary}";
-        }
-
-        return implode("\n", $lines);
-    }
-*/
     // ===========================================
     // FIN OBNTENER CONTEXTO COMPARAR
     // ==========================================
-
 
 public function validateResponseAgainstContext(
     int $conversationId,
@@ -291,12 +263,6 @@ public function validateResponseAgainstContext(
      * Obtener el contexto actual de la conversación.
      */
     $contextText = $this->buildValidationText($conversationId);
-
-    \Log::info('CONTEXTO USADO PARA VALIDAR INCONGRUENCIA', [
-        'conversation_id' => $conversationId,
-        'es_resumen_general' => str_contains($contextText, 'RESUMEN CONSOLIDADO DEL PROYECTO:'),
-        'context_text' => $contextText
-    ]);
     
     /*
      * Si todavía no existe contexto,

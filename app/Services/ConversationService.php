@@ -66,86 +66,158 @@ class ConversationService
     }
 
     public function registerPlanNodesUser(    
-                Collection $planNodes, Collection $questions,  int $nuevoPlanId , int $userPlanId ){
-       
+        Collection $planNodes, Collection $questions, int $nuevoPlanId, int $userPlanId 
+    ) {
         DB::transaction(function () use (
             $planNodes,
             $questions,
-            $nuevoPlanId, $userPlanId
+            $nuevoPlanId,
+            $userPlanId
         ) {
             $nodeIdMap = [];
 
+            // 1. Clonar nodos manteniendo la jerarquía básica
             foreach ($planNodes as $planNode) {
-
-                $newPlanNode = $planNode->replicate();
-
+                
+            $newPlanNode = $planNode->replicate();
+                
                 // Asociar al nuevo Plan
                 $newPlanNode->plan_id = $nuevoPlanId;
                 $newPlanNode->user_plan_id = $userPlanId;
-
-                // Temporalmente no importa el parent_id
-                $newPlanNode->parent_id = null;
-
                 $newPlanNode->save();
 
                 // Guardar relación original -> nuevo
                 $nodeIdMap[$planNode->id] = $newPlanNode->id;
             }
+
+            // 2. Actualizar los parent_id utilizando el mapa de IDs clonados
             foreach ($planNodes as $planNode) {
-
-                $newPlanNodeId = $nodeIdMap[$planNode->id];
-
-                $newParentId = null;
-
-                if ($planNode->parent_id !== null) {
-
-                    $newParentId = $nodeIdMap[$planNode->parent_id] ?? null;
-                }
-
-                PlanNode::where('id', $newPlanNodeId)
-                    ->update([
-                        'parent_id' => $newParentId
+                if ($planNode->parent_id !== null && isset($nodeIdMap[$planNode->parent_id])) {
+                    PlanNode::where('id', $nodeIdMap[$planNode->id])->update([
+                        'parent_id' => $nodeIdMap[$planNode->parent_id]
                     ]);
+                }
+            }
+            // 3. RECALCULAR SECUENCIALMENTE
+            $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'];
+
+            $allRootNodes = PlanNode::where('user_plan_id', $userPlanId)
+                ->where('plan_id', $nuevoPlanId)
+                ->whereNull('parent_id')
+                ->get();
+
+            // Separar y ordenar:
+            $preliminares = $allRootNodes->filter(function($n) {
+                $t = mb_strtolower($n->titulo);
+                return str_contains($t, 'resumen ejecutivo') || str_contains($t, 'introducción');
+            })->sortBy('id');
+
+            $finales = $allRootNodes->filter(function($n) {
+                $t = mb_strtolower($n->titulo);
+                return str_contains($t, 'conclusiones') || str_contains($t, 'recomendaciones');
+            })->sortBy('id');
+
+            $capitulosCentrales = $allRootNodes->reject(function($n) use ($preliminares, $finales) {
+                return $preliminares->contains('id', $n->id) || $finales->contains('id', $n->id);
+            })->sortBy('id');
+
+            // Unir en el orden correcto
+            $rootNodes = $preliminares->concat($capitulosCentrales)->concat($finales);
+
+            $globalOrden = 1;
+            $capIndex = 1;
+
+            foreach ($rootNodes as $root) {
+                $tituloLower = mb_strtolower($root->titulo);
+                
+                // Detectar si es un apartado especial
+                $esEspecial = str_contains($tituloLower, 'resumen ejecutivo') || 
+                              str_contains($tituloLower, 'introducción') || 
+                              str_contains($tituloLower, 'conclusiones') || 
+                              str_contains($tituloLower, 'recomendaciones');
+
+                if ($esEspecial) {
+                    // Limpiar prefijos previos y dejar título limpio sin romanos
+                    $tituloLimpio = preg_replace('/^(Capítulo\s+[I|V|X|L|C|D|M|\d]+\.?\s*|-*\s*)/i', '', $root->titulo);
+                    $root->update([
+                        'titulo' => trim($tituloLimpio),
+                        'orden'  => $globalOrden,
+                        'codigo' => null
+                    ]);
+                    $globalOrden++;
+                } else {
+                    $numeroRomano = $romanos[$capIndex] ?? $capIndex;
+
+                    // Renumerar como Capítulo X
+                    $tituloLimpio = preg_replace('/^Capítulo\s+[I|V|X|L|C|D|M|\d]+\.?\s*/i', '', $root->titulo);
+                    $root->update([
+                        'titulo' => "Capítulo {$numeroRomano}. " . ltrim($tituloLimpio, '. '),
+                        'orden'  => $globalOrden,
+                        'codigo' => (string)$capIndex
+                    ]);
+
+                    // Renumerar subnodos de Nivel
+                    $childrenL2 = PlanNode::where('parent_id', $root->id)
+                        ->orderBy('id', 'asc')
+                        ->get();
+
+                    $l2Index = 1;
+                    foreach ($childrenL2 as $childL2) {
+                        $childL2->update([
+                            'orden' => $l2Index,
+                            'codigo' => "{$capIndex}.{$l2Index}"
+                        ]);
+
+                        // Renumerar subnodos de Nivel 3
+                        $childrenL3 = PlanNode::where('parent_id', $childL2->id)
+                            ->orderBy('id', 'asc')
+                            ->get();
+
+                        $l3Index = 1;
+                        foreach ($childrenL3 as $childL3) {
+                            $childL3->update([
+                                'orden' => $l3Index,
+                                'codigo' => "{$capIndex}.{$l2Index}.{$l3Index}"
+                            ]);
+                            $l3Index++;
+                        }
+
+                        $l2Index++;
+                    }
+
+                    $capIndex++;
+                    $globalOrden++;
+                }
             }
 
-            $newQuestions = [];
-
-            foreach ($questions as $question) {
-
-                // Obtener el nuevo PlanNode correspondiente
-                $newPlanNodeId = $nodeIdMap[$question->plan_node_id] ?? null;
-
-                // Por seguridad, ignoramos preguntas cuyo PlanNode
-                // no haya sido clonado.
-                if (!$newPlanNodeId) {
-                    continue;
+            // 4. Clonar preguntas asociadas de forma masiva
+            $newQuestions = $questions->map(function ($question) use ($nodeIdMap) {
+                if (!isset($nodeIdMap[$question->plan_node_id])) {
+                    return null;
                 }
 
-                $newQuestions[] = [
-                    'plan_node_id' => $newPlanNodeId,
-
+                return [
+                    'plan_node_id'      => $nodeIdMap[$question->plan_node_id],
                     'question_text'     => $question->question_text,
-                    'question_detail'     => $question->question_detail,
-                    'question_example'     => $question->question_example,
-                    'validation_detail'     => $question->validation_detail,
-                    'order_index'  => $question->order_index,
-
-                    'created_at'   => now(),
-                    'updated_at'   => now(),
+                    'question_detail'   => $question->question_detail,
+                    'question_example'  => $question->question_example,
+                    'validation_detail' => $question->validation_detail,
+                    'order_index'       => $question->order_index,
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
                 ];
-            }
+            })->filter()->values()->toArray();
 
             if (!empty($newQuestions)) {
                 Question::insert($newQuestions);
             }
         });
-
     }
     public function startConversation($userId, $userPlanId, $suscriptionId )
     {
          return DB::transaction(function () use ($userId,  $userPlanId, $suscriptionId) {
 
-            // ✔ Crear conversación asociada a esa suscripción
+            // Crear conversación asociada a esa suscripción
             $conversation = Conversation::create([
                 // 'user_id' => $userId,
                 'user_plan_id' => $userPlanId,
@@ -157,7 +229,7 @@ class ConversationService
                 'last_activity_at' => now(),
             ]);
 
-            // ✔ SOLO ARRAY (NO RESPONSE)
+            // SOLO ARRAY (NO RESPONSE)
             return [
                 'status' => 200,
                 'conversation_id' => $conversation->id
@@ -236,7 +308,6 @@ class ConversationService
         return DB::transaction(function () use ($data, $message, $role) {
 
             $conversationId = $data['idConversation'];
-            // $sectionId = $data['idSection'];
             $questionId = $data['idQuestion'];
 
             // Agregar image
@@ -248,7 +319,6 @@ class ConversationService
                 $newImageCount = 0;
             }
 
-
             // Guardar mensaje 
             DB::table('conversation_messages')->insert([
                 'conversation_id' => $conversationId,
@@ -259,21 +329,6 @@ class ConversationService
                 'image_ia_count' => $newImageCount,
                 'created_at' => now()
             ]);
-
-            // Actualizar progreso
-            // DB::table('conversation_section_progress')
-            //     ->updateOrInsert(
-            //         [
-            //             'conversation_id' => $conversationId,
-            //             'section_id' => $sectionId,
-            //             'current_question_id' => $questionId,
-            //         ],
-            //         [
-            //             'status' => 'in_progress' ,
-            //             'updated_at' => now(),
-            //             'user_id' => auth()->id(),
-            //         ]
-            //     );
 
             return response()->json([
                 'message' => 'Conversation Save'
@@ -292,8 +347,6 @@ class ConversationService
         ->sum('image_ia_count');
 
         return  $imageCount ;
-
-
     }
 
     public function saveUserAnswerAutomatic($conversationId, $questionId, $reply)
@@ -345,32 +398,7 @@ class ConversationService
                     'answer_text' => $reply,
                 ]
             );
-            // VERIFICA SI TODAS LAS PREGUNTAS DE LA SECTION YA ESTAN CULMINADAS
-            // $questionIds = Question::where('section_id', $sectionId)
-            //     ->pluck('id');
-
-            // $answeredIds = UserAnswers::where('conversation_id', $conversationId)
-            //     ->whereIn('question_id', $questionIds)
-            //     ->pluck('question_id');
-
-            // $missing = $questionIds->diff($answeredIds);
-
-            // if( $missing->isEmpty() ){
-
-            //        ConversationSectionProgress::updateOrCreate(
-            //         [
-            //             'conversation_id' => $conversationId,
-            //             'section_id' => $sectionId,
-            //         ],
-            //         [
-            //             'user_id' => auth()->id(),
-            //             'status' => 'completed',
-            //             'completed_at' => now(),
-            //         ]
-            //     );
-            // }
-            
-
+           
             /**
              * ============================================
              * GUARDAR ARCHIVOS
@@ -450,7 +478,6 @@ class ConversationService
                     ]);
                 }
 
-
                 DB::table('answer_files')->insert([
                     'answer_id' => $userAnswer->id,
 
@@ -490,7 +517,6 @@ class ConversationService
             }
 
             // TABLA GENERADA X IA
-            // $table = isset($data['table'])  ? json_decode($data['table'], true)  : null;
             $table = null;
 
             if (!empty($data['table'])) {
@@ -604,25 +630,12 @@ class ConversationService
                 }
             }
 
-                    // =========================================================================
+            // =========================================================================
             // VERIFICACIÓN DE CAPÍTULO COMPLETADO PARA ACTUALIZAR THESIS_CONTEXT JSON
             // =========================================================================
             $this->checkAndConsolidateChapter($conversationId, $questionId);
 
             DB::commit();
-
-            /*$userAnswer = UserAnswers::updateOrCreate(
-                [
-                    'conversation_id' => $conversationId,
-                    'question_id' => $questionId,
-                ],
-                [
-                    'user_id' => auth()->id(),
-                    'answer_text' => $reply,
-                ]
-            );
-*/
-    
 
             return [
                 'success' => true,
@@ -642,90 +655,6 @@ class ConversationService
         }
     }
 
-    // public function saveUserAnswer( array $data,  $files = [], $metadata = [], $references = [] ){
-        
-    //     return DB::transaction(function () use ( $data ) {
-        
-    //         $conversationId = $data['idConversation'];
-    //         $sectionId = $data['idSection'];
-    //         $questionId = $data['idQuestion'];
-    //         $reply = $data['reply'];
-            
-            
-    //         // 1. Obtener progreso actual
-    //         $progress = DB::table('conversation_section_progress')
-    //             ->where('conversation_id', $conversationId)
-    //             ->where('section_id', $sectionId)
-    //             ->where('current_question_id', $questionId)
-    //             ->first();
-
-    //         //if (!$progress) {
-    //         //    throw new \Exception('No existe progreso para esta sección');
-    //         //}
-
-    //         $currentSectionId = $progress->section_id ?? $sectionId;
-    //         $currentQuestionId = $progress->section_id->current_question_id ?? $questionId;
-
-    //         /*if (!$currentQuestionId) {
-    //             throw new \Exception('No hay pregunta actual');
-    //         }*/
-
-    //         // 2. Guardar respuesta estructurada y obtenemos el ID 
-    //         $userAnswer = UserAnswers::updateOrCreate(
-    //             [
-    //                 'conversation_id' => $conversationId,
-    //                 'question_id' => $questionId,
-    //             ],
-    //             [
-    //                 'user_id' => auth()->id(),
-    //                 'section_id' => $sectionId,
-    //                 'answer_text' => $reply,
-    //             ]
-    //         );
-
-    //         $userAnswerId = $userAnswer->id;
-           
-    //         // Este estado se modificara cunado se haya completado la construcion de la section ya que la tabla solo acepta una conversastion x section
-
-    //         $allAnswered = $this->sectionCompleted($sectionId, $conversationId);
-
-    //         if( $allAnswered ){
-    //             DB::table('conversation_section_progress')
-    //                 ->updateOrInsert(
-    //                     [
-    //                         'conversation_id' => $conversationId,
-    //                         'section_id' => $sectionId,
-    //                         // 'current_question_id' => $currentQuestionId
-    //                     ],
-    //                     [
-    //                         'status' => 'completed' ,
-    //                         'updated_at' => now(),
-    //                         'user_id' => auth()->id(),
-    //                     ]
-    //                 );
-    //         }
-
-            
-
-    //         // Actualizamos de estado conversations
-    //         // DB::table('conversations')
-    //         //         ->updateOrInsert(
-    //         //             [
-    //         //                 'id' => $conversationId,
-    //         //             ],
-    //         //             [
-    //         //                 'status' => 'completed' ,
-    //         //                 'updated_at' => now(),
-    //         //                 'user_id' => auth()->id(),
-    //         //             ]
-    //         //         );
-            
-    //         return response()->json([
-    //             'message' => 'Section Reply Save',
-    //         ]);
-    //     });
-    // }
-
     public function sectionCompleted( $sectionId, $conversationId){
 
         $questionIds = Question::where('section_id', $sectionId)->pluck('id');
@@ -740,10 +669,6 @@ class ConversationService
 
     }
 
-    /*
-      Verifica si todas las preguntas del capítulo actual fueron respondidas
-      y dispara la consolidación progresiva en plan_context.
-    */
     private function checkAndConsolidateChapter(int $conversationId, int $questionId): void
     {
         try {
@@ -784,13 +709,6 @@ class ConversationService
                 ->where('answer_text', '!=', '')
                 ->get();
 
-            \Log::info("CHECK CONSOLIDATE", [
-                'capitulo_id' => $chapterNode->id,
-                'capitulo_titulo' => $chapterNode->titulo,
-                'preguntas_totales' => $questionIds->count(),
-                'respuestas_guardadas' => $answeredList->count(),
-            ]);
-
             // 5. Si todas las preguntas del capítulo ya están respondidas
             if ($answeredList->count() >= $questionIds->count()) {
 
@@ -816,10 +734,6 @@ class ConversationService
                         ];
                     }
                 }
-                \Log::info("DISPARANDO CONSOLIDACIÓN CAPÍTULO {$numeroCapitulo}", [
-                    'capitulo_id' => $chapterNode->id,
-                    'capitulo_titulo' => $chapterNode->titulo
-                ]);
 
                 // Disparamos la consolidación del plan_context
                 $this->aiService->consolidarCapituloPlanContext(
@@ -833,4 +747,109 @@ class ConversationService
             \Log::error("Error en checkAndConsolidateChapter: " . $e->getMessage());
         }
     }
+
+    /*
+      Elimina en cascada las respuestas desde el capítulo seleccionado en adelante (Solo Fase 1)
+    */
+    public function deleteChaptersAnswersFrom(int $conversationId, int $startChapterNodeId): array
+    {
+        return DB::transaction(function () use ($conversationId, $startChapterNodeId) {
+
+            $conversation = Conversation::findOrFail($conversationId);
+            $userPlanId = $conversation->user_plan_id;
+
+            // 1. Obtener SOLO los capítulos raíz de Fase 1
+            $rootNodes = PlanNode::where('user_plan_id', $userPlanId)
+                ->whereNull('parent_id')
+                ->where('execution_phase', 1)
+                ->orderBy('orden', 'asc')
+                ->orderBy('id', 'asc')
+                ->get();
+
+            $startNode = $rootNodes->firstWhere('id', $startChapterNodeId);
+
+            if (!$startNode) {
+                throw new \Exception('El capítulo seleccionado no pertenece a la fase de desarrollo de capítulos.');
+            }
+
+            // 2. Identificar todos los capítulos de Fase 1 desde el seleccionado en adelante
+            $startDeleting = false;
+            $targetRootIds = [];
+
+            foreach ($rootNodes as $root) {
+                if ($root->id == $startNode->id) {
+                    $startDeleting = true;
+                }
+                if ($startDeleting) {
+                    $targetRootIds[] = $root->id;
+                }
+            }
+
+            // 3. Obtener (Nivel 2 y Nivel 3) de todos los capítulos afectados
+            $level2Ids = PlanNode::whereIn('parent_id', $targetRootIds)->pluck('id')->toArray();
+            $level3Ids = !empty($level2Ids)
+                ? PlanNode::whereIn('parent_id', $level2Ids)->pluck('id')->toArray()
+                : [];
+
+            $allNodeIds = array_unique(array_merge($targetRootIds, $level2Ids, $level3Ids));
+            // 4. Obtener todas las preguntas de esos nodos
+            $questionIds = Question::whereIn('plan_node_id', $allNodeIds)->pluck('id')->toArray();
+
+            if (!empty($questionIds)) {
+                // 5. Obtener las respuestas registradas en esta conversación
+                $answers = UserAnswers::where('conversation_id', $conversationId)
+                    ->whereIn('question_id', $questionIds)
+                    ->get();
+
+                $answerIds = $answers->pluck('id')->toArray();
+
+                if (!empty($answerIds)) {
+                    // Eliminar carpetas de archivos físicos en storage
+                    foreach ($answerIds as $ansId) {
+                        Storage::disk('public')->deleteDirectory("answers/{$ansId}");
+                    }
+
+                    // Eliminar registros dependientes de las respuestas
+                    DB::table('answer_files')->whereIn('answer_id', $answerIds)->delete();
+                    DB::table('answer_reference_rel')->whereIn('answer_id', $answerIds)->delete();
+                    Tabla::whereIn('answer_id', $answerIds)->delete();
+
+                    // Eliminar las respuestas del usuario
+                    UserAnswers::whereIn('id', $answerIds)->delete();
+                }
+
+                // Eliminar historial de mensajes IA de esas preguntas
+                DB::table('conversation_messages')
+                    ->where('conversation_id', $conversationId)
+                    ->whereIn('question_id', $questionIds)
+                    ->delete();
+            }
+
+            // 6. Limpiar ThesisContext (cap_X consolidados de los capítulos eliminados)
+            $thesisContext = \App\Models\ThesisContext::where('conversation_id', $conversationId)->first();
+
+            if ($thesisContext && is_array($thesisContext->plan_context)) {
+                $planContext = $thesisContext->plan_context;
+
+                foreach ($rootNodes->values() as $idx => $p1Node) {
+                    if (in_array($p1Node->id, $targetRootIds)) {
+                        $capNum = $idx + 1;
+                        $capKey = "cap_{$capNum}";
+                        if (array_key_exists($capKey, $planContext)) {
+                            $planContext[$capKey] = null;
+                        }
+                    }
+                }
+
+                $thesisContext->plan_context = $planContext;
+                $thesisContext->save();
+            }
+
+            return [
+                'deleted_chapters_count' => count($targetRootIds),
+                'deleted_questions_count' => count($questionIds)
+            ];
+        });
+    }
+    
 }

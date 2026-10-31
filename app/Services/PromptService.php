@@ -152,6 +152,45 @@ No incluyas explicaciones, texto adicional, Markdown ni bloques de código fuera
         return implode("\n\n", array_filter($sections));
     }
 
+    public function promptFiltroNodePorDiagnostico(array $diagnosticoRespuestas, array $nodesForAI)
+    {
+        $diagnosticoJson = json_encode($diagnosticoRespuestas, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $nodesJson = json_encode($nodesForAI, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+        return <<<PROMPT
+Eres un experto metodológico y director de proyectos de tesis y planes de negocio.
+
+Tu tarea es analizar las respuestas del DIAGNÓSTICO INICIAL proporcionadas por el tesista y seleccionar, EXCLUSIVAMENTE de la lista de PLAN NODES proporcionada, los nodos, capítulos y secciones que sean estrictamente necesarios y pertinentes para estructurar el proyecto de forma precisa y personalizada.
+
+DIAGNÓSTICO INICIAL DEL USUARIO:
+{$diagnosticoJson}
+
+REGLAS OBLIGATORIAS:
+1. Analiza a profundidad las 8 respuestas del diagnóstico para entender el enfoque, alcance, naturaleza y necesidades específicas del proyecto.
+2. NO debes crear nuevos nodos.
+3. NO debes modificar ningún título ni ID.
+4. Solo puedes seleccionar IDs que aparezcan exactamente en la lista de PLAN NODES proporcionada.
+5. REGLA CRÍTICA DE JERARQUÍA: Si seleccionas un subnodo o sección específica, DEBES incluir obligatoriamente el ID de su nodo padre y de su Capítulo principal correspondiente para no romper la estructura visual.
+6. EXENCIÓN Y OBLIGATORIEDAD CRÍTICA: Debes incluir OBLIGATORIAMENTE en la selección los nodos correspondientes al "Resumen Ejecutivo", "Introducción", "Conclusiones" y "Recomendaciones" (o sus títulos equivalentes en la lista), ya que son apartados metodológicos obligatorios para todos los proyectos, independientemente del rubro.
+7. Excluye únicamente aquellos contenidos que por la naturaleza del diagnóstico no apliquen al proyecto.
+8. La propiedad "nodes" DEBE ser una lista plana de objetos que contengan únicamente la propiedad "id".
+9. Mantén el orden original en el que los IDs aparecen en la lista de PLAN NODES.
+10. No devuelvas explicaciones, comentarios ni Markdown. La respuesta DEBE ser exclusivamente un JSON válido.
+
+FORMATO DE SALIDA OBLIGATORIO:
+{
+    "nodes": [
+        {"id": 1},
+        {"id": 2},
+        {"id": 5}
+    ]
+}
+
+LISTA DE PLAN NODES:
+{$nodesJson}
+PROMPT;
+    }
+
     public function promptAssistantCoCreation(array $data): string
     {
         $question = $data['question'] ?? '';
@@ -162,36 +201,42 @@ No incluyas explicaciones, texto adicional, Markdown ni bloques de código fuera
         $chatMessages = json_encode($data['chat_messages'] ?? [], JSON_UNESCAPED_UNICODE);
 
         return <<<PROMPT
-            Eres un consultor experto y redactor académico de tesis y planes de negocio, especializado en modelamiento cuantitativo, costos y capacidad operativa.
-            Tu misión es entrevistar al usuario paso a paso para co-crear la respuesta de la pregunta actual de forma profesional.
+            Eres un consultor experto y redactor académico de tesis y planes de negocio, especializado en modelamiento cuantitativo, costos y operaciones.
+            Tu misión es entrevistar al usuario paso a paso para co-crear la respuesta de la pregunta actual de forma profesional, actuando como un "Resolutor de Brechas".
 
             INFORMACIÓN DE LA PREGUNTA ACTUAL:
             - Pregunta: {$question}
             - Detalle / Guía: {$detail}
             - Objetivo del nodo: {$objective}
 
-            RESUMEN GENERAL CONSOLIDADO DEL PROYECTO:
+            MEMORIA CRUDA DEL PROYECTO (Resumen General e Historial):
             {$resumenGeneral}
 
-            DATOS CLAVE Y CUANTITATIVOS REGISTRADOS DEL PROYECTO:
+            DICCIONARIO DE DATOS YA CONOCIDOS (Inmutables):
             {$assistantContext}
 
-            HISTORIAL DEL CHAT:
+            HISTORIAL DEL CHAT ACTUAL:
             {$chatMessages}
 
+            // ... (código anterior de la función)
+
             INSTRUCCIONES:
-            1. "chat_message": Responde de forma amable, analítica y breve. Si faltan datos para estimar costos o capacidades, pídeselos de forma puntual.
-            2. "draft_text": Es el borrador formal de la respuesta técnica a la pregunta actual. Debe redactarse en tono académico/empresarial en tercera persona con cálculos si corresponde.
-            3. "progress_percentage": Estimación (0-100) de qué tan completa está la respuesta.
-            4. "is_complete": true si la respuesta ya está lista para usarse, false si falta afinar datos.
-            5. "updated_specific_data": Si en el chat identificas o confirmas algún dato clave cuantitativo o del proyecto, devuélvelo en este objeto. REGLA ESTRICTA DE INMUTABILIDAD: Si en DATOS CLAVE Y CUANTITATIVOS REGISTRADOS un campo YA TIENE un valor asignado, NO lo modifiques ni lo propongas de nuevo (déjalo null). Solo debes extraer datos para aquellos campos que actualmente estén en null o vacíos.:
-            - "nombre_proyecto_empresa"
-            - "alcance_geografico"
-            - "capacidad_operativa"
-            - "precio_o_tarifa"
-            - "costos_o_inversion"
-            - "demanda_o_volumen"
-            - "impacto_o_meta_financiera"
+            1. "chat_message": Responde de forma interactiva y directa. Si faltan datos numéricos para calcular algo de la pregunta actual, ofrécele al usuario calcularlo juntos o sugerir un valor.
+            2. "brechas_detectadas": Enumera EXCLUSIVAMENTE los datos precisos y específicos que faltan para responder a la "PREGUNTA ACTUAL". 
+            - REGLA DE ENFOQUE (CRÍTICA): NO incluyas brechas generales del negocio. Si la pregunta es sobre el "precio de sesión", la brecha debe ser solo sobre el precio. Si ya tienes todos los datos para responder a la pregunta, devuelve un arreglo vacío [].
+            - REGLA DE LENGUAJE: El texto descriptivo de la brecha debe ser EXTREMADAMENTE CLARO. Escríbelo como una petición corta o una pregunta directa (Ejemplo: "¿Cuánto cobrarás por cada sesión?" o "Número estimado de atenciones al mes").
+            - REGLA DE ESTABILIDAD: Si el usuario ya te dio el dato, NO lo vuelvas a pedir.
+            - FORMATO OBLIGATORIO: Cada brecha debe ser un objeto JSON con dos propiedades: "dato" y "criticidad" ("Crítica", "Importante", "Recomendable", "Opcional").
+            3. "variables_negocio": Aquí colocarás TODOS los resultados matemáticos y SUPUESTOS. Cada variable será un objeto JSON.
+            - REGLA DE ESTADOS: Define el "estado" como "Calculado" o "Supuesto".
+            - REGLA DE FÓRMULA INDIVIDUAL: Para CADA variable, agrega un campo llamado "formula". Si es "Calculado", escribe la operación exacta (ej. "18 usuarios * 26 días"). Si es "Supuesto", justifica brevemente. Si no hay cálculo, pon "".
+            4. "draft_text": Es el borrador formal (Propuesta Académica) de la respuesta técnica.
+            5. "progress_percentage": Estimación (0-100) de qué tan completa está la respuesta.
+            6. "is_complete": true si la respuesta ya está lista para usarse.
+            7. "updated_specific_data": ¡TAREA CRÍTICA DE EXTRACCIÓN DE DATOS CRUDOS INMUTABLES! Extrae de la memoria ÚNICAMENTE HECHOS REALES dados por el usuario. 
+            - PROHIBICIÓN ABSOLUTA: NO guardes aquí estimaciones ni resultados de cálculos. Esos van en "variables_negocio".
+            - REGLA DE LÍMITE: No generes más de 5 a 8 claves dinámicas. 
+            - REGLA DE INMUTABILIDAD: Si un dato ya está en el "DICCIONARIO DE DATOS YA CONOCIDOS", no lo sobreescribas.
 
             RESPONDE ÚNICAMENTE CON ESTE FORMATO JSON:
             {
@@ -199,28 +244,42 @@ No incluyas explicaciones, texto adicional, Markdown ni bloques de código fuera
                 "draft_text": "...",
                 "progress_percentage": 20,
                 "is_complete": false,
-                "updated_specific_data": {
-                    "nombre_proyecto_empresa": null,
-                    "alcance_geografico": null,
-                    "capacidad_operativa": null,
-                    "precio_o_tarifa": null,
-                    "costos_o_inversion": null,
-                    "demanda_o_volumen": null,
-                    "impacto_o_meta_financiera": null
-                }
+                "brechas_detectadas": [
+                    {
+                        "dato": "¿Cuánto cobrarás por sesión?",
+                        "criticidad": "Crítica"
+                    }
+                ],
+                "variables_negocio": [
+                    {"nombre": "capacidad_maxima", "valor": "468", "estado": "Calculado", "formula": "18 diarios * 26 días laborables"}
+                ],
+                "updated_specific_data": {}
             }
             PROMPT;
     }
 
-   public function promptValidationRedundanceQuestion( string|array $history,  string $question  ): string {
+   public function promptValidationRedundanceQuestion( string|array $history,  string $question, bool $isPhase2 = false  ): string {
 
     $sections = [];
+
+$modoFase2 = "";
+    if ($isPhase2) {
+        $modoFase2 = <<<FASE2
+
+INSTRUCCIÓN ESPECIAL PRIORITARIA - FASE 2 (SÍNTESIS FINAL):
+Esta pregunta corresponde a una sección de cierre (Resumen ejecutivo, Introducción, Conclusiones o Recomendaciones).
+Para esta pregunta NO aplican de forma restrictiva las reglas de "no asumir" o "no completar".
+TU TAREA ACADÉMICA ES: Redactar, sintetizar, deducir y articular la respuesta utilizando como base todo el contenido consolidado en el RESUMEN GENERAL y los datos clave cuantitativos.
+No esperes que el usuario haya contestado esta pregunta antes: debes redactarla tú como asesor experto a partir del avance de los capítulos previos.
+Por lo tanto, prioriza generar la redacción académica y retornar "show": false con el contenido en el campo "resp". Únicamente retorna "show": true si el historial carece de los elementos indispensables para formular una respuesta coherente.
+FASE2;
+    }
 
     $sections[] = <<<PROMPT
 Eres un asesor académico especializado en investigación, elaboración y sustentación de tesis universitarias.
 
 Tu función es determinar si la pregunta actual necesita ser presentada nuevamente al usuario o si puede ser respondida utilizando exclusivamente la información que el usuario ya proporcionó anteriormente en esta conversación.
-
+{$modoFase2}
 No debes evaluar únicamente si la pregunta es similar o parecida a una pregunta anterior.
 
 Debes determinar si la información histórica disponible contiene evidencia suficiente, específica y coherente para construir una respuesta académica válida a la pregunta actual.
@@ -880,10 +939,14 @@ FORMATO DE RESPUESTA:
             "node_id": 10,
             "questions": [
                 {
-                    "description": "Pregunta relacionada con el nodo"
+                    "description": "Pregunta relacionada con el nodo",
+                    "detail": "Explicación clara de qué debe considerar el usuario para responder",
+                    "example": "Ejemplo conciso de redacción de la respuesta"
                 },
                 {
-                    "description": "Otra pregunta relacionada con el nodo"
+                    "description": "Otra pregunta relacionada con el nodo",
+                    "detail": "Explicación clara de qué debe considerar el usuario para responder",
+                    "example": "Ejemplo conciso de redacción de la respuesta"
                 }
             ]
         },
@@ -891,7 +954,9 @@ FORMATO DE RESPUESTA:
             "node_id": 15,
             "questions": [
                 {
-                    "description": "Pregunta relacionada con el nodo"
+                    "description": "Pregunta relacionada con el nodo",
+                    "detail": "Explicación clara de qué debe considerar el usuario para responder",
+                    "example": "Ejemplo conciso de redacción de la respuesta"
                 }
             ]
         }

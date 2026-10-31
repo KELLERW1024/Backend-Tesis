@@ -18,14 +18,12 @@ use App\Http\Resources\SubscriptionResource;
 
 class ConversationController extends Controller
 {
-    //
     private ConversationService $conversationService;
 
     public function __construct(ConversationService $conversationService, 
     protected PromptService $promptService, protected OpenAIService $openAIService )
     {
         $this->conversationService = $conversationService;
-        
     }
     
     // =====================================================================================
@@ -38,61 +36,73 @@ class ConversationController extends Controller
             'questions' => 'required|array|min:1',
             'questions.*.id_question' => 'required|integer',
             'questions.*.answer' => 'required|string|min:5',
-
         ]);
-         \Log::info('DEBUG save diaganosti', [
-             'id_subscription_conversation' => $validated['id_subscription_conversation'],
-             'questions' => $validated['questions'],
-            ]);
 
         $conversation = Conversation::find($validated['id_subscription_conversation']);
+        if (!$conversation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Conversación no encontrada'
+            ], 404);
+        }
 
         $userPlanId = $conversation?->user_plan_id;
-
         $userPlan = UserPlan::find( $userPlanId );
-
         $planId= $userPlan->plan_id;
 
         try {
             $user = auth()->user();
 
-            // Consultar con la IA
-            $diagnosticText = '';
+            // 1. Recolectar las respuestas del diagnóstico estructuradas
+            $diagnosticoArray = [];
+            foreach ($validated['questions'] as $qItem) {
+                // Opcional: puedes buscar el texto de la pregunta master si deseas enriquecer el JSON
+                $diagnosticoArray[] = [
+                    'id_question' => $qItem['id_question'],
+                    'answer' => trim($qItem['answer'])
+                ];
 
-            foreach ($validated['questions'] as $question) {
-                $diagnosticText .= "Pregunta ID: {$question['id_question']}\n";
-                $diagnosticText .= "Respuesta: {$question['answer']}\n\n";
+                // Guardar en user_answers_diagnostic o user_answers según corresponda tu arquitectura
+                UserAnswers::updateOrCreate(
+                    [
+                        'conversation_id' => $conversation->id,
+                        'user_id' => $user->id,
+                        'question_id' => $qItem['id_question'],
+                    ],
+                    [
+                        'answer' => trim($qItem['answer']),
+                    ]
+                );
             }
 
-            $prompt = $this->promptService->diagnosticRubroPlan( $diagnosticText ); 
+            // 2. Guardar/Actualizar el diagnóstico inicial dentro del JSON plan_context en ThesisContext
+            $basePlanContext = [
+                'resumen_general' => null,
+                'diagnostico_inicial' => $diagnosticoArray,
+                'cap_1' => null, 'cap_2' => null, 'cap_3' => null, 'cap_4' => null,
+                'cap_5' => null, 'cap_6' => null, 'cap_7' => null, 'cap_8' => null,
+            ];
 
-            $result = $this->openAIService->json($prompt);
+            $thesisContext = \App\Models\ThesisContext::firstOrCreate(
+                ['conversation_id' => $conversation->id],
+                [
+                    'user_plan_id' => $userPlanId,
+                    'plan_context' => $basePlanContext
+                ]
+            );
 
-            \Log::info('RESULTdiaganostic: ', $result);
+            $planContextData = array_merge($basePlanContext, $thesisContext->plan_context ?? []);
+            $planContextData['diagnostico_inicial'] = $diagnosticoArray;
+            
+            $thesisContext->plan_context = $planContextData;
+            $thesisContext->save();
 
-            $rubro = $result['rubro'];
-
-            // ACA SE REALIZA EL FILTRO PARA LA CRECAION DE LOS NUEVOS NODOS Y SUS PREGUNTAS
+            // 3. Obtener los nodos base del plan para que la IA los filtre basados en el diagnóstico completo
             $plansNode = PlanNode::whereNull('user_plan_id')
-                     ->where('plan_id', $planId)
-                    //  ->whereNotIn('id', [1, 2, 3, 139, 140])
-                     ->oldest('id')
-                     ->get();
+                ->where('plan_id', $planId)
+                ->oldest('id')
+                ->get();
 
-            // $plansNode = PlanNode::whereNull('user_plan_id')
-            //                     ->where('plan_id', $planId)
-            //                     ->where('id', '<=', 123)  // Esto desafecta resuemn, introduccion y otros
-            //                     ->oldest('id')
-            //                     ->get();
-
-            foreach ($plansNode as $planNode) {
-
-                \Log::info('Plan Node', [
-                    'id' => $planNode->id,
-                    'titulo' => $planNode->titulo,
-                ]);
-
-            }
             $nodesForAI = $plansNode->map(function ($node) {
                 return [
                     'id' => $node->id,
@@ -100,51 +110,49 @@ class ConversationController extends Controller
                 ];
             })->values()->toArray();
 
-            $promptFiltroNodes = $this->promptService->promptFiltroNode( $rubro, $nodesForAI ); 
+            // 4. Llamar a la IA con el nuevo prompt basado en el diagnóstico inicial completo
+            // ... Recolectar respuestas del diagnóstico y obtener nodos maestros
+        
+        $promptFiltroNodes = $this->promptService->promptFiltroNodePorDiagnostico($diagnosticoArray, $nodesForAI); 
 
-            // iNICIO NUEVA GENERACION DE NODOS => finalmente no se modifico el codigo peri el prompt node retornaba children al a;lgunas ocasiones y generaba el conflicto
-            $resultFiltro = $this->openAIService->json($promptFiltroNodes);
+        $resultFiltro = $this->openAIService->json($promptFiltroNodes);
 
-            \Log::info('RESULTADO FILTRO NODES IA:', [
-                'result' => $resultFiltro
-            ]);
             $nodeIdsFiltrados = collect($resultFiltro['nodes'] ?? [])
-            ->pluck('id')
-            ->toArray();
+                ->pluck('id')
+                ->toArray();
+
+            // =========================================================================
+            // MEDIDA DE SEGURIDAD: ASEGURAR QUE NINGÚN SUBNODO SE QUEDE SIN SU PADRE/CAPÍTULO
+            // =========================================================================
+            $allValidIds = $nodeIdsFiltrados;
+            foreach ($nodeIdsFiltrados as $id) {
+                $current = PlanNode::find($id);
+                // Subir recursivamente por el parent_id hasta llegar al capítulo raíz
+                while ($current && $current->parent_id !== null) {
+                    $allValidIds[] = $current->parent_id;
+                    $current = PlanNode::find($current->parent_id);
+                }
+            }
+            // Eliminar duplicados y ordenar para mantener la consistencia
+            $nodeIdsFiltrados = array_values(array_unique($allValidIds));
+            // =========================================================================
 
             $planNodes = PlanNode::whereIn('id', $nodeIdsFiltrados)
                 ->orderBy('id', 'asc')
                 ->get();
 
-            // FIN NUEVA GENERACION DE NODOS
-
             $questions = Question::whereIn('plan_node_id', $planNodes->pluck('id'))
                 ->orderBy('plan_node_id', 'asc')
                 ->orderBy('order_index', 'asc')
                 ->get();
-                // Hasta aca tengo los nodos filtrados y susu respuestas 
              
-            $conversationService->registerPlanNodesUser( $planNodes, $questions , $planId, $userPlanId);
-            
-            foreach ($validated['questions'] as $question) {
+            // Registrar y re-numerar con la estructura protegida
+            $conversationService->registerPlanNodesUser($planNodes, $questions, $planId, $userPlanId);
 
-                \Log::info('Pregunta y respuesta', [
-                    'id_question' => $question['id_question'],
-                    'answer' => $question['answer'],
-                ]);
-
-                UserAnswers::create([
-                    'conversation_id' => $validated['id_subscription_conversation'],
-                    'user_id' => $user->id,
-                    'question_id' => $question['id_question'],
-                    'answer' => trim($question['answer']),
-                ]);
-            }
-
-            Conversation::where('id', $conversation->id )
-                ->update([
-                    'summary' => $rubro,
-                ]);
+            // Actualizar estado de conversación (sin usar el rubro anterior)
+            $conversation->update([
+                'summary' => 'Diagnóstico inicial procesado con IA',
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -215,22 +223,44 @@ public function flattenNodeIds(array $nodes): array
         $planNode = \App\Models\PlanNode::find($question->plan_node_id);
 
         // =========================================================================
-        // OBTENER CONTEXTOS LIGEROS DE THESIS_CONTEXT (CERO BÚSQUEDAS PESADAS)
+        // OBTENER CONTEXTOS LIGEROS DE THESIS_CONTEXT Y PREPARAR MEMORIA
         // =========================================================================
         $thesisContext = \App\Models\ThesisContext::where('conversation_id', $conversation->id)->first();
+        
+        $resumenGeneralAnterior = $thesisContext?->plan_context['resumen_general'] ?? '';
+        $textoMemoria = "";
+        
+        // 1. EL PASADO: Si hay resumen general, lo usamos. Si no, usamos el diagnóstico inicial.
+        if (!empty(trim($resumenGeneralAnterior))) {
+            $textoMemoria = "RESUMEN DE CAPÍTULOS COMPLETADOS:\n" . $resumenGeneralAnterior . "\n";
+        } else {
+            $diagnosticoInicial = $thesisContext?->plan_context['diagnostico_inicial'] ?? [];
+            if (!empty($diagnosticoInicial)) {
+                $textoMemoria = "DIAGNÓSTICO INICIAL (Datos Crudos):\n";
+                foreach ($diagnosticoInicial as $diag) {
+                    $textoMemoria .= "- Respuesta: {$diag['answer']}\n";
+                }
+            }
+        }
 
-        $resumenGeneral = $thesisContext?->plan_context['resumen_general'] ?? null;
-        $assistantData = $thesisContext?->assistant_context ?? [
-            'nombre_proyecto_empresa' => null,
-            'alcance_geografico' => null,
-            'capacidad_operativa' => null,
-            'precio_o_tarifa' => null,
-            'costos_o_inversion' => null,
-            'demanda_o_volumen' => null,
-            'impacto_o_meta_financiera' => null,
-        ];
+        // 2. EL PRESENTE: SIEMPRE jalamos las últimas 5 respuestas formales del capítulo en curso
+        $historialReciente = $this->conversationService->getHistoryLimit10($conversation->id);
+        if (!empty($historialReciente)) {
+            $textoMemoria .= "\nÚLTIMAS RESPUESTAS DEL CAPÍTULO EN CURSO:\n";
+            foreach ($historialReciente as $item) {
+                $textoMemoria .= "- {$item['content']}\n";
+            }
+        }
 
-        // Tomar únicamente los últimos 6 turnos para mantener el prompt ligero
+        $resumenGeneral = trim($textoMemoria);
+        if (empty($resumenGeneral)) {
+            $resumenGeneral = 'No hay datos previos.';
+        }
+
+        // Permitimos que el contexto reciba las claves dinámicas que la IA invente
+        $assistantData = $thesisContext?->assistant_context ?? [];
+
+        // Tomar únicamente los últimos 6 turnos del chat actual
         $chatMessages = $validated['messages'] ?? [];
         if (!empty($validated['user_message'])) {
             $chatMessages[] = [
@@ -240,7 +270,19 @@ public function flattenNodeIds(array $nodes): array
         }
         $chatMessages = array_slice($chatMessages, -6);
 
-        // Construir el prompt con solo la información esencial
+        // =========================================================================
+        // LOG PARA DEPURAR QUÉ CONTEXTO ESTÁ RECIBIENDO REALMENTE LA IA
+        // =========================================================================
+        \Log::info('=== DEBUG: CONTEXTO ENVIADO AL ASISTENTE IA (Resolutor de Brechas) ===', [
+            'conversation_id' => $conversation->id,
+            'tiene_resumen_general_oficial' => !empty(trim($resumenGeneralAnterior)),
+            'longitud_texto_enviado' => strlen($resumenGeneral),
+            'contenido_texto_enviado' => $resumenGeneral,
+            'datos_conocidos_actuales' => $assistantData,
+            'mensajes_chat_recientes' => count($chatMessages)
+        ]);
+
+        // Construir el prompt
         $prompt = $this->promptService->promptAssistantCoCreation([
             'question' => $question->question_text,
             'detail' => $question->question_detail,
@@ -252,19 +294,9 @@ public function flattenNodeIds(array $nodes): array
 
         try {
             $aiResult = $this->openAIService->json($prompt);
-
-            
-            // LOG 1: Ver qué respondió el agente y qué datos específicos detectó
-            \Log::info("AGENTE IA - RESPUESTA RECIBIDA", [
-                'conversation_id' => $conversation->id,
-                'question_id' => $question->id,
-                'progress_percentage' => $aiResult['progress_percentage'] ?? null,
-                'is_complete' => $aiResult['is_complete'] ?? null,
-                'updated_specific_data_detectado' => $aiResult['updated_specific_data'] ?? [],
-            ]);
             
             // =========================================================================
-            // ACTUALIZAR DATOS ESPECÍFICOS EN ASSISTANT_CONTEXT SI EL AGENTE EXTRAJO ALGO
+            // GUARDAR LOS NUEVOS DATOS ESPECÍFICOS DINÁMICOS EXTRAÍDOS POR LA IA
             // =========================================================================
             if (!empty($aiResult['updated_specific_data']) && is_array($aiResult['updated_specific_data'])) {
                 $hasChanges = false;
@@ -272,17 +304,16 @@ public function flattenNodeIds(array $nodes): array
                     $valorActual = trim((string)($assistantData[$key] ?? ''));
                     $nuevoValor = trim((string)$val);
 
+                    // Solo actualiza si el valor actual estaba vacío y el nuevo no
                     if ($valorActual === '' && $nuevoValor !== '') {
                         $assistantData[$key] = $nuevoValor;
                         $hasChanges = true;
-
                     }
                 }
 
                 if ($hasChanges && $thesisContext) {
                     $thesisContext->assistant_context = $assistantData;
                     $thesisContext->save();
-                    
                 }
             }
 
@@ -294,6 +325,13 @@ public function flattenNodeIds(array $nodes): array
                     'is_complete' => (bool)($aiResult['is_complete'] ?? false),
                     'progress_percentage' => (int)($aiResult['progress_percentage'] ?? 20),
                     'metrics_summary' => $aiResult['metrics_summary'] ?? null,
+                    
+                    'brechas_detectadas' => $aiResult['brechas_detectadas'] ?? [],
+                    'variables_negocio' => $aiResult['variables_negocio'] ?? [],
+                    'formulas_utilizadas' => $aiResult['formulas_utilizadas'] ?? [],
+                    
+                    'contexto_general' => $resumenGeneral,
+                    'datos_conocidos' => $assistantData 
                 ]
             ]);
         } catch (\Throwable $e) {
@@ -328,7 +366,6 @@ public function flattenNodeIds(array $nodes): array
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:20480', 
 
         ]);
-        // \Log::error('OpenAI error: ' . $e->getMessage());
          \Log::info('DEBUG conversationSaveReply', [
                 'metadata' => json_decode($request->metadata, true),
                 'files' => $request->file('files'),
@@ -386,7 +423,6 @@ public function flattenNodeIds(array $nodes): array
                         ->orderBy('id', 'desc')
                         ->get();
 
-
         $data = [
             'user' => [
                 'id' => $user->id,
@@ -396,7 +432,6 @@ public function flattenNodeIds(array $nodes): array
 
                 $package = $conversation->subscription?->package;
                 $packageName = $package?->name ?? 'Paquete general';
-
 
                 $packageIsActive = $package ? (bool) $package->is_active : true;
                 
@@ -417,7 +452,6 @@ public function flattenNodeIds(array $nodes): array
                     'payment_status' => $paymentStatus,
                 ];
             }),
-
         ];
 
         return response()->json($data);
@@ -500,9 +534,8 @@ public function flattenNodeIds(array $nodes): array
         }
 
         $questions = Question::where('plan_node_id', $planNode->id)
-                                                                ->orderBy('order_index')
-                                                                ->get();
-
+            ->orderBy('order_index')
+            ->get();
 
         return response()->json([
             'status' => 200,
@@ -515,7 +548,6 @@ public function flattenNodeIds(array $nodes): array
             // ],
             'questions' => $questions
         ]);
-
 
     }
 
@@ -586,6 +618,8 @@ public function flattenNodeIds(array $nodes): array
         // 4. OBTENER TODOS LOS NODOS Y SUS PREGUNTAS
         // =========================================================
 
+        $isPhase2 = false;
+
         $nodes = PlanNode::with([
             'questions' => function ($query) {
                 $query->orderBy('order_index');
@@ -610,6 +644,8 @@ public function flattenNodeIds(array $nodes): array
 
         // Si la Fase 1 ya terminó por completo, pasamos automáticamente a la Fase 2
         if (!$hasPendingPhase1) {
+            $isPhase2 = true;
+
             $nodes = PlanNode::with([
                 'questions' => function ($query) {
                     $query->orderBy('order_index');
@@ -621,11 +657,6 @@ public function flattenNodeIds(array $nodes): array
                 ->orderBy('id')
                 ->get();
 
-            \Log::info("FASE 1 COMPLETADA -> INICIANDO FASE 2 (SÍNTESIS FINAL)", [
-                'conversation_id' => $idConversation,
-                'user_plan_id' => $userPlanId,
-                'total_nodos_fase_2' => $nodes->count(),
-            ]);
         }
 
         // =========================================================
@@ -714,7 +745,7 @@ public function flattenNodeIds(array $nodes): array
             $question = $result['question'];
 
             // Si la IA ya respondió 2 preguntas automáticamente
-            if (!$triggerAi || $automaticAnswerCount >= $maxAutomaticAnswers) {
+            if (!$triggerAi ||!$isPhase2 && $automaticAnswerCount >= $maxAutomaticAnswers) {
                 return response()->json([
                     'completed' => false,
                     'plan_name' => $planName,
@@ -748,13 +779,6 @@ public function flattenNodeIds(array $nodes): array
             } else {
                 $contextoParaValidar = $this->conversationService->getHistoryLimit10($idConversation);
             }
-
-            \Log::info('VALIDANDO PREGUNTA CON IA', [
-                'conversation_id' => $idConversation,
-                'question_id' => $question->id,
-                'usando_resumen_general' => !empty($resumenGeneral),
-                'resumen_general_usado' => !empty($resumenGeneral) ? $resumenGeneral : 'Capítulo 1: Últimas 5 respuestas',
-            ]);
             
             // =====================================================
             // 9. PREGUNTAR A LA IA SI PUEDE RESPONDERLA
@@ -767,15 +791,12 @@ public function flattenNodeIds(array $nodes): array
                 $promptQuestion =
                     $this->promptService->promptValidationRedundanceQuestion(
                         $contextoParaValidar,
-                        $question->question_text
+                        $question->question_text,
+                        $isPhase2
                     );
 
                 $resultIA = $this->openAIService->json($promptQuestion);
 
-                \Log::info('RESPONSE VALIDACION', [
-                    'question_id' => $question->id,
-                    'resultIA' => $resultIA
-                ]); 
             } catch (\Throwable $e) {
                 \Log::warning('Error o timeout al consultar IA en getConversationPlan: ' . $e->getMessage());
 
@@ -799,32 +820,21 @@ public function flattenNodeIds(array $nodes): array
                 // Validar que realmente exista una respuesta
                 if (!empty(trim($responseAutomatic))) {
 
-                    $this->conversationService->saveUserAnswerAutomatic(
-                        $idConversation,
-                        $question->id,
-                        $responseAutomatic
-                    );
-
-                    // MUY IMPORTANTE:
-                    // Agregamos la pregunta como respondida
-                    // para que no vuelva a aparecer dentro
-                    // del mismo request.
-
-                    $answeredQuestionIds[] = $question->id;
-                    $automaticAnswerCount++;// Sumamos al contador consecutivo
-
-                    \Log::info('PREGUNTA RESPONDIDA AUTOMATICAMENTE', [
+                    \Log::info('PREGUNTA PROPUESTA AUTOMATICAMENTE PARA MODAL', [
                         'conversation_id' => $idConversation,
                         'question_id' => $question->id,
-                        'consecutive_count' => $automaticAnswerCount,
                         'response' => $responseAutomatic
                     ]);
 
-                    // -------------------------------------------------
-                    // CONTINUAR CON LA SIGUIENTE PREGUNTA
-                    // -------------------------------------------------
-
-                    continue;
+                    return response()->json([
+                        'completed' => false,
+                        'plan_name' => $planName,
+                        'node' => $node,
+                        'parent_node' => $node->parent,
+                        'question' => $question,
+                        'auto_generated' => true,
+                        'suggested_answer' => $responseAutomatic
+                    ]);
                 }
             }
 
@@ -841,7 +851,6 @@ public function flattenNodeIds(array $nodes): array
             ]);
         }
     }
-
 
     // =====================================================================================
     // XXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -862,7 +871,7 @@ public function flattenNodeIds(array $nodes): array
         $userPlanId = $conversation?->user_plan_id;
 
         $planNodes = PlanNode::where('user_plan_id', $userPlanId )
-                // ->where('execution_phase', 1)  
+                ->where('execution_phase', '!=', 0)  
                 ->orderBy('id', 'asc')
                 ->get();
 
@@ -872,93 +881,6 @@ public function flattenNodeIds(array $nodes): array
             'data' => $planNodes,
         ]);
 
-       
-
-    //     $conversation = Conversation::with([  
-    //         'plan.sections'=> function ($q) {
-    //             $q->where('is_active', true)
-    //             ->orderBy('order_index');
-    //         },
-    //         'plan.sections.questions',
-    //      ])
-    //     ->where('id', $idConversation)
-    //     ->where('user_id', auth()->id())
-    //     ->firstOrFail();
-
-    //     $answers = UserAnswers::with('files')
-    //     ->where('conversation_id', $idConversation)
-    //     ->where('user_id', auth()->id())
-    //     ->get();
-
-    //     $progressSectionConversation = ConversationSectionProgress::where('conversation_id', $idConversation)
-    //         ->where('user_id', auth()->id())
-    //         ->get()
-    //         ->keyBy('section_id');
-
-    //     $answersSections = $answers->whereNotNull('section_id')->keyBy('section_id');
-
-    //     $answersQuestions = $answers->whereNotNull('question_id')->keyBy('question_id');
-
-    //     $conversation->plan->sections->each(function ($section) use ($answersSections, $answersQuestions, $progressSectionConversation) {
-
-    //     // answer de section
-    //     $section->setAttribute(
-    //         'answer',
-    //         $answersSections[$section->id]->answer_text ?? null
-    //     );
-    //     //progress de section
-    //     $section->setAttribute(
-    //         'progress',
-    //         $progressSectionConversation[$section->id]->status ?? null
-    //     );
-
-
-    //     // answers de questions
-    //     $section->questions->each(function ($question) use ($answersQuestions) {
-
-    //         $answer = $answersQuestions->get($question->id);
-
-    //         $question->setAttribute(
-    //             'answer',
-    //             $answer->answer_text ?? null
-    //         );
-
-    //         $question->setAttribute(
-    //             'files',
-    //             $answer ? $answer->files
-    //             ->whereIn('file_type', 'image')
-    //             ->map(function ($file) {
-    //                 return [
-    //                     'id' => $file->id,
-    //                     'file_type' => $file->file_type,
-    //                     'file_url' => asset('storage/' . $file->file_path),
-    //                     'description' =>  $file->description,
-    //                     'fuente' =>  $file->fuente,
-    //                 ];
-    //             }) : []
-    //         );      
-
-    //         $question->setAttribute(
-    //                 'tables',
-    //                 $answer
-    //                     ? $answer->tables->map(function ($table) {
-    //                         return [
-    //                             'id' => $table->id,
-    //                             'title' => $table->nombre,
-    //                             'data' => json_decode($table->data, true),
-    //                             'created_at' => $table->created_at,
-    //                         ];
-    //                     })
-    //                     : []
-    //         );
-
-    //     });
-
-    // });
-
-        
-
-    // return new SubscriptionResource($conversation);
     }
 
     public function getViewConversationPlanUser(Request $request)
@@ -1189,17 +1111,76 @@ public function flattenNodeIds(array $nodes): array
             })
             ->values();
 
-            if ($nodesWithoutQuestions->isEmpty()) {
-                $conversation->update([
-                    'status_structure' => 1
-                ]);
-                
-                return response()->json([
-                    'success' => true,
-                    'can_close' => true,
-                    'message' => 'La estructura está completa.'
-                ]);
+        // ===========================================================================
+        // NUEVO: RECUPERAR PREGUNTAS OFICIALES PARA NODOS PREDEFINIDOS
+        // ===========================================================================
+        $nodesWithoutQuestions = $nodesWithoutQuestions->filter(function ($node) use ($plan) {
+            
+            // 1. Doble seguridad: si el nodo ya cuenta con preguntas, lo filtramos
+            if (Question::where('plan_node_id', $node->id)->exists()) {
+                return false; 
             }
+
+            $masterNode = PlanNode::whereNull('user_plan_id')
+                ->where('plan_id', $plan->id)
+                ->where('titulo', $node->titulo)
+                ->first();
+
+            if ($masterNode) {
+                $masterQuestions = Question::where('plan_node_id', $masterNode->id)->get();
+
+                if ($masterQuestions->isNotEmpty()) {
+                    $newQuestions = [];
+                    foreach ($masterQuestions as $mq) {
+                        
+                        // 2. Verificar que no exista ya una pregunta con el mismo texto en este nodo
+                        $exists = Question::where('plan_node_id', $node->id)
+                            ->where('question_text', $mq->question_text)
+                            ->exists();
+
+                        if (!$exists) {
+                            $newQuestions[] = [
+                                'plan_node_id'      => $node->id,
+                                'question_text'     => $mq->question_text,
+                                'question_detail'   => $mq->question_detail,
+                                'question_example'  => $mq->question_example,
+                                'validation_detail' => $mq->validation_detail,
+                                'order_index'       => $mq->order_index,
+                                'created_at'        => now(),
+                                'updated_at'        => now(),
+                            ];
+                        }
+                    }
+
+                    if (!empty($newQuestions)) {
+                        Question::insert($newQuestions);
+                        
+                        \Log::info("Preguntas oficiales recuperadas para nodo predefinido de forma única", [
+                            'node_id' => $node->id,
+                            'titulo' => $node->titulo,
+                            'cantidad_insertada' => count($newQuestions)
+                        ]);
+                    }
+
+                    return false; // Excluir de la generación por IA
+                }
+            }
+
+            return true; // Es un nodo creado por el usuario de cero, la IA le generará preguntas
+        })->values();
+        // ===========================================================================
+
+        if ($nodesWithoutQuestions->isEmpty()) {
+            $conversation->update([
+                'status_structure' => 1
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'can_close' => true,
+                'message' => 'La estructura está completa.'
+            ]);
+        }
 
             $nodosSinPreguntas = $nodesWithoutQuestions
                     ->map(function ($node) {
@@ -1229,7 +1210,7 @@ public function flattenNodeIds(array $nodes): array
                     ];
                 })
                 ->values()
-                ->toArray();
+                ->toArray();    
 
         $prompt = $this->promptService->buildQuestionsForLeafNodesPrompt(
             plan: $conversation->userPlan->plan->toArray(),
@@ -1289,47 +1270,12 @@ public function flattenNodeIds(array $nodes): array
                 Question::create([
                     'plan_node_id' => $nodeData['node_id'],
                     'question_text' => $questionData['description'],
+                    'question_detail'  => $questionData['detail'] ?? null,
+                    'question_example' => $questionData['example'] ?? null,
                 ]);
             }
         }
 
-
-
-
-
-      
-
-        /*
-        |--------------------------------------------------------------------------
-        | SI EXISTEN NODOS INCOMPLETOS
-        |--------------------------------------------------------------------------
-        */
-/*
-        if ($nodesWithoutQuestions->isNotEmpty()) {
-
-            return response()->json([
-                'success' => false,
-                'can_close' => false,
-                'message' => 'Existen nodos finales que no tienen preguntas asociadas.',
-                'nodes' => $nodesWithoutQuestions->map(function ($node) {
-
-                    return [
-                        'id' => $node->id,
-                        'titulo' => $node->titulo,
-                        'orden' => $node->orden,
-                        'parent_id' => $node->parent_id,
-                        'codigo' => $node->codigo,
-                    ];
-
-                })->values(),
-            ], 422);
-        }
- */
-        /*
-        |--------------------------------------------------------------------------
-        | ESTRUCTURA CORRECTA
-        |--------------------------------------------------------------------------
-        */
         $conversation->update([
             'status_structure' => 1
         ]);
@@ -1354,6 +1300,58 @@ public function flattenNodeIds(array $nodes): array
             ?->status;
 
         return in_array(strtolower($paymentStatus ?? ''), ['completed', 'paid']);
+    }
+
+    // =====================================================================================
+    // ELIMINA EN CASCADA LAS RESPUESTAS DESDE UN CAPÍTULO SELECCIONADO
+    // =====================================================================================
+    public function deleteChaptersAnswers(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $validated = $request->validate([
+            'idConversation' => 'required|integer|exists:conversations,id',
+            'startChapterId' => 'required|integer|exists:plan_node,id',
+        ]);
+
+        $conversation = Conversation::where('id', $validated['idConversation'])
+            ->whereHas('userPlan', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Conversación no encontrada o sin permisos.'
+            ], 404);
+        }
+
+        try {
+            $result = $this->conversationService->deleteChaptersAnswersFrom(
+                (int) $validated['idConversation'],
+                (int) $validated['startChapterId']
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Las respuestas de los capítulos seleccionados fueron eliminadas correctamente.',
+                'data' => $result
+            ], 200);
+
+        } catch (\Throwable $e) {
+            \Log::error('Error en deleteChaptersAnswers: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al eliminar las respuestas.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
     
 }

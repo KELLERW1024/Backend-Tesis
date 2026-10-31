@@ -660,6 +660,13 @@ CREATE TABLE thesis_context (
         ON DELETE CASCADE
 );
 
+CREATE TABLE password_reset_codes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  code VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NULL
+);
+
 ALTER TABLE conversations
 ADD COLUMN status_structure TINYINT(1) NOT NULL DEFAULT 0;
 

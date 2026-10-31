@@ -22,7 +22,7 @@ questions (
     '¿Qué hará principalmente: producir, revender, distribuir, prestar servicios o conectar partes?',
     'Seleccione una o varias actividades y explique cuál genera el valor principal.',
     'Producirá el bien principal y lo venderá directamente al consumidor final.',
-    'ValiPlan propondrá una clasificación, pero el usuario debe confirmarla.'
+    'El usuario debe confirmar la clasificación.'
 ),
 (1,
     '¿Quién compra, quién paga y quién utiliza o consume finalmente?',
@@ -59,17 +59,17 @@ questions (
     '¿Qué problema, solución y mercado resumen el proyecto?',
     'Para delimitar qué problema, solución y mercado resumen el proyecto, use una descripción genérica o la ubicación confirmada por el usuario: “mi ciudad”, “mi región” o “la zona atendida”. Indique cobertura y restricciones.',
     '“Los clientes pierden tiempo porque las alternativas actuales no ofrecen información clara ni entrega dentro del plazo acordado.” En esta respuesta, el foco es: qué problema, solución y mercado resumen el proyecto.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué problema, solución y mercado resumen el proyecto y no sustituya este dato con información de otro apartado.'
+    'Toda afirmación externa debe incluir fuente verificable y fecha. Verifique que la respuesta trate qué problema, solución y mercado resumen el proyecto y no sustituya este dato con información de otro apartado.'
 ),
 (2,
     '¿Qué cifras principales muestran operaciones y finanzas?',
-    'Para responder qué cifras principales muestran operaciones y finanzas, mencione los elementos indispensables para resumen ejecutivo y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué cifras principales muestran operaciones y finanzas, mencione los elementos indispensables para resumen ejecutivo y explique brevemente cada uno.',
     '“Se aplicará una encuesta breve al segmento definido y entrevistas para comprender razones y objeciones.” En esta respuesta, el foco es: qué cifras principales muestran operaciones y finanzas.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué cifras principales muestran operaciones y finanzas y no sustituya este dato con información de otro apartado.'
 ),
 (2,
     '¿Qué conclusión de viabilidad y riesgos debe conocer el lector?',
-    'Para responder qué conclusión de viabilidad y riesgos debe conocer el lector, mencione los elementos indispensables para resumen ejecutivo y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué conclusión de viabilidad y riesgos debe conocer el lector, mencione los elementos indispensables para resumen ejecutivo y explique brevemente cada uno.',
     '“El principal riesgo es depender de un solo proveedor; se mitigará homologando una segunda alternativa.” En esta respuesta, el foco es: qué conclusión de viabilidad y riesgos debe conocer el lector.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué conclusión de viabilidad y riesgos debe conocer el lector y no sustituya este dato con información de otro apartado.'
 ),
@@ -97,9 +97,9 @@ questions (
 -- Formulacion ide de negocio = 5 
 (5,
     '¿Qué nombre provisional tendrá el negocio y qué desea comunicar?',
-    'Para responder qué nombre provisional tendrá el negocio y qué desea comunicar, mencione los elementos indispensables para formulación de la idea de negocio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué nombre provisional tendrá el negocio y qué desea comunicar, mencione los elementos indispensables para formulación de la idea de negocio y explique brevemente cada uno.',
     '“Origen Vivo” como nombre provisional, porque comunica cercanía, identidad y productos naturales. En esta respuesta, el foco es: qué nombre provisional tendrá el negocio y qué desea comunicar.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué nombre provisional tendrá el negocio y qué desea comunicar y no sustituya este dato con información de otro apartado.'
+    'El usuario debe elegir. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué nombre provisional tendrá el negocio y qué desea comunicar y no sustituya este dato con información de otro apartado.'
 ),
 (5,
     '¿Qué producto o servicio ofrecerá, a quién y qué resultado entregará?',
@@ -128,7 +128,7 @@ questions (
 ),
 (6,
     '¿Qué evidencias demuestran que la necesidad existe?',
-    'Para responder qué evidencias demuestran que la necesidad existe, mencione los elementos indispensables para problema o necesidad identificada y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué evidencias demuestran que la necesidad existe, mencione los elementos indispensables para problema o necesidad identificada y explique brevemente cada uno.',
     '“Los clientes pierden tiempo porque las alternativas actuales no ofrecen información clara ni entrega dentro del plazo acordado.” En esta respuesta, el foco es: qué evidencias demuestran que la necesidad existe.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué evidencias demuestran que la necesidad existe y no sustituya este dato con información de otro apartado.'
 ),
@@ -141,13 +141,13 @@ questions (
 ),
 (7,
     '¿Qué señales muestran interés y capacidad de pago?',
-    'Para responder qué señales muestran interés y capacidad de pago, mencione los elementos indispensables para análisis de la oportunidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué señales muestran interés y capacidad de pago, mencione los elementos indispensables para análisis de la oportunidad y explique brevemente cada uno.',
     '“En una prueba de dos semanas, 20 personas solicitaron información, 8 pidieron cotización y 4 realizaron una compra.” En esta respuesta, el foco es: qué señales muestran interés y capacidad de pago.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué señales muestran interés y capacidad de pago y no sustituya este dato con información de otro apartado.'
 ),
 (7,
     '¿Qué espacio no cubren las alternativas y qué barreras debe superar?',
-    'Para responder qué espacio no cubren las alternativas y qué barreras debe superar, mencione los elementos indispensables para análisis de la oportunidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué espacio no cubren las alternativas y qué barreras debe superar, mencione los elementos indispensables para análisis de la oportunidad y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué espacio no cubren las alternativas y qué barreras debe superar.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué espacio no cubren las alternativas y qué barreras debe superar y no sustituya este dato con información de otro apartado.'
 ),
@@ -160,15 +160,15 @@ questions (
 ),
 (8,
     '¿Qué características y beneficios tendrá la oferta?',
-    'Para responder qué características y beneficios tendrá la oferta, mencione los elementos indispensables para descripción del producto o servicio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué características y beneficios tendrá la oferta, mencione los elementos indispensables para descripción del producto o servicio y explique brevemente cada uno.',
     '“Para descripción del producto o servicio, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué características y beneficios tendrá la oferta.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué características y beneficios tendrá la oferta y no sustituya este dato con información de otro apartado.'
 ),
 (8,
     '¿Qué requisitos de calidad, garantía, seguridad o legalidad cumplirá?',
-    'Para responder qué requisitos de calidad, garantía, seguridad o legalidad cumplirá, mencione los elementos indispensables para descripción del producto o servicio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué requisitos de calidad, garantía, seguridad o legalidad cumplirá, mencione los elementos indispensables para descripción del producto o servicio y explique brevemente cada uno.',
     '“La calidad se comprobará mediante especificaciones, entrega puntual, tasa de reclamos y satisfacción del cliente.” En esta respuesta, el foco es: qué requisitos de calidad, garantía, seguridad o legalidad cumplirá.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué requisitos de calidad, garantía, seguridad o legalidad cumplirá y no sustituya este dato con información de otro apartado.'
+    'Toda afirmación externa debe incluir fuente verificable y fecha. Control específico: verifique que la respuesta trate qué requisitos de calidad, garantía, seguridad o legalidad cumplirá y no sustituya este dato con información de otro apartado.'
 ),
 -- Propuesta de valor 
 (9,
@@ -179,7 +179,7 @@ questions (
 ),
 (9,
     '¿Qué diferencia relevante ofrecerá frente a las alternativas?',
-    'Para responder qué diferencia relevante ofrecerá frente a las alternativas, mencione los elementos indispensables para propuesta de valor y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué diferencia relevante ofrecerá frente a las alternativas, mencione los elementos indispensables para propuesta de valor y explique brevemente cada uno.',
     '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: qué diferencia relevante ofrecerá frente a las alternativas.',
     'Evite afirmaciones absolutas o promocionales sin comparación y evidencia. Explique cómo se demostrará la diferencia. Control específico: verifique que la respuesta trate qué diferencia relevante ofrecerá frente a las alternativas y no sustituya este dato con información de otro apartado.'
 ),
@@ -192,7 +192,7 @@ questions (
 -- Segmentos de clientes 
 (11,
     '¿Qué grupos podrían comprar y cuál será prioritario al inicio?',
-    'Para responder qué grupos podrían comprar y cuál será prioritario al inicio, mencione los elementos indispensables para segmentos de clientes y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué grupos podrían comprar y cuál será prioritario al inicio, mencione los elementos indispensables para segmentos de clientes y explique brevemente cada uno.',
     '“Para segmentos de clientes, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué grupos podrían comprar y cuál será prioritario al inicio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué grupos podrían comprar y cuál será prioritario al inicio y no sustituya este dato con información de otro apartado.'
 ),
@@ -206,7 +206,7 @@ questions (
     '¿Qué valoran, con qué frecuencia compran y qué puede impedir la compra?',
     'Para responder sobre qué valoran, con qué frecuencia compran y qué puede impedir la compra, registre una cifra, unidad y período. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en segmentos de clientes.',
     '“Para segmentos de clientes, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué valoran, con qué frecuencia compran y qué puede impedir la compra.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué valoran, con qué frecuencia compran y qué puede impedir la compra y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué valoran, con qué frecuencia compran y qué puede impedir la compra y no sustituya este dato con información de otro apartado.'
 ),
 
 -- Canales  
@@ -263,9 +263,9 @@ questions (
 ),
 (15,
     '¿Qué ingresos complementarios, comisiones y temporadas deben considerarse?',
-    'Para responder qué ingresos complementarios, comisiones y temporadas deben considerarse, mencione los elementos indispensables para fuentes de ingresos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué ingresos complementarios, comisiones y temporadas deben considerarse, mencione los elementos indispensables para fuentes de ingresos y explique brevemente cada uno.',
     '“Para fuentes de ingresos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué ingresos complementarios, comisiones y temporadas deben considerarse.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué ingresos complementarios, comisiones y temporadas deben considerarse y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué ingresos complementarios, comisiones y temporadas deben considerarse y no sustituya este dato con información de otro apartado.'
 ),
 -- recursos clave 
 (16,
@@ -276,13 +276,13 @@ questions (
 ),
 (16,
     '¿Qué recursos ya posee y cuáles debe conseguir?',
-    'Para responder qué recursos ya posee y cuáles debe conseguir, mencione los elementos indispensables para recursos clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué recursos ya posee y cuáles debe conseguir, mencione los elementos indispensables para recursos clave y explique brevemente cada uno.',
     '“Se cuenta con conocimientos técnicos y una computadora; faltan equipos operativos y capital de trabajo.” En esta respuesta, el foco es: qué recursos ya posee y cuáles debe conseguir.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué recursos ya posee y cuáles debe conseguir y no sustituya este dato con información de otro apartado.'
 ),
 (16,
     '¿Qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan?',
-    'Para responder qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan, mencione los elementos indispensables para recursos clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan, mencione los elementos indispensables para recursos clave y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué recursos son críticos, qué capacidad tienen y qué alternativa existe si fallan y no sustituya este dato con información de otro apartado.'
 ),
@@ -314,13 +314,13 @@ questions (
 ),
 (18,
     '¿Bajo qué condiciones trabajarán y qué obtendrán a cambio?',
-    'Para responder bajo qué condiciones trabajarán y qué obtendrán a cambio, mencione los elementos indispensables para socios clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder bajo qué condiciones trabajarán y qué obtendrán a cambio, mencione los elementos indispensables para socios clave y explique brevemente cada uno.',
     '“Para socios clave, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: bajo qué condiciones trabajarán y qué obtendrán a cambio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate bajo qué condiciones trabajarán y qué obtendrán a cambio y no sustituya este dato con información de otro apartado.'
 ),
 (18,
     '¿Qué dependencia o riesgo existe y qué alternativa tendrá?',
-    'Para responder qué dependencia o riesgo existe y qué alternativa tendrá, mencione los elementos indispensables para socios clave y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué dependencia o riesgo existe y qué alternativa tendrá, mencione los elementos indispensables para socios clave y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué dependencia o riesgo existe y qué alternativa tendrá.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué dependencia o riesgo existe y qué alternativa tendrá y no sustituya este dato con información de otro apartado.'
 ),
@@ -334,7 +334,7 @@ questions (
 ),
 (19,
     '¿Qué inversiones y gastos iniciales se requieren?',
-    'Para responder qué inversiones y gastos iniciales se requieren, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué inversiones y gastos iniciales se requieren, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué inversiones y gastos iniciales se requieren.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué inversiones y gastos iniciales se requieren y no sustituya este dato con información de otro apartado.'
 ),
@@ -361,7 +361,7 @@ questions (
 ),
 (21,
     '¿Qué líneas operarán desde el inicio y cuáles se incorporarán después?',
-    'Para responder qué líneas operarán desde el inicio y cuáles se incorporarán después, mencione los elementos indispensables para descripción de la empresa y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué líneas operarán desde el inicio y cuáles se incorporarán después, mencione los elementos indispensables para descripción de la empresa y explique brevemente cada uno.',
     '“Para descripción de la empresa, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué líneas operarán desde el inicio y cuáles se incorporarán después.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué líneas operarán desde el inicio y cuáles se incorporarán después y no sustituya este dato con información de otro apartado.'
 ),
@@ -370,7 +370,7 @@ questions (
     '¿Qué nombre comercial, razón social, domicilio y actividad se consideran?',
     'Para fundamentar qué nombre comercial, razón social, domicilio y actividad se consideran, explique la causa y vínculela con un beneficio, problema o evidencia del proyecto. Si es una opinión, márquela como hipótesis pendiente de validación.',
     '“Origen Vivo” como nombre provisional, porque comunica cercanía, identidad y productos naturales. En esta respuesta, el foco es: qué nombre comercial, razón social, domicilio y actividad se consideran.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué nombre comercial, razón social, domicilio y actividad se consideran y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué nombre comercial, razón social, domicilio y actividad se consideran y no sustituya este dato con información de otro apartado.'
 ),
 (22,
     '¿Quiénes participarán y qué aportará cada uno?',
@@ -380,20 +380,20 @@ questions (
 ),
 (13,
     '¿Qué forma jurídica y clasificación económica deben verificarse?',
-    'Para responder qué forma jurídica y clasificación económica deben verificarse, mencione los elementos indispensables para datos generales de la empresa y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué forma jurídica y clasificación económica deben verificarse, mencione los elementos indispensables para datos generales de la empresa y explique brevemente cada uno.',
     '“Para datos generales de la empresa, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué forma jurídica y clasificación económica deben verificarse.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué forma jurídica y clasificación económica deben verificarse y no sustituya este dato con información de otro apartado.'
 ),
 -- Fortalezas 
 (24,
     '¿Qué capacidades internas ayudan realmente a competir?',
-    'Para responder qué capacidades internas ayudan realmente a competir, mencione los elementos indispensables para fortalezas y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué capacidades internas ayudan realmente a competir, mencione los elementos indispensables para fortalezas y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué capacidades internas ayudan realmente a competir.',
     'El cálculo debe ejecutarse con fórmulas deterministas y entradas aprobadas. La IA solo explica resultados; no reemplaza el motor financiero. Control específico: verifique que la respuesta trate qué capacidades internas ayudan realmente a competir y no sustituya este dato con información de otro apartado.'
 ),
 (24,
     '¿Qué evidencia demuestra cada fortaleza?',
-    'Para responder qué evidencia demuestra cada fortaleza, mencione los elementos indispensables para fortalezas y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué evidencia demuestra cada fortaleza, mencione los elementos indispensables para fortalezas y explique brevemente cada uno.',
     '“En una prueba de dos semanas, 20 personas solicitaron información, 8 pidieron cotización y 4 realizaron una compra.” En esta respuesta, el foco es: qué evidencia demuestra cada fortaleza.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué evidencia demuestra cada fortaleza y no sustituya este dato con información de otro apartado.'
 ),
@@ -406,26 +406,26 @@ questions (
 --  Debilidades 
 (25,
     '¿Qué limitaciones internas dificultan cumplir la propuesta?',
-    'Para responder qué limitaciones internas dificultan cumplir la propuesta, mencione los elementos indispensables para debilidades y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué limitaciones internas dificultan cumplir la propuesta, mencione los elementos indispensables para debilidades y explique brevemente cada uno.',
     '“El principal riesgo es depender de un solo proveedor; se mitigará homologando una segunda alternativa.” En esta respuesta, el foco es: qué limitaciones internas dificultan cumplir la propuesta.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué limitaciones internas dificultan cumplir la propuesta y no sustituya este dato con información de otro apartado.'
 ),
 (25,
     '¿Qué consecuencia produce cada debilidad?',
-    'Para responder qué consecuencia produce cada debilidad, mencione los elementos indispensables para debilidades y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué consecuencia produce cada debilidad, mencione los elementos indispensables para debilidades y explique brevemente cada uno.',
     '“Para debilidades, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué consecuencia produce cada debilidad.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué consecuencia produce cada debilidad y no sustituya este dato con información de otro apartado.'
 ),
 (25,
     '¿Qué puede hacer la empresa para reducirla?',
-    'Para responder qué puede hacer la empresa para reducirla, mencione los elementos indispensables para debilidades y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué puede hacer la empresa para reducirla, mencione los elementos indispensables para debilidades y explique brevemente cada uno.',
     '“Para debilidades, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué puede hacer la empresa para reducirla.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué puede hacer la empresa para reducirla y no sustituya este dato con información de otro apartado.'
 ),
 -- matriz MEFI
 (26,
     '¿Qué fortalezas y debilidades son más determinantes?',
-    'Para responder qué fortalezas y debilidades son más determinantes, mencione los elementos indispensables para matriz MEFI y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué fortalezas y debilidades son más determinantes, mencione los elementos indispensables para matriz MEFI y explique brevemente cada uno.',
     '“Para matriz MEFI, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué fortalezas y debilidades son más determinantes.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué fortalezas y debilidades son más determinantes y no sustituya este dato con información de otro apartado.'
 ),
@@ -437,7 +437,7 @@ questions (
 ),
 (26,
     '¿Qué significa el resultado y qué decisiones orienta?',
-    'Para responder qué significa el resultado y qué decisiones orienta, mencione los elementos indispensables para matriz MEFI y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué significa el resultado y qué decisiones orienta, mencione los elementos indispensables para matriz MEFI y explique brevemente cada uno.',
     '“Para matriz MEFI, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué significa el resultado y qué decisiones orienta.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué significa el resultado y qué decisiones orienta y no sustituya este dato con información de otro apartado.'
 ),
@@ -452,13 +452,13 @@ questions (
     '¿En qué mercado y por qué logro distintivo?',
     'Para fundamentar en qué mercado y por qué logro distintivo, explique la causa y vincúlela con un beneficio, problema o evidencia del proyecto. Si es una opinión, márquela como hipótesis pendiente de validación.',
     '“Ser una empresa reconocida en mi región por su confiabilidad, innovación y aporte sostenible al 2030.” En esta respuesta, el foco es: en qué mercado y por qué logro distintivo.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate en qué mercado y por qué logro distintivo y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate en qué mercado y por qué logro distintivo y no sustituya este dato con información de otro apartado.'
 ),
 (28,
     '¿Cómo se comprobará que la visión se alcanzó?',
     'Para explicar cómo se comprobará que la visión se alcanzó, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para visión.',
     '“Ser una empresa reconocida en mi región por su confiabilidad, innovación y aporte sostenible al 2030.” En esta respuesta, el foco es: cómo se comprobará que la visión se alcanzó.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate cómo se comprobará que la visión se alcanzó y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate cómo se comprobará que la visión se alcanzó y no sustituya este dato con información de otro apartado.'
 ),
 
 -- Mision
@@ -472,26 +472,26 @@ questions (
     '¿Qué entrega y cómo crea valor?',
     'Para explicar qué entrega y cómo crea valor, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para misión.',
     '“Brindar soluciones útiles y confiables a nuestros clientes mediante atención cercana y procesos responsables.” En esta respuesta, el foco es: qué entrega y cómo crea valor.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué entrega y cómo crea valor y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué entrega y cómo crea valor y no sustituya este dato con información de otro apartado.'
 ),
 (29,
     '¿Qué principios deben reflejarse en su actuación?',
-    'Para responder qué principios deben reflejarse en su actuación, mencione los elementos indispensables para misión y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué principios deben reflejarse en su actuación, mencione los elementos indispensables para misión y explique brevemente cada uno.',
     '“Brindar soluciones útiles y confiables a nuestros clientes mediante atención cercana y procesos responsables.” En esta respuesta, el foco es: qué principios deben reflejarse en su actuación.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué principios deben reflejarse en su actuación y no sustituya este dato con información de otro apartado.'
 ),
 -- Valores 
 (30,
     '¿Qué valores son indispensables para operar?',
-    'Para responder qué valores son indispensables para operar, mencione los elementos indispensables para valores y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué valores son indispensables para operar, mencione los elementos indispensables para valores y explique brevemente cada uno.',
     '“Puntualidad: confirmar plazos realistas, comunicar cambios y cumplir la fecha acordada.” En esta respuesta, el foco es: qué valores son indispensables para operar.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué valores son indispensables para operar y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué valores son indispensables para operar y no sustituya este dato con información de otro apartado.'
 ),
 (30,
     '¿Qué conducta observable representa cada valor?',
-    'Para responder qué conducta observable representa cada valor, mencione los elementos indispensables para valores y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué conducta observable representa cada valor, mencione los elementos indispensables para valores y explique brevemente cada uno.',
     '“Puntualidad: confirmar plazos realistas, comunicar cambios y cumplir la fecha acordada.” En esta respuesta, el foco es: qué conducta observable representa cada valor.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué conducta observable representa cada valor y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué conducta observable representa cada valor y no sustituya este dato con información de otro apartado.'
 ),
 (30,
     '¿Cómo se reforzará y evaluará cada conducta?',
@@ -502,7 +502,7 @@ questions (
 -- Objetivo general y objetivos especificos
 (31,
     '¿Qué resultado general busca conseguir el plan?',
-    'Para responder qué resultado general busca conseguir el plan, mencione los elementos indispensables para objetivo general y objetivos específicos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué resultado general busca conseguir el plan, mencione los elementos indispensables para objetivo general y objetivos específicos y explique brevemente cada uno.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: qué resultado general busca conseguir el plan.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué resultado general busca conseguir el plan y no sustituya este dato con información de otro apartado.'
 ),
@@ -510,7 +510,7 @@ questions (
     '¿Qué resultados concretos deben lograrse en mercado, operaciones y finanzas?',
     'Para delimitar qué resultados concretos deben lograrse en mercado, operaciones y finanzas, use una descripción genérica o la ubicación confirmada por el usuario: “mi ciudad”, “mi región” o “la zona atendida”. Indique cobertura y restricciones.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: qué resultados concretos deben lograrse en mercado, operaciones y finanzas.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué resultados concretos deben lograrse en mercado, operaciones y finanzas y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué resultados concretos deben lograrse en mercado, operaciones y finanzas y no sustituya este dato con información de otro apartado.'
 ),
 (32,
     '¿Con qué indicador, meta, plazo y responsable se medirá cada resultado?',
@@ -522,19 +522,19 @@ questions (
 
 (33,
     '¿Qué factores internos y externos son prioritarios?',
-    'Para responder qué factores internos y externos son prioritarios, mencione los elementos indispensables para FODA y FODA cruzado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué factores internos y externos son prioritarios, mencione los elementos indispensables para FODA y FODA cruzado y explique brevemente cada uno.  ',
     '“Para FODA y FODA cruzado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué factores internos y externos son prioritarios.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué factores internos y externos son prioritarios y no sustituya este dato con información de otro apartado.'
 ),
 (34,
     '¿Qué estrategias surgen de combinar F-O, F-A, D-O y D-A?',
-    'Para responder qué estrategias surgen de combinar F-O, F-A, D-O y D-A, mencione los elementos indispensables para FODA y FODA cruzado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué estrategias surgen de combinar F-O, F-A, D-O y D-A, mencione los elementos indispensables para FODA y FODA cruzado y explique brevemente cada uno.  ',
     '“Para FODA y FODA cruzado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué estrategias surgen de combinar F-O, F-A, D-O y D-A.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué estrategias surgen de combinar F-O, F-A, D-O y D-A y no sustituya este dato con información de otro apartado.'
 ),
 (34,
     '¿Cuáles son viables y prioritarias?',
-    'Para responder cuáles son viables y prioritarias, mencione los elementos indispensables para FODA y FODA cruzado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder cuáles son viables y prioritarias, mencione los elementos indispensables para FODA y FODA cruzado y explique brevemente cada uno.',
     '“Para FODA y FODA cruzado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cuáles son viables y prioritarias.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cuáles son viables y prioritarias y no sustituya este dato con información de otro apartado.'
 ),
@@ -548,13 +548,13 @@ questions (
 ),
 (36,
     '¿Qué estrategias sostendrán esa ventaja?',
-    'Para responder qué estrategias sostendrán esa ventaja, mencione los elementos indispensables para ventaja competitiva, estrategias e indicadores y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué estrategias sostendrán esa ventaja, mencione los elementos indispensables para ventaja competitiva, estrategias e indicadores y explique brevemente cada uno.',
     '“Para ventaja competitiva, estrategias e indicadores, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué estrategias sostendrán esa ventaja.',
     'Evite afirmaciones absolutas o promocionales sin comparación y evidencia. Explique cómo se demostrará la diferencia. Control específico: verifique que la respuesta trate qué estrategias sostendrán esa ventaja y no sustituya este dato con información de otro apartado.'
 ),
 (36,
     '¿Qué indicadores y metas permitirán controlar las estrategias?',
-    'Para responder qué indicadores y metas permitirán controlar las estrategias, mencione los elementos indispensables para ventaja competitiva, estrategias e indicadores y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué indicadores y metas permitirán controlar las estrategias, mencione los elementos indispensables para ventaja competitiva, estrategias e indicadores y explique brevemente cada uno.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: qué indicadores y metas permitirán controlar las estrategias.',
     'El cálculo debe ejecutarse con fórmulas deterministas y entradas aprobadas. La IA solo explica resultados; no reemplaza el motor financiero. Control específico: verifique que la respuesta trate qué indicadores y metas permitirán controlar las estrategias y no sustituya este dato con información de otro apartado.'
 ),
@@ -563,9 +563,9 @@ questions (
 -- factores politicos y legales 
 (39,
     '¿Qué normas, permisos o decisiones públicas afectan el negocio?',
-    'Para responder qué normas, permisos o decisiones públicas afectan el negocio, mencione los elementos indispensables para factores políticos y legales y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué normas, permisos o decisiones públicas afectan el negocio, mencione los elementos indispensables para factores políticos y legales y explique brevemente cada uno.',
     '“Para factores políticos y legales, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué normas, permisos o decisiones públicas afectan el negocio.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué normas, permisos o decisiones públicas afectan el negocio y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué normas, permisos o decisiones públicas afectan el negocio y no sustituya este dato con información de otro apartado.'
 ),
 (39,
     '¿Cómo representan una oportunidad o amenaza?',
@@ -575,7 +575,7 @@ questions (
 ),
 (39,
     '¿Qué acción debe adoptar la empresa?',
-    'Para responder qué acción debe adoptar la empresa, mencione los elementos indispensables para factores políticos y legales y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué acción debe adoptar la empresa, mencione los elementos indispensables para factores políticos y legales y explique brevemente cada uno.',
     '“Para factores políticos y legales, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué acción debe adoptar la empresa.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué acción debe adoptar la empresa y no sustituya este dato con información de otro apartado.'
 ),
@@ -589,26 +589,26 @@ questions (
 ),
 (40,
     '¿Cuál es su tendencia y fuente?',
-    'Para responder cuál es su tendencia y fuente, mencione los elementos indispensables para factores económicos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder cuál es su tendencia y fuente, mencione los elementos indispensables para factores económicos y explique brevemente cada uno.',
     '“Para factores económicos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cuál es su tendencia y fuente.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate cuál es su tendencia y fuente y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate cuál es su tendencia y fuente y no sustituya este dato con información de otro apartado.'
 ),
 (40,
     '¿Qué escenario económico usará el plan?',
-    'Para responder qué escenario económico usará el plan, mencione los elementos indispensables para factores económicos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué escenario económico usará el plan, mencione los elementos indispensables para factores económicos y explique brevemente cada uno.',
     '“Para factores económicos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué escenario económico usará el plan.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué escenario económico usará el plan y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué escenario económico usará el plan y no sustituya este dato con información de otro apartado.'
 ),
  -- fcatores sociales ,  culturales y demografocos 
   (41,
     '¿Qué cambios sociales o demográficos influyen en la demanda?',
-    'Para responder qué cambios sociales o demográficos influyen en la demanda, mencione los elementos indispensables para factores sociales, culturales y demográficos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué cambios sociales o demográficos influyen en la demanda, mencione los elementos indispensables para factores sociales, culturales y demográficos y explique brevemente cada uno.',
     '“La proyección parte de 40 ventas mensuales, precio promedio de S/ 80 y crecimiento sujeto a capacidad y evidencia.” En esta respuesta, el foco es: qué cambios sociales o demográficos influyen en la demanda.',
     'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué cambios sociales o demográficos influyen en la demanda y no sustituya este dato con información de otro apartado.'
 ),
 (41,
     '¿Qué hábitos, valores o preferencias son relevantes?',
-    'Para responder qué hábitos, valores o preferencias son relevantes, mencione los elementos indispensables para factores sociales, culturales y demográficos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué hábitos, valores o preferencias son relevantes, mencione los elementos indispensables para factores sociales, culturales y demográficos y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué hábitos, valores o preferencias son relevantes.',
     'El cálculo debe ejecutarse con fórmulas deterministas y entradas aprobadas. La IA solo explica resultados; no reemplaza el motor financiero. Control específico: verifique que la respuesta trate qué hábitos, valores o preferencias son relevantes y no sustituya este dato con información de otro apartado.'
 ),
@@ -622,7 +622,7 @@ questions (
 -- factopres tecnologicos 
 (42,
     '¿Qué tecnología necesita el negocio y qué tecnología cambia el sector?',
-    'Para responder qué tecnología necesita el negocio y qué tecnología cambia el sector, mencione los elementos indispensables para factores tecnológicos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué tecnología necesita el negocio y qué tecnología cambia el sector, mencione los elementos indispensables para factores tecnológicos y explique brevemente cada uno.',
     '“Para factores tecnológicos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué tecnología necesita el negocio y qué tecnología cambia el sector.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué tecnología necesita el negocio y qué tecnología cambia el sector y no sustituya este dato con información de otro apartado.'
 ),
@@ -634,7 +634,7 @@ questions (
 ),
 (42,
     '¿Qué riesgo de falla, seguridad u obsolescencia existe?',
-    'Para responder qué riesgo de falla, seguridad u obsolescencia existe, mencione los elementos indispensables para factores tecnológicos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué riesgo de falla, seguridad u obsolescencia existe, mencione los elementos indispensables para factores tecnológicos y explique brevemente cada uno.',
     '“El principal riesgo es depender de un solo proveedor; se mitigará homologando una segunda alternativa.” En esta respuesta, el foco es: qué riesgo de falla, seguridad u obsolescencia existe.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué riesgo de falla, seguridad u obsolescencia existe y no sustituya este dato con información de otro apartado.'
 ),
@@ -642,19 +642,19 @@ questions (
 -- factores ambientales 
 (43,
     '¿Qué factores ambientales afectan demanda u operación?',
-    'Para responder qué factores ambientales afectan demanda u operación, mencione los elementos indispensables para factores ambientales y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué factores ambientales afectan demanda u operación, mencione los elementos indispensables para factores ambientales y explique brevemente cada uno.',
     '“La proyección parte de 40 ventas mensuales, precio promedio de S/ 80 y crecimiento sujeto a capacidad y evidencia.” En esta respuesta, el foco es: qué factores ambientales afectan demanda u operación.',
     'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué factores ambientales afectan demanda u operación y no sustituya este dato con información de otro apartado.'
 ),
 (43,
     '¿Qué recursos, residuos o impactos genera el negocio?',
-    'Para responder qué recursos, residuos o impactos genera el negocio, mencione los elementos indispensables para factores ambientales y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué recursos, residuos o impactos genera el negocio, mencione los elementos indispensables para factores ambientales y explique brevemente cada uno.',
     '“Se cuenta con conocimientos técnicos y una computadora; faltan equipos operativos y capital de trabajo.” En esta respuesta, el foco es: qué recursos, residuos o impactos genera el negocio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué recursos, residuos o impactos genera el negocio y no sustituya este dato con información de otro apartado.'
 ),
 (43,
     '¿Qué medidas preventivas o sostenibles aplicará?',
-    'Para responder qué medidas preventivas o sostenibles aplicará, mencione los elementos indispensables para factores ambientales y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué medidas preventivas o sostenibles aplicará, mencione los elementos indispensables para factores ambientales y explique brevemente cada uno.',
     '“Para factores ambientales, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué medidas preventivas o sostenibles aplicará.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué medidas preventivas o sostenibles aplicará y no sustituya este dato con información de otro apartado.'
 ),
@@ -696,7 +696,7 @@ questions (
 ),
 (47,
     '¿Qué dependencia existe y qué alternativa tendrá?',
-    'Para responder qué dependencia existe y qué alternativa tendrá, mencione los elementos indispensables para proveedores y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué dependencia existe y qué alternativa tendrá, mencione los elementos indispensables para proveedores y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué dependencia existe y qué alternativa tendrá.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué dependencia existe y qué alternativa tendrá y no sustituya este dato con información de otro apartado.'
 ),
@@ -726,17 +726,17 @@ questions (
     '¿Qué tan fácil es ingresar al mercado?',
     'Para delimitar qué tan fácil es ingresar al mercado, use una descripción genérica o la ubicación confirmada por el usuario: “mi ciudad”, “mi región” o “la zona atendida”. Indique cobertura y restricciones.',
     '“Para nuevos competidores, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué tan fácil es ingresar al mercado.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué tan fácil es ingresar al mercado y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué tan fácil es ingresar al mercado y no sustituya este dato con información de otro apartado.'
 ),
 (49,
     '¿Qué barreras, capacidades o regulaciones influyen?',
-    'Para responder qué barreras, capacidades o regulaciones influyen, mencione los elementos indispensables para nuevos competidores y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué barreras, capacidades o regulaciones influyen, mencione los elementos indispensables para nuevos competidores y explique brevemente cada uno.',
     '“El principal riesgo es depender de un solo proveedor; se mitigará homologando una segunda alternativa.” En esta respuesta, el foco es: qué barreras, capacidades o regulaciones influyen.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué barreras, capacidades o regulaciones influyen y no sustituya este dato con información de otro apartado.'
 ),
 (49,
     '¿Qué defensa legítima puede construir la empresa?',
-    'Para responder qué defensa legítima puede construir la empresa, mencione los elementos indispensables para nuevos competidores y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué defensa legítima puede construir la empresa, mencione los elementos indispensables para nuevos competidores y explique brevemente cada uno.',
     '“Para nuevos competidores, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué defensa legítima puede construir la empresa.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué defensa legítima puede construir la empresa y no sustituya este dato con información de otro apartado.'
 ),
@@ -744,19 +744,19 @@ questions (
 -- Cinco fuerzas de porter 
 (50,
     '¿Qué factores determinan cada fuerza competitiva?',
-    'Para responder qué factores determinan cada fuerza competitiva, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué factores determinan cada fuerza competitiva, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué factores determinan cada fuerza competitiva.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué factores determinan cada fuerza competitiva y no sustituya este dato con información de otro apartado.'
 ),
 (50,
     '¿Qué peso y calificación obtiene cada factor?',
-    'Para responder qué peso y calificación obtiene cada factor, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué peso y calificación obtiene cada factor, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
     '“Para cinco fuerzas de Porter, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué peso y calificación obtiene cada factor.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué peso y calificación obtiene cada factor y no sustituya este dato con información de otro apartado.'
 ),
 (50,
     '¿Qué muestra el resultado sobre el atractivo del sector?',
-    'Para responder qué muestra el resultado sobre el atractivo del sector, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué muestra el resultado sobre el atractivo del sector, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
     '“Se aplicará una encuesta breve al segmento definido y entrevistas para comprender razones y objeciones.” En esta respuesta, el foco es: qué muestra el resultado sobre el atractivo del sector.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué muestra el resultado sobre el atractivo del sector y no sustituya este dato con información de otro apartado.'
 ),
@@ -770,13 +770,13 @@ questions (
 ),
 (51,
     '¿Qué importancia y capacidad de respuesta tiene cada una?',
-    'Para responder qué importancia y capacidad de respuesta tiene cada una, mencione los elementos indispensables para matriz mefe y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué importancia y capacidad de respuesta tiene cada una, mencione los elementos indispensables para matriz mefe y explique brevemente cada uno.',
     '“Para matriz mefe, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué importancia y capacidad de respuesta tiene cada una.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué importancia y capacidad de respuesta tiene cada una y no sustituya este dato con información de otro apartado.'
 ),
 (51,
     '¿Qué significa el puntaje y qué acciones prioriza?',
-    'Para responder qué significa el puntaje y qué acciones prioriza, mencione los elementos indispensables para matriz mefe y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué significa el puntaje y qué acciones prioriza, mencione los elementos indispensables para matriz mefe y explique brevemente cada uno.',
     '“Para matriz mefe, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué significa el puntaje y qué acciones prioriza.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué significa el puntaje y qué acciones prioriza y no sustituya este dato con información de otro apartado.'
 ),
@@ -785,11 +785,11 @@ questions (
     '¿Qué mercado geográfico y tipo de cliente analizará?',
     'Para precisar qué mercado geográfico y tipo de cliente analizará, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de mercado meta. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: qué mercado geográfico y tipo de cliente analizará.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué mercado geográfico y tipo de cliente analizará y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué mercado geográfico y tipo de cliente analizará y no sustituya este dato con información de otro apartado.'
 ),
 (53,
     '¿Qué filtros permiten delimitarlo y localizarlo?',
-    'Para responder qué filtros permiten delimitarlo y localizarlo, mencione los elementos indispensables para mercado meta y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué filtros permiten delimitarlo y localizarlo, mencione los elementos indispensables para mercado meta y explique brevemente cada uno.',
     '“Para mercado meta, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué filtros permiten delimitarlo y localizarlo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué filtros permiten delimitarlo y localizarlo y no sustituya este dato con información de otro apartado.'
 ),
@@ -797,7 +797,7 @@ questions (
     '¿Por qué ese mercado es prioritario y alcanzable?',
     'Para fundamentar por qué ese mercado es prioritario y alcanzable, explique la causa y vincúlela con un beneficio, problema o evidencia del proyecto. Si es una opinión, márquela como hipótesis pendiente de validación.',
     '“Para mercado meta, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: por qué ese mercado es prioritario y alcanzable.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate por qué ese mercado es prioritario y alcanzable y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate por qué ese mercado es prioritario y alcanzable y no sustituya este dato con información de otro apartado.'
 ),
 
 -- Metodo de inverstigacion
@@ -809,7 +809,7 @@ questions (
 ),
 (55,
     '¿Qué método, técnica y muestra usará?',
-    'Para responder qué método, técnica y muestra usará, mencione los elementos indispensables para método de investigación y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué método, técnica y muestra usará, mencione los elementos indispensables para método de investigación y explique brevemente cada uno.',
     '“Se aplicará una encuesta breve al segmento definido y entrevistas para comprender razones y objeciones.” En esta respuesta, el foco es: qué método, técnica y muestra usará.',
     'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué método, técnica y muestra usará y no sustituya este dato con información de otro apartado.'
 ),
@@ -825,11 +825,11 @@ questions (
     '¿Quiénes forman la población y cómo se cuantifican?',
     'Para precisar quiénes forman la población y cómo se cuantifican, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de población y muestra. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: quiénes forman la población y cómo se cuantifican.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate quiénes forman la población y cómo se cuantifican y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate quiénes forman la población y cómo se cuantifican y no sustituya este dato con información de otro apartado.'
 ),
 (56,
     '¿Qué nivel de confianza, error y muestreo se usarán?',
-    'Para responder qué nivel de confianza, error y muestreo se usarán, mencione los elementos indispensables para población y muestra y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué nivel de confianza, error y muestreo se usarán, mencione los elementos indispensables para población y muestra y explique brevemente cada uno.',
     '“Para población y muestra, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué nivel de confianza, error y muestreo se usarán.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué nivel de confianza, error y muestreo se usarán y no sustituya este dato con información de otro apartado.'
 ),
@@ -843,7 +843,7 @@ questions (
 -- Instrumento de recoleccion 
 (57,
     '¿Qué decisiones debe apoyar el instrumento?',
-    'Para responder qué decisiones debe apoyar el instrumento, mencione los elementos indispensables para instrumento de recolección y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué decisiones debe apoyar el instrumento, mencione los elementos indispensables para instrumento de recolección y explique brevemente cada uno.',
     '“Para instrumento de recolección, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué decisiones debe apoyar el instrumento.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué decisiones debe apoyar el instrumento y no sustituya este dato con información de otro apartado.'
 ),
@@ -869,7 +869,7 @@ questions (
 ),
 (58,
     '¿Qué resultados y cruces son relevantes?',
-    'Para responder qué resultados y cruces son relevantes, mencione los elementos indispensables para resultados y tamaño del mercado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué resultados y cruces son relevantes, mencione los elementos indispensables para resultados y tamaño del mercado y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué resultados y cruces son relevantes.',
     'El cálculo debe ejecutarse con fórmulas deterministas y entradas aprobadas. La IA solo explica resultados; no reemplaza el motor financiero. Control específico: verifique que la respuesta trate qué resultados y cruces son relevantes y no sustituya este dato con información de otro apartado.'
 ),
@@ -877,7 +877,7 @@ questions (
     '¿Qué mercado potencial, disponible y objetivo resulta?',
     'Para delimitar qué mercado potencial, disponible y objetivo resulta, use una descripción genérica o la ubicación confirmada por el usuario: “mi ciudad”, “mi región” o “la zona atendida”. Indique cobertura y restricciones.',
     '“Para resultados y tamaño del mercado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué mercado potencial, disponible y objetivo resulta.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué mercado potencial, disponible y objetivo resulta y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué mercado potencial, disponible y objetivo resulta y no sustituya este dato con información de otro apartado.'
 ),
 
 -- proyeccion de demandas y muestras 
@@ -889,7 +889,7 @@ questions (
 ),
 (61,
     '¿Qué crecimiento, estacionalidad y mezcla sustentan la proyección?',
-    'Para responder qué crecimiento, estacionalidad y mezcla sustentan la proyección, mencione los elementos indispensables para proyección de demanda y ventas y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué crecimiento, estacionalidad y mezcla sustentan la proyección, mencione los elementos indispensables para proyección de demanda y ventas y explique brevemente cada uno.',
     '“Para proyección de demanda y ventas, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué crecimiento, estacionalidad y mezcla sustentan la proyección.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué crecimiento, estacionalidad y mezcla sustentan la proyección y no sustituya este dato con información de otro apartado.'
 ),
@@ -904,19 +904,19 @@ questions (
  -- producto o servicio 
  (63,
     '¿Qué oferta comercializará inicialmente y para qué segmento?',
-    'Para responder qué oferta comercializará inicialmente y para qué segmento, mencione los elementos indispensables para producto o servicio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué oferta comercializará inicialmente y para qué segmento, mencione los elementos indispensables para producto o servicio y explique brevemente cada uno.',
     '“Para producto o servicio, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué oferta comercializará inicialmente y para qué segmento.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué oferta comercializará inicialmente y para qué segmento y no sustituya este dato con información de otro apartado.'
 ),
 (63,
     '¿Qué atributos, beneficios, marca y presentación tendrá?',
-    'Para responder qué atributos, beneficios, marca y presentación tendrá, mencione los elementos indispensables para producto o servicio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué atributos, beneficios, marca y presentación tendrá, mencione los elementos indispensables para producto o servicio y explique brevemente cada uno.',
     '“Para producto o servicio, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué atributos, beneficios, marca y presentación tendrá.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué atributos, beneficios, marca y presentación tendrá y no sustituya este dato con información de otro apartado.'
 ),
 (63,
     '¿Qué garantía, complemento y evolución se prevén?',
-    'Para responder qué garantía, complemento y evolución se prevén, mencione los elementos indispensables para producto o servicio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué garantía, complemento y evolución se prevén, mencione los elementos indispensables para producto o servicio y explique brevemente cada uno.',
     '“Para producto o servicio, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué garantía, complemento y evolución se prevén.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué garantía, complemento y evolución se prevén y no sustituya este dato con información de otro apartado.'
 ),
@@ -935,7 +935,7 @@ questions (
 ),
 (64,
     '¿Qué descuentos y condiciones respetarán el margen?',
-    'Para responder qué descuentos y condiciones respetarán el margen, mencione los elementos indispensables para precio y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué descuentos y condiciones respetarán el margen, mencione los elementos indispensables para precio y explique brevemente cada uno.',
     '“Para precio, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué descuentos y condiciones respetarán el margen.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué descuentos y condiciones respetarán el margen y no sustituya este dato con información de otro apartado.'
 ),
@@ -954,20 +954,20 @@ questions (
 ),
 (65,
     '¿Qué intermediarios y capacidad requiere?',
-    'Para responder qué intermediarios y capacidad requiere, mencione los elementos indispensables para plaza y canales y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué intermediarios y capacidad requiere, mencione los elementos indispensables para plaza y canales y explique brevemente cada uno.',
     '“Para plaza y canales, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué intermediarios y capacidad requiere.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué intermediarios y capacidad requiere y no sustituya este dato con información de otro apartado.'
 ),
 -- promocion 
 (66,
     '¿Qué comportamiento desea generar en cada segmento?',
-    'Para responder qué comportamiento desea generar en cada segmento, mencione los elementos indispensables para promoción y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué comportamiento desea generar en cada segmento, mencione los elementos indispensables para promoción y explique brevemente cada uno.',
     '“Para promoción, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué comportamiento desea generar en cada segmento.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué comportamiento desea generar en cada segmento y no sustituya este dato con información de otro apartado.'
 ),
 (66,
     '¿Qué mensaje, medio y acción utilizará?',
-    'Para responder qué mensaje, medio y acción utilizará, mencione los elementos indispensables para promoción y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué mensaje, medio y acción utilizará, mencione los elementos indispensables para promoción y explique brevemente cada uno.',
     '“Para promoción, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué mensaje, medio y acción utilizará.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué mensaje, medio y acción utilizará y no sustituya este dato con información de otro apartado.'
 ),
@@ -987,7 +987,7 @@ questions (
 ),
 (67,
     '¿Qué competencias y protocolo de servicio necesitan?',
-    'Para responder qué competencias y protocolo de servicio necesitan, mencione los elementos indispensables para personas y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué competencias y protocolo de servicio necesitan, mencione los elementos indispensables para personas y explique brevemente cada uno.',
     '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: qué competencias y protocolo de servicio necesitan.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué competencias y protocolo de servicio necesitan y no sustituya este dato con información de otro apartado.'
 ),
@@ -1013,14 +1013,14 @@ questions (
 ),
 (68,
     '¿Qué estándar y mejora se aplicará en cada punto?',
-    'Para responder qué estándar y mejora se aplicará en cada punto, mencione los elementos indispensables para procesos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué estándar y mejora se aplicará en cada punto, mencione los elementos indispensables para procesos y explique brevemente cada uno.',
     '“Para procesos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué estándar y mejora se aplicará en cada punto.',
     'Evite afirmaciones absolutas o promocionales sin comparación y evidencia. Explique cómo se demostrará la diferencia. Control específico: verifique que la respuesta trate qué estándar y mejora se aplicará en cada punto y no sustituya este dato con información de otro apartado.'
 ),
 -- Evidencia fisica 
 (69,
     '¿Qué elementos visibles demostrarán calidad y confianza?',
-    'Para responder qué elementos visibles demostrarán calidad y confianza, mencione los elementos indispensables para evidencia física y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué elementos visibles demostrarán calidad y confianza, mencione los elementos indispensables para evidencia física y explique brevemente cada uno.',
     '“La calidad se comprobará mediante especificaciones, entrega puntual, tasa de reclamos y satisfacción del cliente.” En esta respuesta, el foco es: qué elementos visibles demostrarán calidad y confianza.',
     'Evite afirmaciones absolutas o promocionales sin comparación y evidencia. Explique cómo se demostrará la diferencia. Control específico: verifique que la respuesta trate qué elementos visibles demostrarán calidad y confianza y no sustituya este dato con información de otro apartado.'
 ),
@@ -1032,7 +1032,7 @@ questions (
 ),
 (69,
     '¿Qué evidencia necesita cada segmento?',
-    'Para responder qué evidencia necesita cada segmento, mencione los elementos indispensables para evidencia física y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué evidencia necesita cada segmento, mencione los elementos indispensables para evidencia física y explique brevemente cada uno.',
     '“En una prueba de dos semanas, 20 personas solicitaron información, 8 pidieron cotización y 4 realizaron una compra.” En esta respuesta, el foco es: qué evidencia necesita cada segmento.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué evidencia necesita cada segmento y no sustituya este dato con información de otro apartado.'
 ),
@@ -1071,7 +1071,7 @@ questions (
 ),
 (71,
     '¿Qué componente es más débil y qué ajuste requiere?',
-    'Para responder qué componente es más débil y qué ajuste requiere, mencione los elementos indispensables para marketing mix integrado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué componente es más débil y qué ajuste requiere, mencione los elementos indispensables para marketing mix integrado y explique brevemente cada uno.',
     '“Para marketing mix integrado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué componente es más débil y qué ajuste requiere.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué componente es más débil y qué ajuste requiere y no sustituya este dato con información de otro apartado.'
 ),
@@ -1079,7 +1079,7 @@ questions (
 -- Programa de acciones atacticas 
 (72,
     '¿Qué acciones concretas ejecutarán cada estrategia?',
-    'Para responder qué acciones concretas ejecutarán cada estrategia, mencione los elementos indispensables para programa de acciones tácticas y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué acciones concretas ejecutarán cada estrategia, mencione los elementos indispensables para programa de acciones tácticas y explique brevemente cada uno.',
     '“Para programa de acciones tácticas, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué acciones concretas ejecutarán cada estrategia.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué acciones concretas ejecutarán cada estrategia y no sustituya este dato con información de otro apartado.'
 ),
@@ -1091,7 +1091,7 @@ questions (
 ),
 (72,
     '¿Qué entregable y meta cierran cada acción?',
-    'Para responder qué entregable y meta cierran cada acción, mencione los elementos indispensables para programa de acciones tácticas y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué entregable y meta cierran cada acción, mencione los elementos indispensables para programa de acciones tácticas y explique brevemente cada uno.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: qué entregable y meta cierran cada acción.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué entregable y meta cierran cada acción y no sustituya este dato con información de otro apartado.'
 ),
@@ -1153,26 +1153,26 @@ questions (
 ),
 (76,
     '¿Cuál se selecciona y qué evidencia la sustenta?',
-    'Para responder sobre cuál se selecciona y qué evidencia la sustenta, indique la alternativa elegida, explique las razones de la selección y describa las evidencias que respaldan la decisión. Distinga entre datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder sobre cuál se selecciona y qué evidencia la sustenta, indique la alternativa elegida, explique las razones de la selección y describa las evidencias que respaldan la decisión.',
     '“Se seleccionó la primera ubicación porque ofrece mayor flujo de clientes, mejor accesibilidad y un costo compatible con el presupuesto. La decisión se sustenta en cotizaciones de alquiler, visitas al lugar, análisis del tránsito peatonal y la comparación de costos operativos entre las alternativas.” En esta respuesta, el foco es: cuál se selecciona y qué evidencia la sustenta.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cuál se selecciona y qué evidencia la sustenta y no sustituya este dato con información de otro apartado.'
 ),
 -- Produccion de bienes o prestacion de servicios
 (77,
     '¿Qué bienes o servicios debe entregar y en qué volumen?',
-    'Para responder sobre qué bienes o servicios debe entregar y en qué volumen, describa los bienes o servicios que ofrecerá, indique el volumen previsto de producción o prestación utilizando una cifra, unidad y periodo, y distinga si la información corresponde a datos confirmados, calculados, estimados o propuestas de ValiPlan.',
+    'Para responder sobre qué bienes o servicios debe entregar y en qué volumen, describa los bienes o servicios que ofrecerá, indique el volumen previsto de producción o prestación utilizando una cifra, unidad y periodo.',
     '“Se producirán 300 unidades de polos personalizados por mes para venta directa y pedidos empresariales. El volumen se estimó considerando la capacidad instalada y la demanda proyectada.” En esta respuesta, el foco es: qué bienes o servicios debe entregar y en qué volumen.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué bienes o servicios debe entregar y en qué volumen y no sustituya este dato con información de otro apartado.'
 ),
 (77,
     '¿Qué estándar de calidad y nivel de servicio cumplirá?',
-    'Para responder sobre qué estándar de calidad y nivel de servicio cumplirá, describa los criterios de calidad que aplicará a los bienes o servicios y explique los compromisos de atención, tiempos de respuesta, entrega o garantía. Distinga entre datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder sobre qué estándar de calidad y nivel de servicio cumplirá, describa los criterios de calidad que aplicará a los bienes o servicios y explique los compromisos de atención, tiempos de respuesta, entrega o garantía.',
     '“Todos los productos serán revisados antes de la entrega para verificar su estado y cumplimiento de las especificaciones del cliente. Los pedidos se entregarán en un plazo máximo de 48 horas dentro de la zona de atención y contarán con garantía por defectos de fabricación.” En esta respuesta, el foco es: qué estándar de calidad y nivel de servicio cumplirá.',
     'Evite afirmaciones absolutas o promocionales sin comparación ni evidencia. Explique cómo se demostrará el cumplimiento del estándar de calidad y del nivel de servicio. Control específico: verifique que la respuesta trate qué estándar de calidad y nivel de servicio cumplirá y no sustituya este dato con información de otro apartado.'
 ),
 (77,
     '¿Qué merma, error o devolución es tolerable?',
-    'Para responder sobre qué merma, error o devolución es tolerable, indique los niveles máximos aceptables utilizando cifras, unidades y periodos cuando corresponda. Explique las causas previstas, las medidas de control y distinga entre datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder sobre qué merma, error o devolución es tolerable, indique los niveles máximos aceptables utilizando cifras, unidades y periodos cuando corresponda. Explique las causas previstas y las medidas de control.',
     '“Se considera aceptable una merma de hasta el 2 % mensual en materias primas y una tasa máxima de devoluciones del 1 % de los pedidos entregados. Estos valores se controlarán mediante inspecciones de calidad y seguimiento de incidencias.” En esta respuesta, el foco es: qué merma, error o devolución es tolerable.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué merma, error o devolución es tolerable y no sustituya este dato con información de otro apartado.'
 ),
@@ -1191,20 +1191,20 @@ questions (
 ),
 (78,
     '¿Qué control y cuello de botella existe?',
-    'Para responder sobre qué control y cuello de botella existe, describa los controles aplicados para asegurar el correcto funcionamiento del proceso e identifique las etapas que podrían limitar la capacidad, generar retrasos o afectar la calidad. Explique brevemente cada uno y distinga entre datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder sobre qué control y cuello de botella existe, describa los controles aplicados para asegurar el correcto funcionamiento del proceso e identifique las etapas que podrían limitar la capacidad, generar retrasos o afectar la calidad. Explique brevemente cada uno.',
     '“Se realizará un control de calidad antes del despacho para verificar que el producto cumpla las especificaciones del cliente. El principal cuello de botella se presenta en la etapa de producción cuando coinciden varios pedidos, por lo que se priorizarán los pedidos según su fecha de entrega y se programará capacidad adicional en periodos de alta demanda.” En esta respuesta, el foco es: qué control y cuello de botella existe.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué control y cuello de botella existe y no sustituya este dato con información de otro apartado.'
 ),
 -- Capacidad instalada y utilizada
 (79,
     '¿Qué capacidad tiene cada recurso por hora, día o mes?',
-    'Para responder sobre qué capacidad tiene cada recurso por hora, día o mes, identifique cada recurso relevante (personal, maquinaria, equipos, instalaciones u otros), indique su capacidad utilizando una cifra, unidad y periodo, y explique brevemente cómo contribuye al proceso. Distinga entre datos confirmados, calculados, estimados y propuestas de ValiPlan.',
+    'Para responder sobre qué capacidad tiene cada recurso por hora, día o mes, identifique cada recurso relevante (personal, maquinaria, equipos, instalaciones u otros), indique su capacidad utilizando una cifra, unidad y periodo, y explique brevemente cómo contribuye al proceso.',
     '“La máquina principal puede producir 50 unidades por hora, el operario procesa hasta 350 unidades por día y el almacén tiene capacidad para 2,000 unidades. Estos valores se basan en pruebas de operación y especificaciones técnicas.” En esta respuesta, el foco es: qué capacidad tiene cada recurso por hora, día o mes.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué capacidad tiene cada recurso por hora, día o mes y no sustituya este dato con información de otro apartado.'
 ),
 (79,
     '¿Qué restricciones reducen la capacidad teórica?',
-    'Para responder sobre qué restricciones reducen la capacidad teórica, identifique los factores que limitan el aprovechamiento máximo de los recursos, como horarios, mantenimiento, disponibilidad de personal, abastecimiento, espacio, tiempos de preparación u otras restricciones operativas. Explique brevemente cada una y distinga entre datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder sobre qué restricciones reducen la capacidad teórica, identifique los factores que limitan el aprovechamiento máximo de los recursos, como horarios, mantenimiento, disponibilidad de personal, abastecimiento, espacio, tiempos de preparación u otras restricciones operativas. Explique brevemente cada una.',
     '“La capacidad teórica se reduce por los tiempos de mantenimiento preventivo de la maquinaria, la disponibilidad de personal durante un solo turno de trabajo y los tiempos de espera por abastecimiento de insumos. Estas restricciones disminuyen las horas efectivas de producción.” En esta respuesta, el foco es: qué restricciones reducen la capacidad teórica.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué restricciones reducen la capacidad teórica y no sustituya este dato con información de otro apartado.'
 ),
@@ -1217,7 +1217,7 @@ questions (
 -- Plan de produccion o prestacion
 (80,
     '¿Qué volumen debe producir o atender por periodo?',
-    'Para responder sobre qué volumen debe producir o atender por periodo, indique el volumen previsto de producción o prestación utilizando una cifra, unidad y periodo. Explique brevemente cómo se determinó dicho volumen y distinga entre datos confirmados, calculados, estimados y propuestas de ValiPlan.',
+    'Para responder sobre qué volumen debe producir o atender por periodo, indique el volumen previsto de producción o prestación utilizando una cifra, unidad y periodo. Explique brevemente cómo se determinó dicho volumen.',
     '“Se proyecta producir 1,200 unidades por mes durante el primer año. Este volumen se calculó considerando la demanda estimada, la capacidad instalada y el programa de producción previsto.” En esta respuesta, el foco es: qué volumen debe producir o atender por periodo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué volumen debe producir o atender por periodo y no sustituya este dato con información de otro apartado.'
 ),
@@ -1229,7 +1229,7 @@ questions (
 ),
 (80,
     '¿Qué cambiará en temporada alta o contingencia?',
-    'Para responder sobre qué cambiará en temporada alta o contingencia, describa los ajustes previstos en producción o prestación, personal, turnos, inventarios, recursos o logística para atender incrementos de demanda o situaciones imprevistas. Distinga entre datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder sobre qué cambiará en temporada alta o contingencia, describa los ajustes previstos en producción o prestación, personal, turnos, inventarios, recursos o logística para atender incrementos de demanda o situaciones imprevistas.',
     '“Durante la temporada alta se incrementará la producción mediante un turno adicional y un mayor nivel de inventario de insumos. En caso de contingencias, se priorizarán los pedidos pendientes, se reprogramarán las actividades y se utilizarán proveedores alternativos para mantener la continuidad de las operaciones.” En esta respuesta, el foco es: qué cambiará en temporada alta o contingencia.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué cambiará en temporada alta o contingencia y no sustituya este dato con información de otro apartado.'
 ),
@@ -1248,14 +1248,14 @@ questions (
 ),
 (81,
     '¿Qué mantenimiento, vida útil y respaldo tendrá?',
-    'Para responder sobre qué mantenimiento, vida útil y respaldo tendrá, describa el mantenimiento previsto para cada equipo o infraestructura, indique su vida útil estimada o confirmada y explique las medidas de respaldo, continuidad o reemplazo en caso de fallas. Distinga entre datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder sobre qué mantenimiento, vida útil y respaldo tendrá, describa el mantenimiento previsto para cada equipo o infraestructura, indique su vida útil estimada o confirmada y explique las medidas de respaldo, continuidad o reemplazo en caso de fallas.',
     '“La maquinaria recibirá mantenimiento preventivo cada seis meses y mantenimiento correctivo cuando sea necesario. Se estima una vida útil de 10 años según las especificaciones del fabricante. Como respaldo, se contará con copias de seguridad de la información, equipos alternativos y proveedores de servicio técnico autorizados.” En esta respuesta, el foco es: qué mantenimiento, vida útil y respaldo tendrá.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué mantenimiento, vida útil y respaldo tendrá y no sustituya este dato con información de otro apartado.'
 ),
 -- Gestion de calidad
 (82,
     '¿Qué significa calidad en cada etapa?',
-    'Para responder qué significa calidad en cada etapa, mencione los elementos indispensables para gestión de calidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué significa calidad en cada etapa, mencione los elementos indispensables para gestión de calidad y explique brevemente cada uno.',
     '“La calidad se comprobará mediante especificaciones, entrega puntual, tasa de reclamos y satisfacción del cliente.” En esta respuesta, el foco es: qué significa calidad en cada etapa.',
     'Evite afirmaciones absolutas o promocionales sin comparación y evidencia. Explique cómo se demostrará la diferencia. Control específico: verifique que la respuesta trate qué significa calidad en cada etapa y no sustituya este dato con información de otro apartado.'
 ),
@@ -1312,13 +1312,13 @@ questions (
 -- Inventarios y almacenamiento
 (86,
     '¿Qué se almacenará y bajo qué condiciones?',
-    'Para responder qué se almacenará y bajo qué condiciones, mencione los elementos indispensables para inventarios y almacenamiento y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué se almacenará y bajo qué condiciones, mencione los elementos indispensables para inventarios y almacenamiento y explique brevemente cada uno.',
     '“Para inventarios y almacenamiento, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué se almacenará y bajo qué condiciones.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué se almacenará y bajo qué condiciones y no sustituya este dato con información de otro apartado.'
 ),
 (86,
     '¿Qué stock mínimo, máximo y de seguridad necesita?',
-    'Para responder qué stock mínimo, máximo y de seguridad necesita, mencione los elementos indispensables para inventarios y almacenamiento y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué stock mínimo, máximo y de seguridad necesita, mencione los elementos indispensables para inventarios y almacenamiento y explique brevemente cada uno.',
     '“Para inventarios y almacenamiento, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué stock mínimo, máximo y de seguridad necesita.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué stock mínimo, máximo y de seguridad necesita y no sustituya este dato con información de otro apartado.'
 ),
@@ -1331,7 +1331,7 @@ questions (
 -- Logistica de salida
 (89,
     '¿Cuándo se considera listo el producto o servicio?',
-    'Para responder cuándo se considera listo el producto o servicio, use datos concretos del proyecto vinculados con logística de salida. Si falta información, ValiPlan puede proponer opciones, investigarla con fuentes o dejarla pendiente.',
+    'Para responder cuándo se considera listo el producto o servicio, use datos concretos del proyecto vinculados con logística de salida. Si falta información.',
     '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: cuándo se considera listo el producto o servicio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cuándo se considera listo el producto o servicio y no sustituya este dato con información de otro apartado.'
 ),
@@ -1362,7 +1362,7 @@ questions (
 ),
 (93,
     '¿Qué mermas, mantenimiento y distribución deben incluirse?',
-    'Para responder qué mermas, mantenimiento y distribución deben incluirse, mencione los elementos indispensables para costos operativos y logísticos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué mermas, mantenimiento y distribución deben incluirse, mencione los elementos indispensables para costos operativos y logísticos y explique brevemente cada uno.',
     '“Para costos operativos y logísticos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué mermas, mantenimiento y distribución deben incluirse.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué mermas, mantenimiento y distribución deben incluirse y no sustituya este dato con información de otro apartado.'
 ),
@@ -1372,7 +1372,7 @@ questions (
 -- Estructura organizacional
 (95,
     '¿Qué áreas necesita la empresa al inicio?',
-    'Para responder qué áreas necesita la empresa al inicio, mencione los elementos indispensables para estructura organizacional y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué áreas necesita la empresa al inicio, mencione los elementos indispensables para estructura organizacional y explique brevemente cada uno.',
     '“Para estructura organizacional, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué áreas necesita la empresa al inicio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué áreas necesita la empresa al inicio y no sustituya este dato con información de otro apartado.'
 ),
@@ -1392,7 +1392,7 @@ questions (
 -- Organigrama
 (96,
     '¿Qué puestos existen desde el inicio y cuáles después?',
-    'Para responder qué puestos existen desde el inicio y cuáles después, mencione los elementos indispensables para organigrama y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué puestos existen desde el inicio y cuáles después, mencione los elementos indispensables para organigrama y explique brevemente cada uno.',
     '“Para organigrama, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué puestos existen desde el inicio y cuáles después.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué puestos existen desde el inicio y cuáles después y no sustituya este dato con información de otro apartado.'
 ),
@@ -1404,14 +1404,14 @@ questions (
 ),
 (96,
     '¿El organigrama coincide con funciones y planilla?',
-    'Para responder si el organigrama coincide con funciones y planilla, use datos concretos del proyecto vinculados con organigrama. Si falta información, ValiPlan puede proponer opciones, investigarla con fuentes o dejarla pendiente.',
+    'Para responder si el organigrama coincide con funciones y planilla, use datos concretos del proyecto vinculados con organigrama.',
     '“Para organigrama, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: el organigrama coincide con funciones y planilla.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate si el organigrama coincide con funciones y planilla y no sustituya este dato con información de otro apartado.'
 ),
 -- Puestos requeridos
 (97,
     '¿Qué puestos son indispensables para operar?',
-    'Para responder qué puestos son indispensables para operar, mencione los elementos indispensables para puestos requeridos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué puestos son indispensables para operar, mencione los elementos indispensables para puestos requeridos y explique brevemente cada uno.',
     '“Para puestos requeridos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué puestos son indispensables para operar.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué puestos son indispensables para operar y no sustituya este dato con información de otro apartado.'
 ),
@@ -1423,26 +1423,26 @@ questions (
 ),
 (97,
     '¿En qué etapa se incorporará cada uno?',
-    'Para responder en qué etapa se incorporará cada uno, mencione los elementos indispensables para puestos requeridos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder en qué etapa se incorporará cada uno, mencione los elementos indispensables para puestos requeridos y explique brevemente cada uno.',
     '“Para puestos requeridos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: en qué etapa se incorporará cada uno.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate en qué etapa se incorporará cada uno y no sustituya este dato con información de otro apartado.'
 ),
 -- Perfiles, funciones y responsabilidades
 (98,
     '¿Qué propósito y funciones tiene cada puesto?',
-    'Para responder qué propósito y funciones tiene cada puesto, mencione los elementos indispensables para perfiles, funciones y responsabilidades y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué propósito y funciones tiene cada puesto, mencione los elementos indispensables para perfiles, funciones y responsabilidades y explique brevemente cada uno.',
     '“Para perfiles, funciones y responsabilidades, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué propósito y funciones tiene cada puesto.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué propósito y funciones tiene cada puesto y no sustituya este dato con información de otro apartado.'
 ),
 (98,
     '¿Qué estudios, experiencia y competencias necesita?',
-    'Para responder qué estudios, experiencia y competencias necesita, mencione los elementos indispensables para perfiles, funciones y responsabilidades y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué estudios, experiencia y competencias necesita, mencione los elementos indispensables para perfiles, funciones y responsabilidades y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué estudios, experiencia y competencias necesita.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué estudios, experiencia y competencias necesita y no sustituya este dato con información de otro apartado.'
 ),
 (98,
     '¿Con qué indicador se evaluará?',
-    'Para responder con qué indicador se evaluará, mencione los elementos indispensables para perfiles, funciones y responsabilidades y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder con qué indicador se evaluará, mencione los elementos indispensables para perfiles, funciones y responsabilidades y explique brevemente cada uno.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: con qué indicador se evaluará.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate con qué indicador se evaluará y no sustituya este dato con información de otro apartado.'
 ),
@@ -1455,7 +1455,7 @@ questions (
 ),
 (99,
     '¿Qué entrevista o prueba comprobará competencias?',
-    'Para responder qué entrevista o prueba comprobará competencias, mencione los elementos indispensables para reclutamiento y selección y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué entrevista o prueba comprobará competencias, mencione los elementos indispensables para reclutamiento y selección y explique brevemente cada uno.',
     '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué entrevista o prueba comprobará competencias.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué entrevista o prueba comprobará competencias y no sustituya este dato con información de otro apartado.'
 ),
@@ -1468,13 +1468,13 @@ questions (
 -- Contratacion e induccion
 (100,
     '¿Qué modalidad y condiciones se aplicarán?',
-    'Para responder qué modalidad y condiciones se aplicarán, mencione los elementos indispensables para contratación e inducción y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué modalidad y condiciones se aplicarán, mencione los elementos indispensables para contratación e inducción y explique brevemente cada uno.',
     '“Para contratación e inducción, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué modalidad y condiciones se aplicarán.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué modalidad y condiciones se aplicarán y no sustituya este dato con información de otro apartado.'
 ),
 (100,
     '¿Qué documentos y obligaciones deben cumplirse?',
-    'Para responder qué documentos y obligaciones deben cumplirse, mencione los elementos indispensables para contratación e inducción y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué documentos y obligaciones deben cumplirse, mencione los elementos indispensables para contratación e inducción y explique brevemente cada uno.',
     '“Para contratación e inducción, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué documentos y obligaciones deben cumplirse.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué documentos y obligaciones deben cumplirse y no sustituya este dato con información de otro apartado.'
 ),
@@ -1487,7 +1487,7 @@ questions (
 --  Capacitacion y evaluacion
 (101,
     '¿Qué conocimientos debe fortalecer cada puesto?',
-    'Para responder qué conocimientos debe fortalecer cada puesto, mencione los elementos indispensables para capacitación y evaluación y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué conocimientos debe fortalecer cada puesto, mencione los elementos indispensables para capacitación y evaluación y explique brevemente cada uno.',
     '“Para capacitación y evaluación, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué conocimientos debe fortalecer cada puesto.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué conocimientos debe fortalecer cada puesto y no sustituya este dato con información de otro apartado.'
 ),
@@ -1512,7 +1512,7 @@ questions (
 ),
 (102,
     '¿Qué reconocimiento, comunicación y desarrollo se aplicarán?',
-    'Para responder qué reconocimiento, comunicación y desarrollo se aplicarán, mencione los elementos indispensables para motivación y retención y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué reconocimiento, comunicación y desarrollo se aplicarán, mencione los elementos indispensables para motivación y retención y explique brevemente cada uno.',
     '“Para motivación y retención, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué reconocimiento, comunicación y desarrollo se aplicarán.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué reconocimiento, comunicación y desarrollo se aplicarán y no sustituya este dato con información de otro apartado.'
 ),
@@ -1531,7 +1531,7 @@ questions (
 ),
 (103,
     '¿Qué remuneración, beneficios y cargas corresponden?',
-    'Para responder qué remuneración, beneficios y cargas corresponden, mencione los elementos indispensables para planilla y remuneraciones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué remuneración, beneficios y cargas corresponden, mencione los elementos indispensables para planilla y remuneraciones y explique brevemente cada uno.',
     '“Para planilla y remuneraciones, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué remuneración, beneficios y cargas corresponden.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué remuneración, beneficios y cargas corresponden y no sustituya este dato con información de otro apartado.'
 ),
@@ -1546,7 +1546,7 @@ questions (
     '¿Qué forma legal se evalúa y por qué?',
     'Para fundamentar qué forma legal se evalúa y por qué, explique la causa y vínculela con un beneficio, problema o evidencia del proyecto. Si es una opinión, márquela como hipótesis pendiente de validación.',
     '“Para constitución de la empresa, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué forma legal se evalúa y por qué.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué forma legal se evalúa y por qué y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué forma legal se evalúa y por qué y no sustituya este dato con información de otro apartado.'
 ),
 (104,
     '¿Quiénes son socios, qué aportan y cómo deciden?',
@@ -1563,13 +1563,13 @@ questions (
 -- Aspectos legales, laborales y tributarios
 (106,
     '¿Qué normas sectoriales y contratos afectan la actividad?',
-    'Para responder qué normas sectoriales y contratos afectan la actividad, mencione los elementos indispensables para aspectos legales, laborales y tributarios y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué normas sectoriales y contratos afectan la actividad, mencione los elementos indispensables para aspectos legales, laborales y tributarios y explique brevemente cada uno.',
     '“Para aspectos legales, laborales y tributarios, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué normas sectoriales y contratos afectan la actividad.',
-    'Toda afirmación externa debe incluir fuente verificable y fecha. ValiPlan no debe inventar estadísticas, normas ni referencias. Control específico: verifique que la respuesta trate qué normas sectoriales y contratos afectan la actividad y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué normas sectoriales y contratos afectan la actividad y no sustituya este dato con información de otro apartado.'
 ),
 (106,
     '¿Qué obligaciones laborales y tributarias corresponden?',
-    'Para responder qué obligaciones laborales y tributarias corresponden, mencione los elementos indispensables para aspectos legales, laborales y tributarios y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué obligaciones laborales y tributarias corresponden, mencione los elementos indispensables para aspectos legales, laborales y tributarios y explique brevemente cada uno.',
     '“Para aspectos legales, laborales y tributarios, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué obligaciones laborales y tributarias corresponden.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué obligaciones laborales y tributarias corresponden y no sustituya este dato con información de otro apartado.'
 ),
@@ -1582,7 +1582,7 @@ questions (
 -- Permisos y licencias
 (107,
     '¿Qué licencias, registros o certificaciones necesita?',
-    'Para responder qué licencias, registros o certificaciones necesita, mencione los elementos indispensables para permisos y licencias y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué licencias, registros o certificaciones necesita, mencione los elementos indispensables para permisos y licencias y explique brevemente cada uno.',
     '“Para permisos y licencias, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué licencias, registros o certificaciones necesita.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué licencias, registros o certificaciones necesita y no sustituya este dato con información de otro apartado.'
 ),
@@ -1603,7 +1603,7 @@ questions (
 -- Supuestos financieros
 (109,
     '¿Qué horizonte, moneda y periodicidad usará?',
-    'Para responder qué horizonte, moneda y periodicidad usará, mencione los elementos indispensables para supuestos financieros y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué horizonte, moneda y periodicidad usará, mencione los elementos indispensables para supuestos financieros y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué horizonte, moneda y periodicidad usará.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué horizonte, moneda y periodicidad usará y no sustituya este dato con información de otro apartado.'
 ),
@@ -1615,14 +1615,14 @@ questions (
 ),
 (109,
     '¿Qué fuente y confianza tiene cada supuesto?',
-    'Para responder qué fuente y confianza tiene cada supuesto, mencione los elementos indispensables para supuestos financieros y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué fuente y confianza tiene cada supuesto, mencione los elementos indispensables para supuestos financieros y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué fuente y confianza tiene cada supuesto.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué fuente y confianza tiene cada supuesto y no sustituya este dato con información de otro apartado.'
 ),
 -- Plan de inversiones
 (110,
     '¿Qué activos, intangibles y gastos preoperativos requiere?',
-    'Para responder qué activos, intangibles y gastos preoperativos requiere, mencione los elementos indispensables para plan de inversiones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué activos, intangibles y gastos preoperativos requiere, mencione los elementos indispensables para plan de inversiones y explique brevemente cada uno.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué activos, intangibles y gastos preoperativos requiere.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué activos, intangibles y gastos preoperativos requiere y no sustituya este dato con información de otro apartado.'
 ),
@@ -1647,7 +1647,7 @@ questions (
 ),
 (111,
     '¿Qué inventario, caja, cobranza y pagos forman el ciclo?',
-    'Para responder qué inventario, caja, cobranza y pagos forman el ciclo, mencione los elementos indispensables para capital de trabajo y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué inventario, caja, cobranza y pagos forman el ciclo, mencione los elementos indispensables para capital de trabajo y explique brevemente cada uno.',
     '“Para capital de trabajo, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué inventario, caja, cobranza y pagos forman el ciclo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué inventario, caja, cobranza y pagos forman el ciclo y no sustituya este dato con información de otro apartado.'
 ),
@@ -1685,13 +1685,13 @@ questions (
 ),
 (113,
     '¿Qué gastos comerciales, administrativos y financieros existen?',
-    'Para responder qué gastos comerciales, administrativos y financieros existen, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué gastos comerciales, administrativos y financieros existen, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué gastos comerciales, administrativos y financieros existen.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué gastos comerciales, administrativos y financieros existen y no sustituya este dato con información de otro apartado.'
 ),
 (113,
     '¿Qué periodo, fuente y regla de asignación se usarán?',
-    'Para responder qué periodo, fuente y regla de asignación se usarán, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué periodo, fuente y regla de asignación se usarán, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno.',
     '“Para estructura de costos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué periodo, fuente y regla de asignación se usarán.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué periodo, fuente y regla de asignación se usarán y no sustituya este dato con información de otro apartado.'
 ),
@@ -1710,14 +1710,14 @@ questions (
 ),
 (114,
     '¿Qué comportamiento tendrán al crecer?',
-    'Para responder qué comportamiento tendrán al crecer, mencione los elementos indispensables para costos fijos y variables y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué comportamiento tendrán al crecer, mencione los elementos indispensables para costos fijos y variables y explique brevemente cada uno.',
     '“Para costos fijos y variables, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué comportamiento tendrán al crecer.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué comportamiento tendrán al crecer y no sustituya este dato con información de otro apartado.'
 ),
 -- Costos unitarios
 (115,
     '¿Qué materiales y mano de obra consume cada unidad?',
-    'Para responder qué materiales y mano de obra consume cada unidad, mencione los elementos indispensables para costos unitarios y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué materiales y mano de obra consume cada unidad, mencione los elementos indispensables para costos unitarios y explique brevemente cada uno.',
     '“Para costos unitarios, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué materiales y mano de obra consume cada unidad.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué materiales y mano de obra consume cada unidad y no sustituya este dato con información de otro apartado.'
 ),
@@ -1742,13 +1742,13 @@ questions (
 ),
 (116,
     '¿Qué gastos cambian por etapa?',
-    'Para responder qué gastos cambian por etapa, mencione los elementos indispensables para presupuesto operativo y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué gastos cambian por etapa, mencione los elementos indispensables para presupuesto operativo y explique brevemente cada uno.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué gastos cambian por etapa.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué gastos cambian por etapa y no sustituya este dato con información de otro apartado.'
 ),
 (116,
     '¿Qué calendario de pagos y cobros se aplicará?',
-    'Para responder qué calendario de pagos y cobros se aplicará, mencione los elementos indispensables para presupuesto operativo y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué calendario de pagos y cobros se aplicará, mencione los elementos indispensables para presupuesto operativo y explique brevemente cada uno.',
     '“Para presupuesto operativo, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué calendario de pagos y cobros se aplicará.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué calendario de pagos y cobros se aplicará y no sustituya este dato con información de otro apartado.'
 ),
@@ -1761,7 +1761,7 @@ questions (
 ),
 (117,
     '¿Qué estacionalidad, crecimiento y devoluciones considera?',
-    'Para responder qué estacionalidad, crecimiento y devoluciones considera, mencione los elementos indispensables para proyección de ventas y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué estacionalidad, crecimiento y devoluciones considera, mencione los elementos indispensables para proyección de ventas y explique brevemente cada uno.',
     '“Para proyección de ventas, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué estacionalidad, crecimiento y devoluciones considera.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué estacionalidad, crecimiento y devoluciones considera y no sustituya este dato con información de otro apartado.'
 ),
@@ -1799,13 +1799,13 @@ questions (
 ),
 (119,
     '¿Qué depreciación, intereses e impuestos corresponden?',
-    'Para responder qué depreciación, intereses e impuestos corresponden, mencione los elementos indispensables para estado de resultados proyectado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué depreciación, intereses e impuestos corresponden, mencione los elementos indispensables para estado de resultados proyectado y explique brevemente cada uno.',
     '“En una prueba de dos semanas, 20 personas solicitaron información, 8 pidieron cotización y 4 realizaron una compra.” En esta respuesta, el foco es: qué depreciación, intereses e impuestos corresponden.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué depreciación, intereses e impuestos corresponden y no sustituya este dato con información de otro apartado.'
 ),
 (119,
     '¿Qué utilidad y márgenes resultan por periodo?',
-    'Para responder qué utilidad y márgenes resultan por periodo, mencione los elementos indispensables para estado de resultados proyectado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué utilidad y márgenes resultan por periodo, mencione los elementos indispensables para estado de resultados proyectado y explique brevemente cada uno.',
     '“Para estado de resultados proyectado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué utilidad y márgenes resultan por periodo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué utilidad y márgenes resultan por periodo y no sustituya este dato con información de otro apartado.'
 ),
@@ -1813,7 +1813,7 @@ questions (
 -- Balance general proyectado
 (120,
     '¿Qué activos, pasivos y patrimonio existen al cierre?',
-    'Para responder qué activos, pasivos y patrimonio existen al cierre, mencione los elementos indispensables para balance general proyectado y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué activos, pasivos y patrimonio existen al cierre, mencione los elementos indispensables para balance general proyectado y explique brevemente cada uno.',
     '“Para balance general proyectado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué activos, pasivos y patrimonio existen al cierre.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué activos, pasivos y patrimonio existen al cierre y no sustituya este dato con información de otro apartado.'
 ),
@@ -1825,20 +1825,20 @@ questions (
 ),
 (120,
     '¿Se cumple activo igual a pasivo más patrimonio?',
-    'Para responder si se cumple activo igual a pasivo más patrimonio, use datos concretos del proyecto vinculados con balance general proyectado. Si falta información, ValiPlan puede proponer opciones, investigarla con fuentes o dejarla pendiente.',
+    'Para responder si se cumple activo igual a pasivo más patrimonio, use datos concretos del proyecto vinculados con balance general proyectado. Si falta información.',
     '“Para balance general proyectado, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: si se cumple activo igual a pasivo más patrimonio.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate si se cumple activo igual a pasivo más patrimonio y no sustituya este dato con información de otro apartado.'
 ),
 -- Flujo de caja
 (121,
     '¿Qué entradas y salidas reales ocurren por periodo?',
-    'Para responder qué entradas y salidas reales ocurren por periodo, mencione los elementos indispensables para flujo de caja y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué entradas y salidas reales ocurren por periodo, mencione los elementos indispensables para flujo de caja y explique brevemente cada uno.',
     '“Para flujo de caja, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué entradas y salidas reales ocurren por periodo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué entradas y salidas reales ocurren por periodo y no sustituya este dato con información de otro apartado.'
 ),
 (121,
     '¿Cuándo se desembolsa inversión, deuda y capital de trabajo?',
-    'Para responder cuándo se desembolsa inversión, deuda y capital de trabajo, use datos concretos del proyecto vinculados con flujo de caja. Si falta información, ValiPlan puede proponer opciones, investigarla con fuentes o dejarla pendiente.',
+    'Para responder cuándo se desembolsa inversión, deuda y capital de trabajo, use datos concretos del proyecto vinculados con flujo de caja.',
     '“Para flujo de caja, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cuándo se desembolsa inversión, deuda y capital de trabajo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cuándo se desembolsa inversión, deuda y capital de trabajo y no sustituya este dato con información de otro apartado.'
 ),
@@ -1852,57 +1852,57 @@ questions (
 
 (122,
     '¿Qué flujo y tasa de descuento corresponden?',
-    'Para responder qué flujo y tasa de descuento corresponden, mencione los elementos indispensables para VAN, TIR y periodo de recuperación y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué flujo y tasa de descuento corresponden, mencione los elementos indispensables para VAN, TIR y periodo de recuperación y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué flujo y tasa de descuento corresponden.',
     'El cálculo debe ejecutarse con fórmulas deterministas y entradas aprobadas. La IA solo explica resultados; no reemplaza el motor financiero. Control específico: verifique que la respuesta trate qué flujo y tasa de descuento corresponden y no sustituya este dato con información de otro apartado.'
 ),
 (122,
     '¿Qué VAN, TIR y recuperación calcula el motor?',
-    'Para responder qué VAN, TIR y recuperación calcula el motor, mencione los elementos indispensables para VAN, TIR y periodo de recuperación y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué VAN, TIR y recuperación calcula el motor, mencione los elementos indispensables para VAN, TIR y periodo de recuperación y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué VAN, TIR y recuperación calcula el motor.',
     'El cálculo debe ejecutarse con fórmulas deterministas y entradas aprobadas. La IA solo explica resultados; no reemplaza el motor financiero. Control específico: verifique que la respuesta trate qué VAN, TIR y recuperación calcula el motor y no sustituya este dato con información de otro apartado.'
 ),
 (122,
     '¿Qué criterio de decisión y limitaciones se aplican?',
-    'Para responder qué criterio de decisión y limitaciones se aplican, mencione los elementos indispensables para VAN, TIR y periodo de recuperación y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué criterio de decisión y limitaciones se aplican, mencione los elementos indispensables para VAN, TIR y periodo de recuperación y explique brevemente cada uno.',
     '“Para VAN, TIR y periodo de recuperación, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué criterio de decisión y limitaciones se aplican.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué criterio de decisión y limitaciones se aplican y no sustituya este dato con información de otro apartado.'
 ),
 -- Ratios financieros
 (123,
     '¿Qué ratios son pertinentes al tipo de negocio?',
-    'Para responder qué ratios son pertinentes al tipo de negocio, mencione los elementos indispensables para ratios financieros y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué ratios son pertinentes al tipo de negocio, mencione los elementos indispensables para ratios financieros y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué ratios son pertinentes al tipo de negocio.',
     'El cálculo debe ejecutarse con fórmulas deterministas y entradas aprobadas. La IA solo explica resultados; no reemplaza el motor financiero. Control específico: verifique que la respuesta trate qué ratios son pertinentes al tipo de negocio y no sustituya este dato con información de otro apartado.'
 ),
 (123,
     '¿Qué fórmula y valor presentan por periodo?',
-    'Para responder qué fórmula y valor presentan por periodo, mencione los elementos indispensables para ratios financieros y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué fórmula y valor presentan por periodo, mencione los elementos indispensables para ratios financieros y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: qué fórmula y valor presentan por periodo.',
-    'ValiPlan puede proponer opciones, pero el usuario debe elegir y aprobar. Verifique disponibilidad legal cuando corresponda. Control específico: verifique que la respuesta trate qué fórmula y valor presentan por periodo y no sustituya este dato con información de otro apartado.'
+    'Verifique que la respuesta trate qué fórmula y valor presentan por periodo y no sustituya este dato con información de otro apartado.'
 ),
 (123,
     '¿Con qué referencia se comparan y qué decisión generan?',
-    'Para responder con qué referencia se comparan y qué decisión generan, mencione los elementos indispensables para ratios financieros y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder con qué referencia se comparan y qué decisión generan, mencione los elementos indispensables para ratios financieros y explique brevemente cada uno.',
     '“El motor calculará el resultado con entradas verificadas y mostrará fórmulas, supuestos y escenarios.” En esta respuesta, el foco es: con qué referencia se comparan y qué decisión generan.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate con qué referencia se comparan y qué decisión generan y no sustituya este dato con información de otro apartado.'
 ),
 -- Analisis de sensibilidad, escenarios y viabilidad
 (124,
     '¿Qué variables pueden cambiar de manera material?',
-    'Para responder qué variables pueden cambiar de manera material, mencione los elementos indispensables para análisis de sensibilidad, escenarios y viabilidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué variables pueden cambiar de manera material, mencione los elementos indispensables para análisis de sensibilidad, escenarios y viabilidad y explique brevemente cada uno.',
     '“Para análisis de sensibilidad, escenarios y viabilidad, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué variables pueden cambiar de manera material.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué variables pueden cambiar de manera material y no sustituya este dato con información de otro apartado.'
 ),
 (125,
     '¿Qué escenarios pesimista, probable y optimista se evaluarán?',
-    'Para responder qué escenarios pesimista, probable y optimista se evaluarán, mencione los elementos indispensables para análisis de sensibilidad, escenarios y viabilidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué escenarios pesimista, probable y optimista se evaluarán, mencione los elementos indispensables para análisis de sensibilidad, escenarios y viabilidad y explique brevemente cada uno.',
     '“Para análisis de sensibilidad, escenarios y viabilidad, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué escenarios pesimista, probable y optimista se evaluarán.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué escenarios pesimista, probable y optimista se evaluarán y no sustituya este dato con información de otro apartado.'
 ),
 (126,
     '¿En qué punto deja de ser viable y qué conclusión integral corresponde?',
-    'Para responder en qué punto deja de ser viable y qué conclusión integral corresponde, mencione los elementos indispensables para análisis de sensibilidad, escenarios y viabilidad y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder en qué punto deja de ser viable y qué conclusión integral corresponde, mencione los elementos indispensables para análisis de sensibilidad, escenarios y viabilidad y explique brevemente cada uno.',
     '“Para análisis de sensibilidad, escenarios y viabilidad, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: en qué punto deja de ser viable y qué conclusión integral corresponde.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate en qué punto deja de ser viable y qué conclusión integral corresponde y no sustituya este dato con información de otro apartado.'
 ),
@@ -1911,26 +1911,26 @@ questions (
 -- Conclusiones
 (127,
     '¿Qué hallazgo responde a cada objetivo?',
-    'Para responder qué hallazgo responde a cada objetivo, mencione los elementos indispensables para conclusiones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué hallazgo responde a cada objetivo, mencione los elementos indispensables para conclusiones y explique brevemente cada uno.',
     '“Para conclusiones, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué hallazgo responde a cada objetivo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué hallazgo responde a cada objetivo y no sustituya este dato con información de otro apartado.'
 ),
 (127,
     '¿Qué evidencia o cálculo lo sustenta?',
-    'Para responder qué evidencia o cálculo lo sustenta, mencione los elementos indispensables para conclusiones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué evidencia o cálculo lo sustenta, mencione los elementos indispensables para conclusiones y explique brevemente cada uno.',
     '“En una prueba de dos semanas, 20 personas solicitaron información, 8 pidieron cotización y 4 realizaron una compra.” En esta respuesta, el foco es: qué evidencia o cálculo lo sustenta.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué evidencia o cálculo lo sustenta y no sustituya este dato con información de otro apartado.'
 ),
 (127,
     '¿Qué limitación debe declararse?',
-    'Para responder qué limitación debe declararse, mencione los elementos indispensables para conclusiones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué limitación debe declararse, mencione los elementos indispensables para conclusiones y explique brevemente cada uno.',
     '“Para conclusiones, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué limitación debe declararse.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué limitación debe declararse y no sustituya este dato con información de otro apartado.'
 ),
 -- Recomendaciones
 (128,
     '¿Qué acción se deriva de cada conclusión o riesgo?',
-    'Para responder qué acción se deriva de cada conclusión o riesgo, mencione los elementos indispensables para recomendaciones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué acción se deriva de cada conclusión o riesgo, mencione los elementos indispensables para recomendaciones y explique brevemente cada uno.',
     '“El principal riesgo es depender de un solo proveedor; se mitigará homologando una segunda alternativa.” En esta respuesta, el foco es: qué acción se deriva de cada conclusión o riesgo.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué acción se deriva de cada conclusión o riesgo y no sustituya este dato con información de otro apartado.'
 ),
@@ -1942,7 +1942,7 @@ questions (
 ),
 (128,
     '¿Qué indicador verificará su cumplimiento?',
-    'Para responder qué indicador verificará su cumplimiento, mencione los elementos indispensables para recomendaciones y explique brevemente cada uno. Distinga datos confirmados, estimaciones y propuestas de ValiPlan.',
+    'Para responder qué indicador verificará su cumplimiento, mencione los elementos indispensables para recomendaciones y explique brevemente cada uno.',
     '“Incrementar la recompra del 20 % al 30 % durante el primer año, medida mensualmente por el responsable comercial.” En esta respuesta, el foco es: qué indicador verificará su cumplimiento.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué indicador verificará su cumplimiento y no sustituya este dato con información de otro apartado.'
 ),

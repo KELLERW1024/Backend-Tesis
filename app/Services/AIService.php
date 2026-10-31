@@ -109,52 +109,45 @@ class AIService
             return trim($texto);
         }
 
+        // ====================================================
+        // Incluir el Diagnóstico Inicial + Historial reciente
+        // ====================================================
+        $diagnosticoInicial = $context?->plan_context['diagnostico_inicial'] ?? [];
+        $textoDiagnostico = "";
+        
+        if (!empty($diagnosticoInicial)) {
+            $textoDiagnostico = "DIAGNÓSTICO INICIAL DEL PROYECTO (8 PREGUNTAS):\n";
+            foreach ($diagnosticoInicial as $diag) {
+                $textoDiagnostico .= "- Respuesta: {$diag['answer']}\n";
+            }
+            $textoDiagnostico .= "\n";
+        }
+
+
         // Capítulo 1: Usamos app() para no romper dependencias circulares
         $conversationService = app(ConversationService::class);
         $historial5 = $conversationService->getHistoryLimit10($conversationId);
 
+        $conversationService = app(ConversationService::class);
+        $historial5 = $conversationService->getHistoryLimit10($conversationId);
+
+        $textoHistorial = "";
         if (!empty($historial5)) {
-            $texto = "RESPUESTAS RECIENTES DADAS POR EL USUARIO (CAPÍTULO 1):\n";
+            $textoHistorial = "RESPUESTAS RECIENTES DADAS POR EL USUARIO (CAPÍTULO 1):\n";
             foreach ($historial5 as $item) {
-                $texto .= "- {$item['content']}\n\n";
+                $textoHistorial .= "- {$item['content']}\n\n";
             }
-            return trim($texto);
+        }
+
+        $textoCompleto = trim($textoDiagnostico . $textoHistorial);
+     
+        if (!empty($textoCompleto)) {
+            return $textoCompleto;
         }
 
         return '';
     }
 
-    /**
-     * Convierte el registro de thesis_context
-     * en texto para la IA.
-     */
-    /*private function construirContexto( ThesisContext $context  ): string {
-
-        return <<<CONTEXTO
-Nombre del negocio:
-{$context->business_name}
-
-Sector:
-{$context->business_sector}
-
-Producto o servicio:
-{$context->product_service}
-
-Cliente objetivo:
-{$context->target_customer}
-
-Problema principal:
-{$context->main_problem}
-
-Propuesta de valor:
-{$context->value_proposition}
-
-Resumen:
-{$context->context_summary}
-CONTEXTO;
-    }
-
-*/
     /**
      * Construye el prompt para detectar incongruencias.
      */
@@ -271,7 +264,6 @@ PROMPT;
             'cap_10' => null,
         ];
 
-        // 2. Obtener o crear el registro thesis_context
         // 2. Obtener o crear el registro thesis_context
         $thesisContext = \App\Models\ThesisContext::firstOrCreate(
             ['conversation_id' => $conversationId],

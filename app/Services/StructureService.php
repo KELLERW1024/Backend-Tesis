@@ -29,17 +29,23 @@ class StructureService
 
             // Si no mandaron orden, agregamos al final
             $orden = $data['orden']
-                ?? $this->getNextOrder($parentId, $data['plan_id']);
+                ?? $this->getNextOrder($parentId, $data['plan_id'], $data['user_plan_id'] ?? null);
 
             // Desplazar elementos posteriores
-            PlanNode::where('plan_id', $data['plan_id'])
-                ->where('parent_id', $parentId)
-                ->where('orden', '>=', $orden)
-                ->increment('orden');
+            $query = PlanNode::where('plan_id', $data['plan_id'])
+                ->where('parent_id', $parentId);
+            
+            if (isset($data['user_plan_id'])) {
+                $query->where('user_plan_id', $data['user_plan_id']);
+            } else {
+                $query->whereNull('user_plan_id');
+            }
+
+            $query->where('orden', '>=', $orden)->increment('orden');
 
             $nivel = $this->calculateLevel($parentId);
 
-            return PlanNode::create([
+            $newNode = PlanNode::create([
                 'user_plan_id' => $data['user_plan_id'] ?? null,
                 'plan_id'      => $data['plan_id'],
                 'parent_id'    => $parentId,
@@ -48,6 +54,11 @@ class StructureService
                 'objective'    => $data['objective'] ?? null,
                 'nivel'        => $nivel,
             ]);
+
+            // RECALCULAR SECUENCIALMENTE CÓDIGOS Y TÍTULOS
+            $this->recalculateStructure($data['plan_id'], $data['user_plan_id'] ?? null);
+
+            return $newNode->fresh();
         });
     }
 
@@ -64,11 +75,7 @@ class StructureService
     }
 
     // MOVER/REORDENAR UN NODO
-    // - Este método permite: 1.4 → 1.2
-    // pero también:
-    //Capítulo I → Capítulo II o 1.4 → hijo de 1.2
-
-        public function changePosition(
+    public function changePosition(
         int $id,
         ?int $newParentId,
         int $newOrder
@@ -83,7 +90,7 @@ class StructureService
                 ->findOrFail($id);
 
             $oldParentId = $node->parent_id;
-            $oldOrder = $node->orden;
+            $oldOrder = $node->orden;     
 
             // No permitir que un nodo sea hijo de sí mismo
             if ($newParentId === $node->id) {
@@ -100,56 +107,31 @@ class StructureService
                 );
             }
 
-            /*
-             * CASO 1:
-             * Se mueve dentro del mismo padre
-             */
-            if ($oldParentId == $newParentId) {
-
-                // Se mueve hacia arriba
-                if ($newOrder < $oldOrder) {
-
-                    PlanNode::where('plan_id', $node->plan_id)
-                        ->where('parent_id', $oldParentId)
-                        ->where('id', '!=', $node->id)
-                        ->whereBetween('orden', [
-                            $newOrder,
-                            $oldOrder - 1
-                        ])
-                        ->increment('orden');
-
-                }
-
-                // Se mueve hacia abajo
-                elseif ($newOrder > $oldOrder) {
-
-                    PlanNode::where('plan_id', $node->plan_id)
-                        ->where('parent_id', $oldParentId)
-                        ->where('id', '!=', $node->id)
-                        ->whereBetween('orden', [
-                            $oldOrder + 1,
-                            $newOrder
-                        ])
-                        ->decrement('orden');
-                }
-
+            $query = PlanNode::where('plan_id', $node->plan_id);
+            if ($node->user_plan_id !== null) {
+                $query->where('user_plan_id', $node->user_plan_id);
+            } else {
+                $query->whereNull('user_plan_id');
             }
 
-            /*
-             * CASO 2:
-             * Se mueve a otro padre
-             */
-            else {
-
-                // Cerramos el hueco que deja
-                PlanNode::where('plan_id', $node->plan_id)
-                    ->where('parent_id', $oldParentId)
+            if ($oldParentId == $newParentId) {
+                if ($newOrder < $oldOrder) {
+                    (clone $query)->where('parent_id', $oldParentId)
+                        ->where('id', '!=', $node->id)
+                        ->whereBetween('orden', [$newOrder, $oldOrder - 1])
+                        ->increment('orden');
+                } elseif ($newOrder > $oldOrder) {
+                    (clone $query)->where('parent_id', $oldParentId)
+                        ->where('id', '!=', $node->id)
+                        ->whereBetween('orden', [$oldOrder + 1, $newOrder])
+                        ->decrement('orden');
+                }
+            } else {
+                (clone $query)->where('parent_id', $oldParentId)
                     ->where('orden', '>', $oldOrder)
                     ->decrement('orden');
 
-                // Abrimos espacio en el nuevo padre
-                PlanNode::where('plan_id', $node->plan_id)
-                    ->where('parent_id', $newParentId)
+                (clone $query)->where('parent_id', $newParentId)
                     ->where('orden', '>=', $newOrder)
                     ->increment('orden');
             }
@@ -160,20 +142,16 @@ class StructureService
                 'nivel'     => $this->calculateLevel($newParentId),
             ]);
 
+            // RECALCULAR SECUENCIALMENTE CÓDIGOS Y TÍTULOS
+            $this->recalculateStructure($node->plan_id, $node->user_plan_id);
+
             return $node->fresh();
         });
     }
 
-    // EVITAR CICLOS 
-    //No puedes permitir:
-
-    // 1.6
-    //     └── 1.6.1
-    //             └── 1.6 No puedes permitir:
-
     private function validateNoCycle(
-    int $nodeId,
-    int $newParentId
+        int $nodeId,
+        int $newParentId
     ): void {
 
         $parent = PlanNode::find($newParentId);
@@ -202,18 +180,22 @@ class StructureService
         return $parent->nivel + 1;
     }
 
-    // Obtener el siguiente oprden 
+    // Obtener el siguiente oprden
     private function getNextOrder(
         ?int $parentId,
-        int $planId
+        int $planId,
+        ?int $userPlanId
     ): int {
+        $query = PlanNode::where('plan_id', $planId)
+            ->where('parent_id', $parentId);
 
-        return (
-            PlanNode::where('plan_id', $planId)
-                ->where('parent_id', $parentId)
-                ->max('orden')
-            ?? 0
-        ) + 1;
+        if ($userPlanId !== null) {
+            $query->where('user_plan_id', $userPlanId);
+        } else {
+            $query->whereNull('user_plan_id');
+        }
+
+        return ($query->max('orden') ?? 0) + 1;
     }
 
     // ELIMINAR 
@@ -224,6 +206,8 @@ class StructureService
             $node = PlanNode::lockForUpdate()
                 ->findOrFail($id);
 
+            $planId = $node->plan_id;
+            $userPlanId = $node->user_plan_id;
             $parentId = $node->parent_id;
             $orden = $node->orden;
 
@@ -233,30 +217,136 @@ class StructureService
             $node->delete();
 
             // Cerrar hueco
-            PlanNode::where('plan_id', $node->plan_id)
-                ->where('parent_id', $parentId)
-                ->where('orden', '>', $orden)
-                ->decrement('orden');
+            $query = PlanNode::where('plan_id', $planId)
+                ->where('parent_id', $parentId);
+
+            if ($userPlanId !== null) {
+                $query->where('user_plan_id', $userPlanId);
+            } else {
+                $query->whereNull('user_plan_id');
+            }
+
+            $query->where('orden', '>', $orden)->decrement('orden');
+
+            // RECALCULAR SECUENCIALMENTE CÓDIGOS Y TÍTULOS TRAS LA ELIMINACIÓN
+            $this->recalculateStructure($planId, $userPlanId);
         });
     }
 
-    // DELETE CHILDREN
     private function deleteChildren(int $parentId): void
     {
         $children = PlanNode::where('parent_id', $parentId)->get();
 
         foreach ($children as $child) {
-
             $this->deleteChildren($child->id);
-
             $child->delete();
         }
     }
-    
 
+    // =================================================
+    // MÉTODO PARA REORDENAR
+    // =================================================
+    private function recalculateStructure(int $planId, ?int $userPlanId): void
+    {
+        $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'];
 
+        $query = PlanNode::where('plan_id', $planId);
+        if ($userPlanId !== null) {
+            $query->where('user_plan_id', $userPlanId);
+        } else {
+            $query->whereNull('user_plan_id');
+        }
 
+        // Obtener todos los nodos raíz
+        $allRootNodes = (clone $query)->whereNull('parent_id')
+            ->orderBy('orden', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // Separar y ordenar para respetar el orden:
+
+        $preliminares = $allRootNodes->filter(function($n) {
+            $t = mb_strtolower($n->titulo);
+            return str_contains($t, 'resumen ejecutivo') || str_contains($t, 'introducción');
+        })->sortBy('orden');
+
+        $finales = $allRootNodes->filter(function($n) {
+            $t = mb_strtolower($n->titulo);
+            return str_contains($t, 'conclusiones') || str_contains($t, 'recomendaciones');
+        })->sortBy('orden');
+
+        $capitulosCentrales = $allRootNodes->reject(function($n) use ($preliminares, $finales) {
+            return $preliminares->contains('id', $n->id) || $finales->contains('id', $n->id);
+        })->sortBy('orden');
+
+        $rootNodes = $preliminares->concat($capitulosCentrales)->concat($finales);
+
+        $globalOrden = 1;
+        $capIndex = 1;
+
+        foreach ($rootNodes as $root) {
+            $tituloLower = mb_strtolower($root->titulo);
+            
+            // Detectar si es Fase 2
+            $esEspecial = str_contains($tituloLower, 'resumen ejecutivo') || 
+                          str_contains($tituloLower, 'introducción') || 
+                          str_contains($tituloLower, 'conclusiones') || 
+                          str_contains($tituloLower, 'recomendaciones');
+
+            if ($esEspecial) {
+                // Limpiar prefijos de capítulo y dejar título limpio sin romanos
+                $tituloLimpio = preg_replace('/^(Capítulo\s+[I|V|X|L|C|D|M|\d]+\.?\s*|-*\s*)/i', '', $root->titulo);
+                $root->update([
+                    'titulo' => trim($tituloLimpio),
+                    'orden'  => $globalOrden,
+                    'codigo' => null
+                ]);
+                $globalOrden++;
+            } else {
+                $numeroRomano = $romanos[$capIndex] ?? $capIndex;
+
+                // Renumerar como Capítulo X
+                $tituloLimpio = preg_replace('/^Capítulo\s+[I|V|X|L|C|D|M|\d]+\.?\s*/i', '', $root->titulo);
+                $root->update([
+                    'titulo' => "Capítulo {$numeroRomano}. " . ltrim($tituloLimpio, '. '),
+                    'orden'  => $globalOrden,
+                    'codigo' => (string)$capIndex
+                ]);
+
+                // Renumerar subnodos de Nivel 2
+                $childrenL2 = (clone $query)->where('parent_id', $root->id)
+                    ->orderBy('orden', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->get();
+
+                $l2Index = 1;
+                foreach ($childrenL2 as $childL2) {
+                    $childL2->update([
+                        'orden' => $l2Index,
+                        'codigo' => "{$capIndex}.{$l2Index}"
+                    ]);
+
+                    // Renumerar subnodos de Nivel 3
+                    $childrenL3 = (clone $query)->where('parent_id', $childL2->id)
+                        ->orderBy('orden', 'asc')
+                        ->orderBy('id', 'asc')
+                        ->get();
+
+                    $l3Index = 1;
+                    foreach ($childrenL3 as $childL3) {
+                        $childL3->update([
+                            'orden' => $l3Index,
+                            'codigo' => "{$capIndex}.{$l2Index}.{$l3Index}"
+                        ]);
+                        $l3Index++;
+                    }
+
+                    $l2Index++;
+                }
+
+                $capIndex++;
+                $globalOrden++;
+            }
+        }
+    }
 }
-
-
-

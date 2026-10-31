@@ -481,6 +481,7 @@ class DocumentController extends Controller
             ->where('plan_id', $plan->id)
             ->where('user_plan_id', $conversation->user_plan_id)
             // ->whereNotNull('user_plan_id')
+            ->where('execution_phase', '!=', 0)
             ->orderBy('orden')
             ->get();
 
@@ -653,9 +654,18 @@ Log::info('NODOS NIVEL 1', [
             //         $contadorTabla
             //     );
             // }
-            foreach ($nodeTree as $index => $node) {
+            
+            $capituloIndex = 1;
 
-                $numero = (string) ($index + 1);
+            foreach ($nodeTree as $node) {
+
+                // Si es Fase 2 (Resumen, Introducción, Conclusiones, Recomendaciones), no lleva número
+                if ((int) $node->execution_phase === 2) {
+                    $numero = '';
+                } else {
+                    $numero = (string) $capituloIndex;
+                    $capituloIndex++; // Solo incrementa en capítulos reales de Fase 1
+                }
 
                 $this->addNodeToDocument(
                     $section,
@@ -813,10 +823,19 @@ Log::info('NODOS NIVEL 1', [
         //     );
         // }
 
+        /*
+        |--------------------------------------------------------------------------
+        | MODIFICACIÓN 1: Solo anteponer número si $numero no está vacío
+        |--------------------------------------------------------------------------
+        */
         if (!empty($titulo)) {
 
+            $textoTitulo = !empty($numero) 
+                ? $numero . ' ' . $this->cleanText($titulo)
+                : $this->cleanText($titulo);
+
             $section->addTitle(
-                $numero . ' ' . $this->cleanText($titulo),
+                $textoTitulo,
                 $nivelTitulo
             );
         }
@@ -1221,10 +1240,20 @@ Log::info('NODOS NIVEL 1', [
         //         $contadorTabla
         //     );
         // }
+
+        /*
+        |--------------------------------------------------------------------------
+        | MODIFICACIÓN 2: Si el padre tiene número (ej. "1"), el hijo será "1.1".
+        | Si el padre no tiene número (sección preliminar/Fase 2), se envía vacío.
+        |--------------------------------------------------------------------------
+        */
+
         foreach ($node->children as $index => $child) {
 
-            $numeroHijo = $numero . '.' . ($index + 1);
-
+           $numeroHijo = !empty($numero) 
+                ? $numero . '.' . ($index + 1)
+                : '';
+                
             $this->addNodeToDocument(
                 $section,
                 $child,
