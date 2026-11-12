@@ -313,36 +313,36 @@ questions (
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué proveedores, aliados o instituciones necesita y qué aportará cada uno y no sustituya este dato con información de otro apartado.'
 ),
 (18,
-    '¿Bajo qué condiciones trabajarán y qué obtendrán a cambio?',
-    'Para responder bajo qué condiciones trabajarán y qué obtendrán a cambio, mencione los elementos indispensables para socios clave y explique brevemente cada uno.',
-    '“Para socios clave, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: bajo qué condiciones trabajarán y qué obtendrán a cambio.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate bajo qué condiciones trabajarán y qué obtendrán a cambio y no sustituya este dato con información de otro apartado.'
+    '¿Por qué cada socio es clave para la propuesta de valor y qué pasaría sin él?',
+    'Para explicar por qué cada socio es clave para la propuesta de valor y qué pasaría sin él, relacione cada socio con el recurso o actividad que aporta y el efecto que tendría su ausencia. No detalle precios, plazos ni condiciones de compra.',
+    '“El taller aliado permite ofrecer personalización sin invertir en maquinaria; sin él, la oferta se limitaría a productos estándar.” En esta respuesta, el foco es: por qué cada socio es clave para la propuesta de valor y qué pasaría sin él.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate por qué cada socio es clave para la propuesta de valor y qué pasaría sin él y no sustituya este dato con condiciones comerciales u operativas de otro apartado.'
 ),
 (18,
-    '¿Qué dependencia o riesgo existe y qué alternativa tendrá?',
-    'Para responder qué dependencia o riesgo existe y qué alternativa tendrá, mencione los elementos indispensables para socios clave y explique brevemente cada uno.',
-    '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué dependencia o riesgo existe y qué alternativa tendrá.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué dependencia o riesgo existe y qué alternativa tendrá y no sustituya este dato con información de otro apartado.'
+    '¿Qué actividades o recursos obtendrá mediante socios en lugar de realizarlos internamente?',
+    'Para responder qué actividades o recursos obtendrá mediante socios en lugar de realizarlos internamente, indique qué se tercerizará, qué se hará con recursos propios y la razón de esa decisión dentro de socios clave.',
+    '“La entrega y el diseño gráfico se tercerizarán para reducir inversión inicial; la producción y la atención al cliente se mantendrán internas.” En esta respuesta, el foco es: qué actividades o recursos obtendrá mediante socios en lugar de realizarlos internamente.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué actividades o recursos obtendrá mediante socios en lugar de realizarlos internamente y no sustituya este dato con información de otro apartado.'
 ),
 
 -- Estructura de costos 
 (19,
-    '¿Qué costos fijos, variables, directos e indirectos tendrá el negocio?',
-    'Para responder sobre qué costos fijos, variables, directos e indirectos tendrá el negocio, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en estructura de costos.',
-    '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué costos fijos, variables, directos e indirectos tendrá el negocio.',
-    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué costos fijos, variables, directos e indirectos tendrá el negocio y no sustituya este dato con información de otro apartado.'
+    '¿Cuáles son las principales categorías de costos del modelo de negocio?',
+    'Para responder cuáles son las principales categorías de costos del modelo de negocio, mencione los grandes grupos de costos (por ejemplo, insumos, personal, local, marketing, logística) sin detallar montos. Las cifras se desarrollarán en el plan financiero.',
+    '“Los principales costos serán insumos, personal de producción, alquiler del local, publicidad digital y reparto.” En esta respuesta, el foco es: cuáles son las principales categorías de costos del modelo de negocio.',
+    'No es necesario registrar cifras en este apartado. Control específico: verifique que la respuesta trate cuáles son las principales categorías de costos del modelo de negocio y no adelante cálculos que corresponden al plan financiero.'
 ),
 (19,
-    '¿Qué inversiones y gastos iniciales se requieren?',
-    'Para responder qué inversiones y gastos iniciales se requieren, mencione los elementos indispensables para estructura de costos y explique brevemente cada uno.',
-    '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué inversiones y gastos iniciales se requieren.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué inversiones y gastos iniciales se requieren y no sustituya este dato con información de otro apartado.'
+    '¿Qué actividades o recursos clave generan los costos más importantes?',
+    'Para responder qué actividades o recursos clave generan los costos más importantes, relacione cada categoría de costo con la actividad o recurso clave que la origina dentro de estructura de costos.',
+    '“La producción personalizada concentra el mayor costo por insumos y mano de obra; el canal digital genera costos de publicidad.” En esta respuesta, el foco es: qué actividades o recursos clave generan los costos más importantes.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué actividades o recursos clave generan los costos más importantes y no sustituya este dato con información de otro apartado.'
 ),
 (19,
-    '¿Qué costos suelen olvidarse y cómo cambiarán al crecer?',
-    'Para responder sobre qué costos suelen olvidarse y cómo cambiarán al crecer, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en estructura de costos.',
-    '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué costos suelen olvidarse y cómo cambiarán al crecer.',
-    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué costos suelen olvidarse y cómo cambiarán al crecer y no sustituya este dato con información de otro apartado.'
+    '¿El modelo se orienta a minimizar costos o a crear valor, y por qué?',
+    'Para responder si el modelo se orienta a minimizar costos o a crear valor, explique cuál es la prioridad del negocio y cómo esa decisión se refleja en sus costos dentro de estructura de costos.',
+    '“El modelo se orienta a crear valor: se aceptan costos mayores en materiales y atención para sostener la personalización y la puntualidad.” En esta respuesta, el foco es: si el modelo se orienta a minimizar costos o a crear valor, y por qué.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate si el modelo se orienta a minimizar costos o a crear valor, y por qué, y que sea coherente con la propuesta de valor.'
 ),
 
 -- capitulo II
@@ -378,7 +378,7 @@ questions (
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: quiénes participarán y qué aportará cada uno.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate quiénes participarán y qué aportará cada uno y no sustituya este dato con información de otro apartado.'
 ),
-(13,
+(22,
     '¿Qué forma jurídica y clasificación económica deben verificarse?',
     'Para responder qué forma jurídica y clasificación económica deben verificarse, mencione los elementos indispensables para datos generales de la empresa y explique brevemente cada uno.',
     '“Para datos generales de la empresa, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué forma jurídica y clasificación económica deben verificarse.',
@@ -661,20 +661,60 @@ questions (
 
 
 
+-- Cinco fuerzas de porter 
+(45,
+    '¿Qué factores determinan cada fuerza competitiva?',
+    'Para responder qué factores determinan cada fuerza competitiva, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
+    '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué factores determinan cada fuerza competitiva.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué factores determinan cada fuerza competitiva y no sustituya este dato con información de otro apartado.'
+),
+(45,
+    '¿Qué peso y calificación obtiene cada factor?',
+    'Para responder qué peso y calificación obtiene cada factor, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
+    '“Para cinco fuerzas de Porter, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué peso y calificación obtiene cada factor.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué peso y calificación obtiene cada factor y no sustituya este dato con información de otro apartado.'
+),
+(45,
+    '¿Qué muestra el resultado sobre el atractivo del sector?',
+    'Para responder qué muestra el resultado sobre el atractivo del sector, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
+    '“Se aplicará una encuesta breve al segmento definido y entrevistas para comprender razones y objeciones.” En esta respuesta, el foco es: qué muestra el resultado sobre el atractivo del sector.',
+    'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué muestra el resultado sobre el atractivo del sector y no sustituya este dato con información de otro apartado.'
+),
+
+-- Clientes
+(46,
+    '¿Quiénes son los clientes principales y qué tan concentradas están las compras?',
+    'Para precisar quiénes son los clientes principales y qué tan concentradas están las compras, identifique al tipo de cliente concreto e indique si las ventas dependen de pocos compradores grandes o de muchos compradores pequeños dentro de clientes. Evite respuestas amplias como “todos” o “el público en general”.',
+    '“Las ventas se reparten entre muchos consumidores finales de mi ciudad; ningún cliente representa más del 5 % de los pedidos mensuales.” En esta respuesta, el foco es: quiénes son los clientes principales y qué tan concentradas están las compras.',
+    'No use porcentajes sin periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate quiénes son los clientes principales y qué tan concentradas están las compras y no sustituya este dato con información de otro apartado.'
+),
+(46,
+    '¿Qué tan fácil les resulta cambiar de proveedor y cuánto influye el precio en su decisión?',
+    'Para responder qué tan fácil les resulta cambiar de proveedor y cuánto influye el precio en su decisión, mencione el costo de cambio, la información que tienen para comparar y la sensibilidad al precio. Indique si el dato es real, observado o estimado, y anote la fuente o supuesto utilizado en clientes.',
+    '“El cliente puede comparar opciones por Internet y cambiar sin costo; sin embargo, valora la puntualidad y acepta pagar un poco más por una entrega confiable.” En esta respuesta, el foco es: qué tan fácil les resulta cambiar de proveedor y cuánto influye el precio en su decisión.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué tan fácil les resulta cambiar de proveedor y cuánto influye el precio en su decisión y no sustituya este dato con información de otro apartado.'
+),
+(46,
+    '¿Qué poder de negociación tienen los clientes y cómo lo gestionará la empresa?',
+    'Para responder qué poder de negociación tienen los clientes y cómo lo gestionará la empresa, califique el poder como bajo, medio o alto, explique los factores que lo determinan y describa las acciones concretas que aplicará la empresa para clientes.',
+    '“El poder de negociación de los clientes es medio: hay alternativas disponibles, pero pocas ofrecen personalización; se fidelizará con seguimiento posventa y beneficios por recompra.” En esta respuesta, el foco es: qué poder de negociación tienen los clientes y cómo lo gestionará la empresa.',
+    'La calificación debe sustentarse en los factores descritos y ser coherente con el análisis de las demás fuerzas. Control específico: verifique que la respuesta trate qué poder de negociación tienen los clientes y cómo lo gestionará la empresa y no sustituya este dato con información de otro apartado.'
+),
+
 -- Competidores\
- (46,
+(47,
     '¿Quiénes compiten directa e indirectamente?',
     'Para precisar quiénes compiten directa e indirectamente, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de competidores. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: quiénes compiten directa e indirectamente.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate quiénes compiten directa e indirectamente y no sustituya este dato con información de otro apartado.'
 ),
-(46,
+(47,
     '¿Qué ofrecen, a qué precio, por qué canal y con qué reputación?',
     'Para responder sobre qué ofrecen, a qué precio, por qué canal y con qué reputación, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en competidores.',
     '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: qué ofrecen, a qué precio, por qué canal y con qué reputación.',
     'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué ofrecen, a qué precio, por qué canal y con qué reputación y no sustituya este dato con información de otro apartado.'
 ),
-(46,
+(47,
     '¿En qué son fuertes, débiles y dónde queda espacio?',
     'Para delimitar en qué son fuertes, débiles y dónde queda espacio, use una descripción genérica o la ubicación confirmada por el usuario: “mi ciudad”, “mi región” o “la zona atendida”. Indique cobertura y restricciones.',
     '“El negocio funcionará en mi ciudad y atenderá inicialmente las zonas cercanas mediante recojo y entrega programada.” En esta respuesta, el foco es: en qué son fuertes, débiles y dónde queda espacio.',
@@ -682,39 +722,39 @@ questions (
 ),
 
 -- Proveedores 
-(47,
-    '¿Qué proveedores existen para cada insumo crítico?',
-    'Para precisar qué proveedores existen para cada insumo crítico, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de proveedores. Evite respuestas amplias como “todos” o “el público en general”.',
-    '“Un proveedor local abastecerá el insumo principal y un servicio externo realizará entregas en horas de alta demanda.” En esta respuesta, el foco es: qué proveedores existen para cada insumo crítico.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué proveedores existen para cada insumo crítico y no sustituya este dato con información de otro apartado.'
+(48,
+    '¿Cuántos proveedores ofrecen los insumos críticos y qué tan concentrado está ese mercado?',
+    'Para precisar cuántos proveedores ofrecen los insumos críticos y qué tan concentrado está ese mercado, indique si existen muchos o pocos proveedores en el sector y si alguno domina la oferta. No detalle el proveedor elegido ni sus condiciones de compra.',
+    '“El insumo principal es ofrecido por al menos seis distribuidores en la región; ninguno concentra la mayor parte del mercado.” En esta respuesta, el foco es: cuántos proveedores ofrecen los insumos críticos y qué tan concentrado está ese mercado.',
+    'Distinga datos verificados de estimaciones. Control específico: verifique que la respuesta trate cuántos proveedores ofrecen los insumos críticos y qué tan concentrado está ese mercado y no sustituya este dato con información de otro apartado.'
 ),
-(47,
-    '¿Qué condiciones, calidad, precio y plazo ofrecen?',
-    'Para responder sobre qué condiciones, calidad, precio y plazo ofrecen, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en proveedores.',
-    '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: qué condiciones, calidad, precio y plazo ofrecen.',
-    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué condiciones, calidad, precio y plazo ofrecen y no sustituya este dato con información de otro apartado.'
+(48,
+    '¿Qué costo o dificultad implica cambiar de proveedor en el sector?',
+    'Para responder qué costo o dificultad implica cambiar de proveedor en el sector, mencione si los insumos son estándar o diferenciados, si hay contratos, adaptaciones técnicas o tiempos de prueba que encarecen el cambio dentro de proveedores.',
+    '“Los insumos son estándar y pueden cambiarse sin costo; solo el material importado requiere pedidos anticipados y pruebas de calidad.” En esta respuesta, el foco es: qué costo o dificultad implica cambiar de proveedor en el sector.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué costo o dificultad implica cambiar de proveedor en el sector y no sustituya este dato con información de otro apartado.'
 ),
-(47,
-    '¿Qué dependencia existe y qué alternativa tendrá?',
-    'Para responder qué dependencia existe y qué alternativa tendrá, mencione los elementos indispensables para proveedores y explique brevemente cada uno.',
-    '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué dependencia existe y qué alternativa tendrá.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué dependencia existe y qué alternativa tendrá y no sustituya este dato con información de otro apartado.'
+(48,
+    '¿Qué poder de negociación tienen los proveedores y cómo afecta al sector?',
+    'Para responder qué poder de negociación tienen los proveedores y cómo afecta al sector, califique el poder como bajo, medio o alto y explique los factores que lo determinan dentro de proveedores.',
+    '“El poder de negociación de los proveedores es bajo: hay varias alternativas y los insumos son estándar, por lo que no pueden imponer precios.” En esta respuesta, el foco es: qué poder de negociación tienen los proveedores y cómo afecta al sector.',
+    'La calificación debe sustentarse en los factores descritos y ser coherente con el análisis de las demás fuerzas. Control específico: verifique que la respuesta trate qué poder de negociación tienen los proveedores y cómo afecta al sector y no sustituya este dato con información de otro apartado.'
 ),
 
 -- productos sustitutos
-(48,
+(49,
     '¿Qué puede usar el cliente en lugar de la oferta?',
     'Para precisar qué puede usar el cliente en lugar de la oferta, identifique al actor concreto y explique su función, necesidad o responsabilidad dentro de productos sustitutos. Evite respuestas amplias como “todos” o “el público en general”.',
     '“El cliente principal será una persona adulta de mi ciudad que busca una solución confiable, compara opciones por Internet y valora la puntualidad.” En esta respuesta, el foco es: qué puede usar el cliente en lugar de la oferta.',
     'Solicite solo datos necesarios y evite estereotipos o características que no influyan en la compra. Proteja información personal. Control específico: verifique que la respuesta trate qué puede usar el cliente en lugar de la oferta y no sustituya este dato con información de otro apartado.'
 ),
-(48,
+(49,
     '¿Qué ventaja y costo de cambio tiene cada sustituto?',
     'Para responder sobre qué ventaja y costo de cambio tiene cada sustituto, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en productos sustitutos.',
     '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué ventaja y costo de cambio tiene cada sustituto.',
     'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué ventaja y costo de cambio tiene cada sustituto y no sustituya este dato con información de otro apartado.'
 ),
-(48,
+(49,
     '¿Cómo responderá la empresa?',
     'Para explicar cómo responderá la empresa, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para productos sustitutos.',
     '“Para productos sustitutos, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cómo responderá la empresa.',
@@ -722,43 +762,23 @@ questions (
 ),
 
 -- nuevos competidopres 
-(49,
+(50,
     '¿Qué tan fácil es ingresar al mercado?',
     'Para delimitar qué tan fácil es ingresar al mercado, use una descripción genérica o la ubicación confirmada por el usuario: “mi ciudad”, “mi región” o “la zona atendida”. Indique cobertura y restricciones.',
     '“Para nuevos competidores, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué tan fácil es ingresar al mercado.',
     'Verifique que la respuesta trate qué tan fácil es ingresar al mercado y no sustituya este dato con información de otro apartado.'
 ),
-(49,
+(50,
     '¿Qué barreras, capacidades o regulaciones influyen?',
     'Para responder qué barreras, capacidades o regulaciones influyen, mencione los elementos indispensables para nuevos competidores y explique brevemente cada uno.',
     '“El principal riesgo es depender de un solo proveedor; se mitigará homologando una segunda alternativa.” En esta respuesta, el foco es: qué barreras, capacidades o regulaciones influyen.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué barreras, capacidades o regulaciones influyen y no sustituya este dato con información de otro apartado.'
 ),
-(49,
+(50,
     '¿Qué defensa legítima puede construir la empresa?',
     'Para responder qué defensa legítima puede construir la empresa, mencione los elementos indispensables para nuevos competidores y explique brevemente cada uno.',
     '“Para nuevos competidores, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué defensa legítima puede construir la empresa.',
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué defensa legítima puede construir la empresa y no sustituya este dato con información de otro apartado.'
-),
-
--- Cinco fuerzas de porter 
-(50,
-    '¿Qué factores determinan cada fuerza competitiva?',
-    'Para responder qué factores determinan cada fuerza competitiva, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
-    '“Las alternativas ofrecen un servicio básico; queda espacio para una opción con seguimiento, personalización y garantía clara.” En esta respuesta, el foco es: qué factores determinan cada fuerza competitiva.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué factores determinan cada fuerza competitiva y no sustituya este dato con información de otro apartado.'
-),
-(50,
-    '¿Qué peso y calificación obtiene cada factor?',
-    'Para responder qué peso y calificación obtiene cada factor, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
-    '“Para cinco fuerzas de Porter, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué peso y calificación obtiene cada factor.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué peso y calificación obtiene cada factor y no sustituya este dato con información de otro apartado.'
-),
-(50,
-    '¿Qué muestra el resultado sobre el atractivo del sector?',
-    'Para responder qué muestra el resultado sobre el atractivo del sector, mencione los elementos indispensables para cinco fuerzas de Porter y explique brevemente cada uno.',
-    '“Se aplicará una encuesta breve al segmento definido y entrevistas para comprender razones y objeciones.” En esta respuesta, el foco es: qué muestra el resultado sobre el atractivo del sector.',
-    'No generalice resultados si la muestra o el método no lo permiten. Registre sesgos, alcance y limitaciones. Control específico: verifique que la respuesta trate qué muestra el resultado sobre el atractivo del sector y no sustituya este dato con información de otro apartado.'
 ),
 
 -- matriz MEFE
@@ -882,22 +902,22 @@ questions (
 
 -- proyeccion de demandas y muestras 
 (61,
-    '¿Qué demanda base, productos y precios proyectará?',
-    'Para responder sobre qué demanda base, productos y precios proyectará, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en proyección de demanda y ventas.',
-    '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: qué demanda base, productos y precios proyectará.',
-    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué demanda base, productos y precios proyectará y no sustituya este dato con información de otro apartado.'
+    '¿Qué demanda base en unidades se estima para el mercado objetivo y de dónde proviene el dato?',
+    'Para responder sobre qué demanda base en unidades se estima para el mercado objetivo, registre una cifra, unidad y periodo. Indique si el valor es real, calculado o estimado, y anote la fuente o supuesto utilizado en proyección de demanda. No incluya precios ni ingresos; esos se calcularán en el plan financiero.',
+    '“La demanda objetivo se estima en 1 200 unidades anuales, a partir de la encuesta aplicada y del tamaño de mercado calculado.” En esta respuesta, el foco es: qué demanda base en unidades se estima para el mercado objetivo y de dónde proviene el dato.',
+    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué demanda base en unidades se estima para el mercado objetivo y no sustituya este dato con información de otro apartado.'
 ),
 (61,
-    '¿Qué crecimiento, estacionalidad y mezcla sustentan la proyección?',
-    'Para responder qué crecimiento, estacionalidad y mezcla sustentan la proyección, mencione los elementos indispensables para proyección de demanda y ventas y explique brevemente cada uno.',
-    '“Para proyección de demanda y ventas, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué crecimiento, estacionalidad y mezcla sustentan la proyección.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué crecimiento, estacionalidad y mezcla sustentan la proyección y no sustituya este dato con información de otro apartado.'
+    '¿Qué crecimiento y estacionalidad tendrá la demanda en el horizonte del proyecto?',
+    'Para responder qué crecimiento y estacionalidad tendrá la demanda en el horizonte del proyecto, indique la tasa de crecimiento esperada, los meses de mayor y menor demanda y el sustento de cada supuesto dentro de proyección de demanda.',
+    '“Se proyecta un crecimiento de 8 % anual según la tendencia del sector; la demanda aumenta en diciembre y baja en febrero.” En esta respuesta, el foco es: qué crecimiento y estacionalidad tendrá la demanda en el horizonte del proyecto.',
+    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué crecimiento y estacionalidad tendrá la demanda en el horizonte del proyecto y no sustituya este dato con información de otro apartado.'
 ),
 (61,
-    '¿Cómo cambian los resultados en escenarios?',
-    'Para explicar cómo cambian los resultados en escenarios, describa la secuencia en orden: quién actúa, qué recibe, qué hace y qué resultado entrega. Incluya las excepciones relevantes para proyección de demanda y ventas.',
-    '“Para proyección de demanda y ventas, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: cómo cambian los resultados en escenarios.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cómo cambian los resultados en escenarios y no sustituya este dato con información de otro apartado.'
+    '¿Qué participación de la demanda objetivo espera captar y con qué sustento?',
+    'Para responder qué participación de la demanda objetivo espera captar, indique el porcentaje o las unidades que atenderá el negocio y justifíquelo con la capacidad, la competencia y la intención de compra observada en proyección de demanda.',
+    '“Se espera captar el 10 % de la demanda objetivo el primer año, limitado por la capacidad instalada y la presencia de tres competidores directos.” En esta respuesta, el foco es: qué participación de la demanda objetivo espera captar y con qué sustento.',
+    'La participación debe ser coherente con la capacidad operativa y el análisis competitivo. Control específico: verifique que la respuesta trate qué participación de la demanda objetivo espera captar y con qué sustento y no sustituya este dato con información de otro apartado.'
 ),
 
 -- CAPITULO 4
@@ -1118,10 +1138,10 @@ questions (
 
 -- Programa y pronostico de ventas 
 (74,
-    '¿Cuántas unidades espera vender por producto, canal y periodo?',
-    'Para responder sobre cuántas unidades espera vender por producto, canal y periodo, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en programa y pronóstico de ventas.',
-    '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: cuántas unidades espera vender por producto, canal y periodo.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cuántas unidades espera vender por producto, canal y periodo y no sustituya este dato con información de otro apartado.'
+    '¿Cómo distribuirá la meta de ventas entre canales y meses del primer año?',
+    'Para responder cómo distribuirá la meta de ventas entre canales y meses del primer año, indique qué porcentaje de las ventas corresponde a cada canal y cómo se reparte en el año según temporadas y acciones comerciales. No es necesario calcular ingresos; eso se realizará en el plan financiero.',
+    '“El 60 % de las ventas se realizará por canal digital y el 40 % en tienda; los meses de mayor venta serán noviembre y diciembre por campañas de fin de año.” En esta respuesta, el foco es: cómo distribuirá la meta de ventas entre canales y meses del primer año.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate cómo distribuirá la meta de ventas entre canales y meses del primer año y no sustituya este dato con información de otro apartado.'
 ),
 (74,
     '¿Qué clientes, frecuencia y conversión sustentan la meta?',
@@ -1355,10 +1375,10 @@ questions (
     'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué costos genera cada proceso y recurso y no sustituya este dato con información de otro apartado.'
 ),
 (93,
-    '¿Cómo se calcula el costo por unidad o servicio?',
-    'Para responder sobre cómo se calcula el costo por unidad o servicio, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en costos operativos y logísticos.',
-    '“Ofreceré productos personalizados por pedido, con opciones estándar y premium, mediante atención presencial y digital.” En esta respuesta, el foco es: cómo se calcula el costo por unidad o servicio.',
-    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate cómo se calcula el costo por unidad o servicio y no sustituya este dato con información de otro apartado.'
+    '¿Qué cantidades de insumos, horas y servicios consume cada proceso por periodo?',
+    'Para responder qué cantidades de insumos, horas y servicios consume cada proceso por periodo, registre cantidades físicas, unidad y periodo para cada proceso operativo y logístico. La valorización en soles se realizará en el plan financiero.',
+    '“Cada pedido consume 2 metros de material y 1,5 horas de trabajo; el reparto requiere 40 entregas mensuales.” En esta respuesta, el foco es: qué cantidades de insumos, horas y servicios consume cada proceso por periodo.',
+    'No use cifras sin unidad, periodo y origen. Control específico: verifique que la respuesta trate qué cantidades de insumos, horas y servicios consume cada proceso por periodo y no sustituya este dato con información de otro apartado.'
 ),
 (93,
     '¿Qué mermas, mantenimiento y distribución deben incluirse?',
@@ -1678,10 +1698,10 @@ questions (
 ),
 -- Estructura de costos
 (113,
-    '¿Qué costos son fijos, variables, directos e indirectos?',
-    'Para responder sobre qué costos son fijos, variables, directos e indirectos, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en estructura de costos.',
-    '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué costos son fijos, variables, directos e indirectos.',
-    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué costos son fijos, variables, directos e indirectos y no sustituya este dato con información de otro apartado.'
+    '¿Qué costos directos e indirectos tiene el negocio y cuál es su monto mensual?',
+    'Para responder sobre qué costos directos e indirectos tiene el negocio y cuál es su monto mensual, registre cada costo con cifra, unidad y periodo, e indique si es real, cotizado o estimado.',
+    '“Costos directos: materiales S/ 1 800 y mano de obra S/ 2 000 al mes; costos indirectos: alquiler S/ 900 y servicios S/ 250 al mes.” En esta respuesta, el foco es: qué costos directos e indirectos tiene el negocio y cuál es su monto mensual.',
+    'No use cifras sin unidad, periodo y origen. La clasificación en fijos y variables se realizará en el siguiente apartado. Control específico: verifique que la respuesta trate qué costos directos e indirectos tiene el negocio y cuál es su monto mensual y no sustituya este dato con información de otro apartado.'
 ),
 (113,
     '¿Qué gastos comerciales, administrativos y financieros existen?',
@@ -1735,10 +1755,10 @@ questions (
 ),
 -- Presupuesto operativo
 (116,
-    '¿Qué ingresos y costos se proyectan por periodo?',
-    'Para responder sobre qué ingresos y costos se proyectan por periodo, registre una cifra, unidad y periodo. Indique si el valor es real, cotizado, calculado o estimado, y anote la fuente o supuesto utilizado en presupuesto operativo.',
-    '“El alquiler y la remuneración son costos fijos; los materiales y la entrega varían con cada pedido.” En esta respuesta, el foco es: qué ingresos y costos se proyectan por periodo.',
-    'No use cifras sin unidad, periodo y origen. Una estimación debe quedar identificada y no presentarse como dato comprobado. Control específico: verifique que la respuesta trate qué ingresos y costos se proyectan por periodo y no sustituya este dato con información de otro apartado.'
+    '¿Qué costos y gastos operativos se presupuestan por periodo, integrando operaciones, personal y marketing?',
+    'Para responder qué costos y gastos operativos se presupuestan por periodo, consolide en soles los costos de operación, las remuneraciones y los gastos de marketing y administración del proyecto. Indique periodo y fuente de cada partida.',
+    '“El presupuesto mensual integra costos operativos de S/ 3 800, planilla de S/ 2 500 y marketing de S/ 600, con un total de S/ 6 900.” En esta respuesta, el foco es: qué costos y gastos operativos se presupuestan por periodo, integrando operaciones, personal y marketing.',
+    'No use cifras sin unidad, periodo y origen. Las cifras deben ser coherentes con las registradas en otros apartados del proyecto. Control específico: verifique que la respuesta trate qué costos y gastos operativos se presupuestan por periodo y no sustituya este dato con información de otro apartado.'
 ),
 (116,
     '¿Qué gastos cambian por etapa?',
@@ -1747,10 +1767,10 @@ questions (
     'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué gastos cambian por etapa y no sustituya este dato con información de otro apartado.'
 ),
 (116,
-    '¿Qué calendario de pagos y cobros se aplicará?',
-    'Para responder qué calendario de pagos y cobros se aplicará, mencione los elementos indispensables para presupuesto operativo y explique brevemente cada uno.',
-    '“Para presupuesto operativo, se registrará información concreta del proyecto, se indicará su fuente y se validará antes de usarla en el documento final.” En esta respuesta, el foco es: qué calendario de pagos y cobros se aplicará.',
-    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué calendario de pagos y cobros se aplicará y no sustituya este dato con información de otro apartado.'
+    '¿Qué partidas tienen mayor peso en el presupuesto y cómo se controlarán?',
+    'Para responder qué partidas tienen mayor peso en el presupuesto y cómo se controlarán, identifique las partidas más significativas, su porcentaje sobre el total y el mecanismo de seguimiento que aplicará dentro de presupuesto operativo.',
+    '“Los insumos representan el 45 % del presupuesto; se controlarán con compras programadas y revisión mensual de mermas.” En esta respuesta, el foco es: qué partidas tienen mayor peso en el presupuesto y cómo se controlarán.',
+    'El ejemplo es solo orientativo. Debe adaptarse a la realidad del proyecto y no debe copiarse como respuesta. Control específico: verifique que la respuesta trate qué partidas tienen mayor peso en el presupuesto y cómo se controlarán y no sustituya este dato con información de otro apartado.'
 ),
 -- Proyeccion de ventas
 (117,

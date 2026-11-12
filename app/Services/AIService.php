@@ -3,11 +3,14 @@
 namespace App\Services;
 
 use App\Models\ThesisContext;
+use App\Services\Prompts\PlanPromptResolver;
 
 class AIService
 {
     public function __construct(
-        private OpenAIService $openAIService
+        private OpenAIService $openAIService,
+        private PromptService $promptService,
+        private PlanPromptResolver $planPromptResolver
     ) {
     }
 
@@ -249,6 +252,8 @@ PROMPT;
             $contenidoCapitulo .= "R: {$item['respuesta']}\n\n";
         }
 
+        $planPrompts = $this->planPromptResolver->forConversation($conversation);
+
        // 1. Plantilla base fija obligatoria
         $basePlanContext = [
             'resumen_general' => null,
@@ -269,15 +274,7 @@ PROMPT;
             ['conversation_id' => $conversationId],
             [
                 'user_plan_id' => $conversation->user_plan_id,
-                'assistant_context' => [
-                    'nombre_proyecto_empresa' => null,
-                    'alcance_geografico' => null,
-                    'capacidad_operativa' => null,
-                    'precio_o_tarifa' => null,
-                    'costos_o_inversion' => null,
-                    'demanda_o_volumen' => null,
-                    'impacto_o_meta_financiera' => null,
-                ],
+                'assistant_context' => $planPrompts->assistantContextDefaults(),
                 'plan_context' => $basePlanContext
             ]
         );
@@ -285,26 +282,13 @@ PROMPT;
         $planContext = array_merge($basePlanContext, $thesisContext->plan_context ?? []);
         $resumenGeneralAnterior = $planContext['resumen_general'] ?? null;
 
-        $prompt = <<<PROMPT
-            Eres un director académico y metodológico de planes de negocio y proyectos de tesis.
-            Se ha completado el capítulo {$numeroCapitulo}: "{$chapterTitle}".
-
-            RESPUESTAS COMPLETADAS EN ESTE CAPÍTULO:
-            {$contenidoCapitulo}
-
-            RESUMEN GENERAL ACUMULADO PREVIO (Capítulos anteriores):
-            {$resumenGeneralAnterior}
-
-            Tu objetivo:
-            1. "resumen_capitulo": Redacta un resumen breve, preciso y sustancial de lo respondido en este capítulo (máximo 120-180 palabras), destacando datos clave, decisiones y cifras.
-            2. "nuevo_resumen_general": Si no había resumen general previo, usa el resumen de este capítulo. Si ya existía uno previo, intégralos en un solo texto fluido y unificado (máximo 120-1200 palabras) que sintetice toda la columna vertebral del proyecto hasta el momento.
-
-            RESPONDE ÚNICAMENTE CON ESTE FORMATO JSON:
-            {
-                "resumen_capitulo": "Texto del resumen del capítulo actual...",
-                "nuevo_resumen_general": "Texto consolidado de todos los capítulos hasta el actual..."
-            }
-            PROMPT;
+        $prompt = $this->promptService->promptConsolidateChapter(
+            $planPrompts,
+            $numeroCapitulo,
+            $chapterTitle,
+            $contenidoCapitulo,
+            $resumenGeneralAnterior
+        );
 
         try {
             $resultado = $this->openAIService->json($prompt);

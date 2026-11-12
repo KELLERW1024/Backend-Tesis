@@ -530,19 +530,22 @@ CREATE TABLE coupon_redemptions (
 -- user_token_quota
 -- ============================================
 
+-- Tokens de IA consumidos: una fila por usuario, suscripción y plan
 CREATE TABLE user_token_quota (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
-    subscription_id BIGINT NOT NULL,      
-    tokens_used BIGINT NOT NULL DEFAULT 0, 
-    tokens_limit BIGINT NOT NULL DEFAULT 10000, 
+    subscription_id BIGINT NOT NULL,
+    plan_id BIGINT NULL,
+    tokens_used BIGINT NOT NULL DEFAULT 0,
+    tokens_limit BIGINT NOT NULL DEFAULT 10000,
     period_start DATETIME,
     period_end DATETIME,
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (subscription_id) REFERENCES user_subscriptions(id) ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL,
 
-    UNIQUE (user_id, subscription_id, period_start), 
+    UNIQUE (user_id, subscription_id, plan_id),
     INDEX (user_id),
     INDEX (subscription_id),
     INDEX (period_start),
@@ -677,8 +680,16 @@ ALTER TABLE thesis_context
 ADD COLUMN assistant_context JSON NULL,
 ADD COLUMN plan_context JSON NULL;
 
+CREATE TABLE annexes (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    conversation_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    source VARCHAR(255) NULL,
+    file_path VARCHAR(500) NOT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-
-
-
-
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+    INDEX (conversation_id)
+) ENGINE=InnoDB;

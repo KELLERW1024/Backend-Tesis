@@ -14,6 +14,7 @@ class Question extends Model
         'question_detail',
         'question_example',
         'validation_detail',
+        'order_index',
     ];
     public function section()
     {

@@ -15,6 +15,9 @@ use Carbon\Carbon;
 
 class AuthController extends Controller
 {
+    // Duración de la sesión al extenderla desde el aviso (el login usa JWT_TTL del .env)
+    private const REFRESH_TTL_MINUTES = 120;
+
     public function login (){
         $credentials = request(['email', 'password']);
 
@@ -24,6 +27,17 @@ class AuthController extends Controller
  
         return $this->respondWithToken($token);
     }
+
+    // Extiende la sesión cuando el usuario lo pide desde el aviso de "sesión por expirar".
+    // Solo se llega aquí con un token vigente (middleware auth:api); el nuevo dura 2 horas.
+    public function refresh()
+    {
+        $token = auth('api')->setTTL(self::REFRESH_TTL_MINUTES)->refresh();
+        auth('api')->setToken($token);
+
+        return $this->respondWithToken($token);
+    }
+
     protected function respondWithToken($token)
     {
         $user = auth('api')->user();

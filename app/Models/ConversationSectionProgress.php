@@ -8,7 +8,7 @@ class ConversationSectionProgress extends Model
 {
      protected $table = 'conversation_section_progress';
 
-    public $timestamps = false; // porque solo tienes updated_at
+    public $timestamps = false;
 
     protected $fillable = [
         'user_id',

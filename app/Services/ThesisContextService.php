@@ -4,14 +4,14 @@ namespace App\Services;
 
 use App\Models\ThesisContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
 use App\Models\Question;
-
+use App\Services\Prompts\PlanPromptResolver;
 
 class ThesisContextService
 {
 
-    public function __construct( private OpenAIService $openAIService ,   private PromptService $promptService   ) {
+    public function __construct( private OpenAIService $openAIService ,   private PromptService $promptService ,
+                                 private PlanPromptResolver $planPromptResolver   ) {
 
     }
     // ============ INICIO GUARDAR ACTUALIZAR CONTEXTO 
@@ -48,6 +48,7 @@ class ThesisContextService
         }
 
         $prompt = $this->promptService->promptUpdateThesisContext(
+            $this->planPromptResolver->forConversation($conversationId),
             $context,
             $question,
             $answer
@@ -90,7 +91,6 @@ class ThesisContextService
         }
     }
 
-
     private function filterAllowedFields(array $updates): array
     {
         $allowed = [
@@ -117,7 +117,6 @@ class ThesisContextService
 
         return $filtered;
     }
-
 
     private function parseJsonResponse(string $response): array
     {
@@ -159,12 +158,9 @@ class ThesisContextService
         )->first();
     }
 
-    /**
-     * Construir el contexto que será enviado a la IA
-     * para validar una nueva respuesta.
-     *
-     * No enviamos toda la conversación.
-     */
+    
+    // Construir el contexto que será enviado a la IA
+     
     public function buildValidationContext(
         int $conversationId
     ): array {
@@ -288,81 +284,13 @@ public function validateResponseAgainstContext(
     }
 
     /*
-     * Construir el prompt para la IA.
+     * Construir el prompt para la IA según el plan de la conversación.
      */
-    $prompt = <<<PROMPT
-
-Eres un sistema de validación de coherencia para una tesis.
-
-Tu objetivo es determinar si una nueva respuesta del usuario
-presenta una INCONGRUENCIA IMPORTANTE con el contexto actual
-de su proyecto de negocio.
-
-CONTEXTO ACTUAL DE LA TESIS:
-
-{$contextText}
-
-NUEVA RESPUESTA DEL USUARIO:
-
-{$response}
-
-Analiza principalmente la relación entre:
-
-- Negocio
-- Sector
-- Producto o servicio
-- Cliente objetivo
-- Problema principal
-- Propuesta de valor
-
-IMPORTANTE:
-
-No consideres como incongruencia:
-
-- información adicional compatible con el negocio;
-- detalles nuevos que complementan el contexto;
-- cambios menores;
-- explicaciones más específicas;
-- nuevas estrategias o actividades compatibles con el negocio.
-
-Considera una incongruencia cuando la nueva respuesta
-cambie de manera clara y significativa elementos centrales
-del negocio previamente establecido.
-
-Por ejemplo:
-
-Si el contexto indica:
-
-"Negocio: Cafetería"
-"Producto: Café y postres"
-"Cliente: Estudiantes"
-
-y la nueva respuesta indica:
-
-"La empresa venderá maquinaria industrial para constructoras."
-
-Esto debe considerarse una incongruencia importante.
-
-En cambio, si la nueva respuesta indica:
-
-"Implementaremos publicidad en Instagram para atraer estudiantes."
-
-Esto es compatible con el contexto y NO debe considerarse
-una incongruencia.
-
-Devuelve únicamente un JSON válido con esta estructura:
-
-{
-    "is_inconsistent": true
-}
-
-Si no existe una contradicción importante:
-
-{
-    "is_inconsistent": false
-}
-
-PROMPT;
+    $prompt = $this->promptService->promptCoherenceContext(
+        $this->planPromptResolver->forConversation($conversationId),
+        $contextText,
+        $response
+    );
 
     /*
      * Consultar a OpenAI.
@@ -377,7 +305,4 @@ PROMPT;
         'is_inconsistent' => (bool) ($result['is_inconsistent'] ?? false)
     ];
 }
-
-
-
 }

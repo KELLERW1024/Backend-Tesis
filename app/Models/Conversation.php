@@ -25,11 +25,6 @@ class Conversation extends Model
         return $this->belongsTo(UserPlan::class, 'user_plan_id');
     }
 
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
-
     public function answers()
     {
         return $this->hasMany(UserAnswers::class);
@@ -44,11 +39,6 @@ class Conversation extends Model
     {
         return $this->belongsTo(UserSubscription::class, 'subscription_id');
     }
-
-    // public function plan()
-    // {
-    //     return $this->belongsTo(Plan::class);
-    // }
 
         public function user()
     {

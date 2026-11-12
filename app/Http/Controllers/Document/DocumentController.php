@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Models\UserAnswers;
 use App\Models\PlanNode;
+use App\Models\Annex;
+use App\Services\ExcelService;
 use App\Models\UserSubscription;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\PhpWord;
@@ -437,10 +439,14 @@ class DocumentController extends Controller
             |--------------------------------------------------------------------------
             */
 
+            // Solo el dueño de la conversación puede descargar su plan
             $conversation = Conversation::with([
                 'userPlan.plan',
             ])
             ->where('id', $idConversation)
+            ->whereHas('userPlan', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->firstOrFail();
 
             /*
@@ -677,6 +683,10 @@ Log::info('NODOS NIVEL 1', [
                 );
             }
 
+   
+
+            $this->addAnexosToDocument($section, $conversation->id);
+
             /*
             |--------------------------------------------------------------------------
             | GUARDAR
@@ -794,6 +804,107 @@ Log::info('NODOS NIVEL 1', [
 
         return $build(0);
     }
+    // Tabla con encabezado gris y una fila por registro ($tableData: columns y rows)
+    private function addDataTable($section, array $tableData): void
+    {
+        $numColumns = count($tableData['columns']);
+
+        $table = $section->addTable([
+            'borderSize' => 6,
+            'borderColor' => '000000',
+            'cellMargin' => 80,
+        ]);
+
+        // Ancho de columnas
+        $pageWidth = 9000;
+        $cellWidth = intval($pageWidth / $numColumns);
+
+        // Encabezado
+        $table->addRow();
+
+        foreach ($tableData['columns'] as $column) {
+            $table->addCell($cellWidth, [
+                    'bgColor' => 'D9D9D9',
+                ])->addText(
+                    $this->cleanText((string) $column),
+                    [
+                        'bold' => true,
+                        'size' => 11,
+                    ]
+                );
+        }
+
+        // Filas, respetando el número de columnas
+        foreach ($tableData['rows'] as $row) {
+            $table->addRow();
+
+            for ($i = 0; $i < $numColumns; $i++) {
+                $cell = $row[$i] ?? '';
+
+                $table->addCell($cellWidth)
+                    ->addText($this->cleanText((string) $cell));
+            }
+        }
+    }
+
+    private function addAnexosToDocument($section, int $conversationId): void
+    {
+        $anexos = Annex::where('conversation_id', $conversationId)->orderBy('sort_order')->orderBy('id')->get();
+
+        if ($anexos->isEmpty()) {
+            return;
+        }
+
+        $section->addPageBreak();
+        $section->addTitle('Anexos', 1);
+
+        $numero = 1;
+
+        foreach ($anexos as $anexo) {
+            $fullPath = storage_path('app/public/' . $anexo->file_path);
+
+            if (!file_exists($fullPath)) {
+                continue;
+            }
+
+            $section->addTextBreak();
+
+            $section->addText(
+                'Anexo ' . $numero . '. ' . $this->cleanText($anexo->title),
+                ['bold' => true],
+                ['keepNext' => true, 'keepLines' => true]
+            );
+
+            if ($anexo->type === 'excel') {
+                $tableData = app(ExcelService::class)->extractTable($fullPath);
+
+                if (empty($tableData['columns']) || !isset($tableData['rows'])) {
+                    continue;
+                }
+
+                $this->addDataTable($section, $tableData);
+            } else {
+                if (!@getimagesize($fullPath)) {
+                    continue;
+                }
+
+                $section->addImage($fullPath, [
+                    'width' => 350,
+                    'alignment' => Jc::CENTER,
+                    'wrappingStyle' => 'inline',
+                ]);
+            }
+
+            $section->addText(
+                'Fuente: ' . $this->cleanText($anexo->source ?: 'Elaboración propia'),
+                ['italic' => true, 'size' => 10],
+                ['alignment' => Jc::START]
+            );
+
+            $numero++;
+        }
+    }
+
    private function addNodeToDocument(
         $section,
         $node,
@@ -1120,73 +1231,7 @@ Log::info('NODOS NIVEL 1', [
                 |--------------------------------------------------------------------------
                 */
 
-                $table = $section->addTable([
-                    'borderSize' => 6,
-                    'borderColor' => '000000',
-                    'cellMargin' => 80,
-                ]);
-
-                /*
-                |--------------------------------------------------------------------------
-                | ANCHO DE COLUMNAS
-                |--------------------------------------------------------------------------
-                */
-
-                $pageWidth = 9000;
-
-                $cellWidth = intval(
-                    $pageWidth / $numColumns
-                );
-
-                /*
-                |--------------------------------------------------------------------------
-                | ENCABEZADO
-                |--------------------------------------------------------------------------
-                */
-
-                $table->addRow();
-
-                foreach ($tableData['columns'] as $column) {
-
-                    $table->addCell($cellWidth, [
-                            'bgColor' => 'D9D9D9',
-                        ])->addText(
-                            $this->cleanText(
-                                (string) $column
-                            ),
-                            [
-                                'bold' => true,
-                                'size' => 11,
-                            ]
-                        );
-                }
-
-                /*
-                |--------------------------------------------------------------------------
-                | FILAS
-                |--------------------------------------------------------------------------
-                */
-
-                foreach ($tableData['rows'] as $row) {
-
-                    $table->addRow();
-
-                    /*
-                    | Nos aseguramos de respetar el número de columnas
-                    */
-
-                    for ($i = 0; $i < $numColumns; $i++) {
-
-                        $cell = $row[$i] ?? '';
-
-                        $table->addCell($cellWidth)
-                            ->addText(
-                                $this->cleanText(
-                                    (string) $cell
-                                )
-                            );
-                    }
-                }
+                $this->addDataTable($section, $tableData);
 
                 /*
                 |--------------------------------------------------------------------------

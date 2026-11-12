@@ -25,7 +25,6 @@ class AnswerFile extends Model
         'metadata' => 'array',
     ];
 
-    // 🔥 IMPORTANTE si tu tabla tiene timestamps
     public $timestamps = true;
 
     public function answer()

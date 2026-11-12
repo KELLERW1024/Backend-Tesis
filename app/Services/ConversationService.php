@@ -13,7 +13,9 @@ use App\Models\Tabla;
 use App\Models\PlanNode;
 use App\Models\TablaColumna; 
 use App\Models\TablaFila; 
-use App\Models\TablaCelda; 
+use App\Models\TablaCelda;
+use App\Models\ThesisContext;
+use App\Models\Annex;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -21,11 +23,22 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ConversationService
 {
+    // Etiquetas del mensaje del tesista en la bitácora (conversation_messages).
+    public const LABEL_RESPUESTA = 'RESPUESTA DEL TESISTA:';
+    public const LABEL_IMAGEN = 'EVIDENCIA VISUAL:';
+    public const LABEL_DOCUMENTO = 'DOCUMENTACIÓN:';
+
+    // copias de "Volver a la pregunta anterior", por pregunta
+    public const RESTORE_KEY = 'retroceso';
+    // pregunta en la que Impulsa extrajo cada dato de assistant_context
+    public const ORIGIN_KEY = 'assistant_context_origen';
+
     public $excelService;
 
     protected AIService $aiService;
 
-    public function __construct(ExcelService $excelService, AIService   $aiService)
+    public function __construct(ExcelService $excelService, AIService   $aiService,
+                                private StructureService $structureService)
     {
         $this->excelService = $excelService;
         $this->aiService = $aiService;
@@ -98,97 +111,8 @@ class ConversationService
                     ]);
                 }
             }
-            // 3. RECALCULAR SECUENCIALMENTE
-            $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'];
-
-            $allRootNodes = PlanNode::where('user_plan_id', $userPlanId)
-                ->where('plan_id', $nuevoPlanId)
-                ->whereNull('parent_id')
-                ->get();
-
-            // Separar y ordenar:
-            $preliminares = $allRootNodes->filter(function($n) {
-                $t = mb_strtolower($n->titulo);
-                return str_contains($t, 'resumen ejecutivo') || str_contains($t, 'introducción');
-            })->sortBy('id');
-
-            $finales = $allRootNodes->filter(function($n) {
-                $t = mb_strtolower($n->titulo);
-                return str_contains($t, 'conclusiones') || str_contains($t, 'recomendaciones');
-            })->sortBy('id');
-
-            $capitulosCentrales = $allRootNodes->reject(function($n) use ($preliminares, $finales) {
-                return $preliminares->contains('id', $n->id) || $finales->contains('id', $n->id);
-            })->sortBy('id');
-
-            // Unir en el orden correcto
-            $rootNodes = $preliminares->concat($capitulosCentrales)->concat($finales);
-
-            $globalOrden = 1;
-            $capIndex = 1;
-
-            foreach ($rootNodes as $root) {
-                $tituloLower = mb_strtolower($root->titulo);
-                
-                // Detectar si es un apartado especial
-                $esEspecial = str_contains($tituloLower, 'resumen ejecutivo') || 
-                              str_contains($tituloLower, 'introducción') || 
-                              str_contains($tituloLower, 'conclusiones') || 
-                              str_contains($tituloLower, 'recomendaciones');
-
-                if ($esEspecial) {
-                    // Limpiar prefijos previos y dejar título limpio sin romanos
-                    $tituloLimpio = preg_replace('/^(Capítulo\s+[I|V|X|L|C|D|M|\d]+\.?\s*|-*\s*)/i', '', $root->titulo);
-                    $root->update([
-                        'titulo' => trim($tituloLimpio),
-                        'orden'  => $globalOrden,
-                        'codigo' => null
-                    ]);
-                    $globalOrden++;
-                } else {
-                    $numeroRomano = $romanos[$capIndex] ?? $capIndex;
-
-                    // Renumerar como Capítulo X
-                    $tituloLimpio = preg_replace('/^Capítulo\s+[I|V|X|L|C|D|M|\d]+\.?\s*/i', '', $root->titulo);
-                    $root->update([
-                        'titulo' => "Capítulo {$numeroRomano}. " . ltrim($tituloLimpio, '. '),
-                        'orden'  => $globalOrden,
-                        'codigo' => (string)$capIndex
-                    ]);
-
-                    // Renumerar subnodos de Nivel
-                    $childrenL2 = PlanNode::where('parent_id', $root->id)
-                        ->orderBy('id', 'asc')
-                        ->get();
-
-                    $l2Index = 1;
-                    foreach ($childrenL2 as $childL2) {
-                        $childL2->update([
-                            'orden' => $l2Index,
-                            'codigo' => "{$capIndex}.{$l2Index}"
-                        ]);
-
-                        // Renumerar subnodos de Nivel 3
-                        $childrenL3 = PlanNode::where('parent_id', $childL2->id)
-                            ->orderBy('id', 'asc')
-                            ->get();
-
-                        $l3Index = 1;
-                        foreach ($childrenL3 as $childL3) {
-                            $childL3->update([
-                                'orden' => $l3Index,
-                                'codigo' => "{$capIndex}.{$l2Index}.{$l3Index}"
-                            ]);
-                            $l3Index++;
-                        }
-
-                        $l2Index++;
-                    }
-
-                    $capIndex++;
-                    $globalOrden++;
-                }
-            }
+            // 3. RECALCULAR SECUENCIALMENTE CÓDIGOS, TÍTULOS Y NIVELES (todos los niveles)
+            $this->structureService->recalculateStructure($nuevoPlanId, $userPlanId);
 
             // 4. Clonar preguntas asociadas de forma masiva
             $newQuestions = $questions->map(function ($question) use ($nodeIdMap) {
@@ -362,6 +286,8 @@ class ConversationService
             ]
         );
 
+        $this->clearRestoredAnswer($conversationId, $questionId);
+
         // Dispara la consolidación si esta respuesta automática completa el capítulo
         $this->checkAndConsolidateChapter($conversationId, $questionId);
     }
@@ -372,6 +298,17 @@ class ConversationService
         array $metadata = [],
         array $references = []
     ) {
+
+        // Del Excel solo se usa la primera hoja: con varias, la tabla podría no ser la esperada
+        foreach ($files as $file) {
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            if (in_array($extension, ['xls', 'xlsx']) && ($sheets = $this->excelService->sheetsCount($file->getRealPath())) > 1) {
+                throw new \DomainException(
+                    'El archivo tiene más de una hoja. Deja solo la que contiene tu información y vuelve a intentarlo.'
+                );
+            }
+        }
 
         DB::beginTransaction();
 
@@ -398,7 +335,10 @@ class ConversationService
                     'answer_text' => $reply,
                 ]
             );
-           
+
+            // Si se había vuelto a esta pregunta, la copia de lo recuperado ya no hace falta
+            $this->clearRestoredAnswer($conversationId, $questionId);
+
             /**
              * ============================================
              * GUARDAR ARCHIVOS
@@ -686,15 +626,13 @@ class ConversationService
                 $chapterNode = $parent;
             }
 
-            // 2. Obtener los IDs de subnodos del capítulo
-            $descendantIds = PlanNode::where('parent_id', $chapterNode->id)->pluck('id')->toArray();
-            $allNodeIds = array_unique(array_merge([$chapterNode->id], $descendantIds));
+            // Solo se consolidan los capítulos de la Fase 1. Las secciones de la Fase 2
+            // (resumen ejecutivo, introducción, conclusiones, recomendaciones) no están en la
+            // numeración cap_1, cap_2...: antes se guardaban como cap_1 y lo sobrescribían.
+            if ((int) $chapterNode->execution_phase !== 1) return;
 
-            // Si existen sub-subnodos, los agregamos también
-            if (!empty($descendantIds)) {
-                $subDescendantIds = PlanNode::whereIn('parent_id', $descendantIds)->pluck('id')->toArray();
-                $allNodeIds = array_unique(array_merge($allNodeIds, $subDescendantIds));
-            }
+            // 2. Obtener los IDs de todos los subnodos del capítulo, en cualquier nivel
+            $allNodeIds = $this->subtreeNodeIds($chapterNode->user_plan_id, $chapterNode->id);
 
             // 3. Obtener todas las preguntas del capítulo
             $chapterQuestions = Question::whereIn('plan_node_id', $allNodeIds)->get();
@@ -748,108 +686,479 @@ class ConversationService
         }
     }
 
-    /*
-      Elimina en cascada las respuestas desde el capítulo seleccionado en adelante (Solo Fase 1)
-    */
-    public function deleteChaptersAnswersFrom(int $conversationId, int $startChapterNodeId): array
+    /**
+     * @throws \DomainException
+     */
+    public function deleteAnswersFrom(int $conversationId, ?int $startNodeId, ?int $startQuestionId = null): array
     {
-        return DB::transaction(function () use ($conversationId, $startChapterNodeId) {
+        return DB::transaction(function () use ($conversationId, $startNodeId, $startQuestionId) {
 
             $conversation = Conversation::findOrFail($conversationId);
             $userPlanId = $conversation->user_plan_id;
 
-            // 1. Obtener SOLO los capítulos raíz de Fase 1
-            $rootNodes = PlanNode::where('user_plan_id', $userPlanId)
-                ->whereNull('parent_id')
-                ->where('execution_phase', 1)
-                ->orderBy('orden', 'asc')
-                ->orderBy('id', 'asc')
-                ->get();
+            // Solo contiene preguntas de la Fase 1 de esta estructura: una pregunta ajena no se encuentra
+            $ordered = $this->orderedQuestions($userPlanId, 1);
 
-            $startNode = $rootNodes->firstWhere('id', $startChapterNodeId);
+            // 1. Desde el punto de inicio hasta el final de la Fase 1
+            $startIndex = $startQuestionId !== null
+                ? $this->questionStartIndex($ordered, $startQuestionId)
+                : $this->nodeStartIndex($ordered, $userPlanId, (int) $startNodeId);
 
-            if (!$startNode) {
-                throw new \Exception('El capítulo seleccionado no pertenece a la fase de desarrollo de capítulos.');
-            }
+            $phase1Items = array_slice($ordered, $startIndex);
+            $affectedRootIds = array_unique(array_column($phase1Items, 'root_id'));
 
-            // 2. Identificar todos los capítulos de Fase 1 desde el seleccionado en adelante
-            $startDeleting = false;
-            $targetRootIds = [];
+            // 2. Más todas las preguntas de la Fase 2
+            $questionIds = array_merge(
+                array_map(fn ($item) => $item['question']->id, $phase1Items),
+                array_map(fn ($item) => $item['question']->id, $this->orderedQuestions($userPlanId, 2))
+            );
 
-            foreach ($rootNodes as $root) {
-                if ($root->id == $startNode->id) {
-                    $startDeleting = true;
-                }
-                if ($startDeleting) {
-                    $targetRootIds[] = $root->id;
-                }
-            }
+            $deletedAnswers = UserAnswers::where('conversation_id', $conversationId)
+                ->whereIn('question_id', $questionIds)
+                ->count();
 
-            // 3. Obtener (Nivel 2 y Nivel 3) de todos los capítulos afectados
-            $level2Ids = PlanNode::whereIn('parent_id', $targetRootIds)->pluck('id')->toArray();
-            $level3Ids = !empty($level2Ids)
-                ? PlanNode::whereIn('parent_id', $level2Ids)->pluck('id')->toArray()
-                : [];
+            // 3. Eliminar las respuestas de esas preguntas y todo lo asociado
+            $this->deleteAnswersOf($conversationId, $questionIds);
 
-            $allNodeIds = array_unique(array_merge($targetRootIds, $level2Ids, $level3Ids));
-            // 4. Obtener todas las preguntas de esos nodos
-            $questionIds = Question::whereIn('plan_node_id', $allNodeIds)->pluck('id')->toArray();
+            // El plan deja de estar completo: los anexos ya no corresponden al contenido
+            $this->deleteAnnexesOf($conversationId);
 
-            if (!empty($questionIds)) {
-                // 5. Obtener las respuestas registradas en esta conversación
-                $answers = UserAnswers::where('conversation_id', $conversationId)
-                    ->whereIn('question_id', $questionIds)
-                    ->get();
-
-                $answerIds = $answers->pluck('id')->toArray();
-
-                if (!empty($answerIds)) {
-                    // Eliminar carpetas de archivos físicos en storage
-                    foreach ($answerIds as $ansId) {
-                        Storage::disk('public')->deleteDirectory("answers/{$ansId}");
-                    }
-
-                    // Eliminar registros dependientes de las respuestas
-                    DB::table('answer_files')->whereIn('answer_id', $answerIds)->delete();
-                    DB::table('answer_reference_rel')->whereIn('answer_id', $answerIds)->delete();
-                    Tabla::whereIn('answer_id', $answerIds)->delete();
-
-                    // Eliminar las respuestas del usuario
-                    UserAnswers::whereIn('id', $answerIds)->delete();
-                }
-
-                // Eliminar historial de mensajes IA de esas preguntas
-                DB::table('conversation_messages')
-                    ->where('conversation_id', $conversationId)
-                    ->whereIn('question_id', $questionIds)
-                    ->delete();
-            }
-
-            // 6. Limpiar ThesisContext (cap_X consolidados de los capítulos eliminados)
-            $thesisContext = \App\Models\ThesisContext::where('conversation_id', $conversationId)->first();
-
-            if ($thesisContext && is_array($thesisContext->plan_context)) {
-                $planContext = $thesisContext->plan_context;
-
-                foreach ($rootNodes->values() as $idx => $p1Node) {
-                    if (in_array($p1Node->id, $targetRootIds)) {
-                        $capNum = $idx + 1;
-                        $capKey = "cap_{$capNum}";
-                        if (array_key_exists($capKey, $planContext)) {
-                            $planContext[$capKey] = null;
-                        }
-                    }
-                }
-
-                $thesisContext->plan_context = $planContext;
-                $thesisContext->save();
-            }
+            // 4. Limpiar la memoria del proyecto (thesis_context)
+            $this->cleanContextAfterDelete($conversationId, $userPlanId, $affectedRootIds, $questionIds);
 
             return [
-                'deleted_chapters_count' => count($targetRootIds),
-                'deleted_questions_count' => count($questionIds)
+                'deleted_answers_count' => $deletedAnswers,
+                'affected_chapters_count' => count($affectedRootIds),
             ];
         });
     }
-    
+
+    // El plan está completo cuando no queda ninguna pregunta sin responder, ni de la Fase 1 ni de la Fase 2
+    public function isPlanCompleted(Conversation $conversation): bool
+    {
+        $answered = array_flip(
+            UserAnswers::where('conversation_id', $conversation->id)
+                ->whereNotNull('question_id')
+                ->pluck('question_id')
+                ->all()
+        );
+
+        foreach ([1, 2] as $phase) {
+            $ordered = $this->orderedQuestions($conversation->user_plan_id, $phase);
+
+            if ($this->firstUnansweredIndex($ordered, $answered) !== null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Elimina los anexos de la conversación con sus archivos
+    public function deleteAnnexesOf(int $conversationId): void
+    {
+        $annexes = Annex::where('conversation_id', $conversationId)->get(['id', 'file_path']);
+
+        Storage::disk('public')->delete($annexes->pluck('file_path')->all());
+        Annex::whereIn('id', $annexes->pluck('id'))->delete();
+    }
+
+    // Posición de esa pregunta en el orden de la Fase 1
+    private function questionStartIndex(array $ordered, int $questionId): int
+    {
+        foreach ($ordered as $index => $item) {
+            if ((int) $item['question']->id === $questionId) {
+                return $index;
+            }
+        }
+
+        throw new \DomainException('La pregunta seleccionada no pertenece a la fase de desarrollo de capítulos.');
+    }
+
+    // Posición de la primera pregunta del nodo (o de sus subnodos) en el orden de la Fase 1
+    private function nodeStartIndex(array $ordered, int $userPlanId, int $nodeId): int
+    {
+        $startNode = PlanNode::where('id', $nodeId)
+            ->where('user_plan_id', $userPlanId)
+            ->where('execution_phase', 1)
+            ->first();
+
+        if (!$startNode) {
+            throw new \DomainException('La sección seleccionada no pertenece a la fase de desarrollo de capítulos.');
+        }
+
+        $subtreeIds = array_flip($this->subtreeNodeIds($userPlanId, $startNode->id));
+
+        foreach ($ordered as $index => $item) {
+            if (isset($subtreeIds[$item['question']->plan_node_id])) {
+                return $index;
+            }
+        }
+
+        throw new \DomainException('La sección seleccionada no tiene preguntas.');
+    }
+
+    // Id del nodo y de todos sus descendientes, en cualquier nivel
+    private function subtreeNodeIds(int $userPlanId, int $nodeId): array
+    {
+        $childrenByParent = PlanNode::where('user_plan_id', $userPlanId)
+            ->get(['id', 'parent_id'])
+            ->groupBy('parent_id');
+
+        $ids = [];
+        $pending = [$nodeId];
+
+        while ($pending) {
+            $current = array_pop($pending);
+            $ids[] = $current;
+
+            foreach ($childrenByParent->get($current, collect()) as $child) {
+                $pending[] = $child->id;
+            }
+        }
+
+        return $ids;
+    }
+
+    private function cleanContextAfterDelete(int $conversationId, int $userPlanId, array $affectedRootIds, array $questionIds): void
+    {
+        $context = ThesisContext::where('conversation_id', $conversationId)->first();
+
+        if (!$context) {
+            return;
+        }
+
+        $planContext = $context->plan_context ?? [];
+
+        // Capítulos de la Fase 1 en el mismo orden que usa checkAndConsolidateChapter (cap_1, cap_2...)
+        $rootNodes = PlanNode::where('user_plan_id', $userPlanId)
+            ->whereNull('parent_id')
+            ->where('execution_phase', 1)
+            ->orderBy('orden', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $remainingSummaries = [];
+
+        foreach ($rootNodes->values() as $index => $root) {
+            $capKey = 'cap_' . ($index + 1);
+
+            if (in_array($root->id, $affectedRootIds)) {
+                $planContext[$capKey] = null;
+            } elseif (!empty($planContext[$capKey])) {
+                $remainingSummaries[] = "{$root->titulo}:\n{$planContext[$capKey]}";
+            }
+        }
+
+        $planContext['resumen_general'] = $remainingSummaries ? implode("\n\n", $remainingSummaries) : null;
+
+        // Datos de Impulsa extraídos en las preguntas borradas
+        $assistantData = $context->assistant_context ?? [];
+        $origins = $planContext[self::ORIGIN_KEY] ?? [];
+
+        foreach ($origins as $key => $originQuestionId) {
+            if (in_array((int) $originQuestionId, $questionIds)) {
+                unset($assistantData[$key], $origins[$key]);
+            }
+        }
+
+        $planContext[self::ORIGIN_KEY] = $origins;
+
+        // Copias de "Volver a la pregunta anterior" de las preguntas borradas
+        foreach ($questionIds as $questionId) {
+            unset($planContext[self::RESTORE_KEY][$questionId]);
+        }
+
+        $context->assistant_context = $assistantData;
+        $context->plan_context = $planContext;
+        $context->save();
+    }
+
+    // Elimina las respuestas de esas preguntas con sus archivos, tablas, referencias y mensajes de la bitácora
+    private function deleteAnswersOf(int $conversationId, array $questionIds): void
+    {
+        if (empty($questionIds)) {
+            return;
+        }
+
+        $answerIds = UserAnswers::where('conversation_id', $conversationId)
+            ->whereIn('question_id', $questionIds)
+            ->pluck('id')
+            ->toArray();
+
+        if (!empty($answerIds)) {
+            // Eliminar carpetas de archivos físicos en storage
+            foreach ($answerIds as $ansId) {
+                Storage::disk('public')->deleteDirectory("answers/{$ansId}");
+            }
+
+            // Eliminar registros dependientes de las respuestas
+            DB::table('answer_files')->whereIn('answer_id', $answerIds)->delete();
+            DB::table('answer_reference_rel')->whereIn('answer_id', $answerIds)->delete();
+            Tabla::whereIn('answer_id', $answerIds)->delete();
+
+            // Eliminar las respuestas del usuario
+            UserAnswers::whereIn('id', $answerIds)->delete();
+        }
+
+        // Eliminar historial de mensajes IA de esas preguntas
+        DB::table('conversation_messages')
+            ->where('conversation_id', $conversationId)
+            ->whereIn('question_id', $questionIds)
+            ->delete();
+    }
+
+    /**
+     * @return array<int, array{question: Question, root_id: int}>
+     */
+    public function orderedQuestions(int $userPlanId, int $phase): array
+    {
+        $nodes = PlanNode::with(['questions' => fn ($query) => $query->orderBy('order_index')])
+            ->where('user_plan_id', $userPlanId)
+            ->where('execution_phase', $phase)
+            ->orderBy('orden')
+            ->orderBy('id')
+            ->get();
+
+        $nodesByParent = $nodes->groupBy('parent_id');
+        $ordered = [];
+
+        $walk = function ($parentId, ?int $rootId) use (&$walk, &$ordered, $nodesByParent) {
+            $children = $nodesByParent->get($parentId, collect())
+                ->sortBy([['orden', 'asc'], ['id', 'asc']]);
+
+            foreach ($children as $node) {
+                $chapterId = $rootId ?? $node->id;
+
+                foreach ($node->questions as $question) {
+                    $ordered[] = ['question' => $question, 'root_id' => $chapterId];
+                }
+
+                $walk($node->id, $chapterId);
+            }
+        };
+
+        $walk(null, null);
+
+        return $ordered;
+    }
+
+    /**
+     * Indica si se puede volver desde la pregunta actual
+     * @return array{allowed: bool, reason: ?string, previous: ?Question, current: ?Question}
+     */
+    public function goBackInfo(Conversation $conversation, ?int $questionId = null): array
+    {
+        $deny = fn (string $reason) => ['allowed' => false, 'reason' => $reason, 'previous' => null, 'current' => null];
+        $closedMessage = 'Estás en la primera pregunta de este capítulo. El capítulo anterior ya está cerrado.';
+
+        $answered = array_flip(
+            UserAnswers::where('conversation_id', $conversation->id)
+                ->whereNotNull('question_id')
+                ->pluck('question_id')
+                ->all()
+        );
+
+        // Misma regla que getConversationPlan: la Fase 2 empieza cuando la Fase 1 está completa
+        $phase = 1;
+        $ordered = $this->orderedQuestions($conversation->user_plan_id, 1);
+        $currentIndex = $this->firstUnansweredIndex($ordered, $answered);
+
+        if ($currentIndex === null) {
+            $phase = 2;
+            $ordered = $this->orderedQuestions($conversation->user_plan_id, 2);
+            $currentIndex = $this->firstUnansweredIndex($ordered, $answered);
+        }
+
+        if ($currentIndex === null) {
+            return $deny('El plan ya está completo.');
+        }
+
+        $current = $ordered[$currentIndex];
+
+        if ($questionId !== null && (int) $current['question']->id !== $questionId) {
+            return $deny('La pregunta que estás viendo ya no es la actual. Recarga la página.');
+        }
+
+        if ($currentIndex === 0) {
+            return $deny($phase === 1 ? 'Estás en la primera pregunta del plan.' : $closedMessage);
+        }
+
+        $previous = $ordered[$currentIndex - 1];
+
+        // Solo dentro del capítulo actual: un capítulo cerrado ya está en el resumen general
+        if ($previous['root_id'] !== $current['root_id']) {
+            return $deny($closedMessage);
+        }
+
+        return [
+            'allowed'  => true,
+            'reason'   => null,
+            'previous' => $previous['question'],
+            'current'  => $current['question'],
+        ];
+    }
+
+    /**
+     * @throws \DomainException
+     */
+    public function goBack(Conversation $conversation, int $questionId): array
+    {
+        return DB::transaction(function () use ($conversation, $questionId) {
+
+            $info = $this->goBackInfo($conversation, $questionId);
+
+            if (!$info['allowed']) {
+                throw new \DomainException($info['reason']);
+            }
+
+            $previous = $info['previous'];
+            $current = $info['current'];
+
+            $answer = UserAnswers::with(['files', 'tables'])
+                ->where('conversation_id', $conversation->id)
+                ->where('question_id', $previous->id)
+                ->first();
+
+            // Respuesta automática de la IA: no hay texto del tesista, se carga la respuesta guardada
+            $copy = [
+                'user_input' => $this->lastUserInput($conversation->id, $previous->id)
+                    ?? (string) ($answer?->answer_text ?? ''),
+                'table'      => $this->aiTableOf($answer),
+                'files'      => $this->attachedFileNames($answer),
+                'created_at' => now()->toDateTimeString(),
+            ];
+
+            $this->deleteAnswersOf($conversation->id, [$previous->id]);
+
+            $context = ThesisContext::firstOrCreate(
+                ['conversation_id' => $conversation->id],
+                ['user_plan_id' => $conversation->user_plan_id, 'confidence' => 0]
+            );
+
+            $planContext = $context->plan_context ?? [];
+            $assistantData = $context->assistant_context ?? [];
+            $origins = $planContext[self::ORIGIN_KEY] ?? [];
+
+            // Datos de Impulsa extraídos en la pregunta borrada o en la actual, que también se descarta
+            foreach ($origins as $key => $originQuestionId) {
+                if (in_array((int) $originQuestionId, [(int) $previous->id, (int) $current->id], true)) {
+                    unset($assistantData[$key], $origins[$key]);
+                }
+            }
+
+            $planContext[self::ORIGIN_KEY] = $origins;
+            // Solo la pregunta a la que se vuelve recupera su texto. Las copias anteriores se
+            // descartan: si se vuelve de la 4 a la 3, al responder la 3 la 4 aparece vacía.
+            $planContext[self::RESTORE_KEY] = [$previous->id => $copy];
+
+            $context->assistant_context = $assistantData;
+            $context->plan_context = $planContext;
+            $context->save();
+
+            return ['question_id' => $previous->id];
+        });
+    }
+
+    // Copia guardada al volver a esta pregunta, o null si no hay
+    public function restoredAnswer(int $conversationId, int $questionId): ?array
+    {
+        $planContext = ThesisContext::where('conversation_id', $conversationId)->first()?->plan_context;
+
+        return $planContext[self::RESTORE_KEY][$questionId] ?? null;
+    }
+
+    // La pregunta ya se volvió a responder: la copia no hace falta
+    private function clearRestoredAnswer(int $conversationId, int $questionId): void
+    {
+        $context = ThesisContext::where('conversation_id', $conversationId)->first();
+        $planContext = $context?->plan_context ?? [];
+
+        if (!isset($planContext[self::RESTORE_KEY][$questionId])) {
+            return;
+        }
+
+        unset($planContext[self::RESTORE_KEY][$questionId]);
+        $context->plan_context = $planContext;
+        $context->save();
+    }
+
+    private function firstUnansweredIndex(array $ordered, array $answered): ?int
+    {
+        foreach ($ordered as $index => $item) {
+            if (!isset($answered[$item['question']->id])) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    // Lo que escribió el tesista en su última validación de esa pregunta (null si no validó)
+    private function lastUserInput(int $conversationId, int $questionId): ?string
+    {
+        $message = DB::table('conversation_messages')
+            ->where('conversation_id', $conversationId)
+            ->where('question_id', $questionId)
+            ->where('role', 'user')
+            ->orderByDesc('id')
+            ->value('message_text');
+
+        if ($message === null) {
+            return null;
+        }
+
+        $message = trim($message);
+
+        if ($message === '[El tesista no proporcionó información]') {
+            return '';
+        }
+
+        $start = mb_strpos($message, self::LABEL_RESPUESTA);
+
+        if ($start === false) {
+            // Solo adjuntó archivos; o es un mensaje anterior a las etiquetas, que se carga completo
+            $onlyFiles = str_starts_with($message, self::LABEL_IMAGEN) || str_starts_with($message, self::LABEL_DOCUMENTO);
+            return $onlyFiles ? '' : $message;
+        }
+
+        $text = mb_substr($message, $start + mb_strlen(self::LABEL_RESPUESTA));
+
+        foreach ([self::LABEL_IMAGEN, self::LABEL_DOCUMENTO] as $label) {
+            $end = mb_strpos($text, "\n\n" . $label);
+            if ($end !== false) {
+                $text = mb_substr($text, 0, $end);
+            }
+        }
+
+        return trim($text);
+    }
+
+    // Tabla generada con "Generar cuadro"
+    private function aiTableOf(?UserAnswers $answer): ?array
+    {
+        foreach ($answer?->tables ?? [] as $tabla) {
+            $data = is_string($tabla->data) ? json_decode($tabla->data, true) : $tabla->data;
+
+            if (is_array($data) && isset($data['columns'], $data['rows'])) {
+                return [
+                    'title'   => $data['title'] ?? $tabla->nombre,
+                    'columns' => $data['columns'],
+                    'rows'    => $data['rows'],
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    // Nombres de los archivos guardados con la respuesta, para avisar que hay que volver a adjuntarlos
+    private function attachedFileNames(?UserAnswers $answer): array
+    {
+        return collect($answer?->files ?? [])
+            ->filter(fn ($file) => !empty($file->original_name))
+            ->map(fn ($file) => $file->original_name === 'imagen_ia.webp' ? 'Imagen generada por la IA' : $file->original_name)
+            ->values()
+            ->all();
+    }
 }

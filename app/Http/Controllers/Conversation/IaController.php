@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Conversation;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\PlanNode;
+use App\Models\Question;
 use App\Services\FileTextExtractorService;
 use App\Services\PromptService;
+use App\Services\Prompts\PlanPromptResolver;
 use App\Services\ThesisContextService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Services\ConversationService;
+use App\Services\AnswerValidationService;
 use App\Services\OpenAIService;
 use App\Services\ReplicateService;
 use App\Models\Section;
@@ -28,7 +31,9 @@ class IaController extends Controller
     protected PromptService $promptService,
     protected UploadService $uploadService,
     private ReplicateService $replicateService, 
-    protected ThesisContextService $thesisContextService, 
+    protected ThesisContextService $thesisContextService,
+    protected PlanPromptResolver $planPromptResolver,
+    protected AnswerValidationService $answerValidationService,
 
     ) {}
 
@@ -127,53 +132,36 @@ class IaController extends Controller
                 ], 404);
             }
 
-            $parentNode = PlanNode::where('user_plan_id', $conversation->user_plan_id)
-                ->whereNull('parent_id')
-                ->first();
-
-            $objective = $parentNode?->objective;
-            \Log::info(' OBJECTIVE : ' . $objective );
-            
-            $history = $this->conversationService->getHistoryLimit10($data['idConversation']);
-            \Log::info(' HISTORY : ' , $history );
-
-            // $historycapitulos = $this->conversationService->getHistorysentens($data['idConversation']);
-            // \Log::info(' HISTORYCAPITULOS : ' , $historycapitulos );
-
             // =====================================================================================
             // INICIO DONDE SE  VALIDA SI LA RESPUESTA CORRESPONDE O TIENE UNA DIRECTIVA VALIDA
+            // Las revisiones están en AnswerValidationService, que también valida la
+            // respuesta sugerida del modal antes de mostrarla.
             // ======================================================================================
 
-            $prompt = $this->promptService->buildValidationPrompt([ // ESTE METODO SOLO ARMA LAS RESPUESTA ACORDE A LA PREGUNTA
-                    ...$data,
-                    'file_content' => $documentContent,
-                    'image_content' => $imageContent,
-                    'objective' => $objective,
-                    'history' => $history,
-            ] ); 
+            $validation = $this->answerValidationService->validate($conversation, $data, $documentContent, $imageContent);
 
-            \Log::info('PROMPT IACONTROLLER', [
-                '$prompt => ' => $prompt ?? null 
+            $planPrompts = $validation['plan_prompts'];
+            $sectionNode = $validation['section_node'];
+            $parentNode = $validation['parent_node'];
+            $objective = $validation['objective'];
+            $history = $validation['history'];
+            $result = $validation['result'];
+
+            \Log::info('RESULT IACONTROLLER', [
+                '$result => ' => $result ?? null
             ]);
 
-            $result = $this->openAIService->json($prompt); // ESTE METODO HACE LA VALUIDACION  CON LA IA 
-             \Log::info('RESULT IACONTROLLER', [
-                '$result => ' => $result ?? null 
-            ]);
-            
-            $context = $this->thesisContextService->validateResponseAgainstContext( $data['idConversation'], $data['response']);
+            if (!$validation['valid']) {
 
-            if ( $result['is_valid'] == false ||  $context['is_inconsistent'] == true ) {
-                
                 $result['response'] = '';
                 $result['images'] = [];
 
                  \Log::info('RESPONSE VALIDACION ', [
                     '$result => ' => $result ?? null ,
-                    '$context => ' => $context ?? null
+                    'inconsistent' => $validation['inconsistent']
                 ]);
-                
-                if( $context['is_inconsistent'] == true ){
+
+                if ($validation['inconsistent']) {
                      $mensajeError = 'La respuesta no tiene congruencia con la información previamente registrada del proyecto.';
                      return response()->json([
                         'is_valid' => false,
@@ -192,10 +180,12 @@ class IaController extends Controller
             // FIN
             // ===========
 
-            $messages = $this->promptService->buildMessagesBitacoraResponseCurrent( [  ...$data,    'file_content' => $documentContent,
+            $messages = $this->promptService->buildMessagesBitacoraResponseCurrent( $planPrompts,
+                                                                                    [  ...$data,    'file_content' => $documentContent,
                                                                                                     'image_content' => $imageContent,
                                                                                                     'objective' => $objective,
                                                                                                     'parent_node' => $parentNode,
+                                                                                                    'section_node' => $sectionNode,
                                                                                                     'history' => $history ],
 
                                                                                                     $history,  
@@ -226,9 +216,17 @@ class IaController extends Controller
             $response = implode("\n\n", $studentInput);
             if($data['generate_table'] == true ){
 
-                $messageTable = $this->promptService->buildMessageTable(  $response  ); //vWFIFICAR QUE RESPOUESRTA PONER ACA  
-                
-                $tableResponse= $this->openAIService->chat( $messageTable );
+                // Con la pregunta, la sección y el objetivo, para que las columnas sigan lo que se pregunta
+                $messageTable = $this->promptService->buildMessageTable(
+                    $planPrompts,
+                    $response,
+                    $data['question'],
+                    $sectionNode,
+                    $objective
+                );
+
+                // Temperatura 0: convertir datos en tabla es una tarea mecánica; con los mismos datos debe salir la misma tabla
+                $tableResponse= $this->openAIService->chat( $messageTable, ['temperature' => 0] );
                 \Log::info('TABLE RESPONSE RAW', [
                     'tableResponse' => $tableResponse
                 ]);
@@ -239,7 +237,8 @@ class IaController extends Controller
                     'json_error' => json_last_error_msg()
                 ]);
 
-                if (json_last_error() !== JSON_ERROR_NONE) {
+                // JSON inválido, o la IA indicó que no hay datos para una tabla (sin columnas o sin filas)
+                if (json_last_error() !== JSON_ERROR_NONE || empty($replyTable['columns']) || empty($replyTable['rows'])) {
                     $replyTable = null;
                 }
 
@@ -282,6 +281,14 @@ class IaController extends Controller
                 'conversation_id' => $data['idConversation'] ?? null,
             ]);
 
+            // Sin conexión con el servicio externo (corte de internet o de DNS) tras los reintentos
+            if ($e instanceof \Illuminate\Http\Client\ConnectionException) {
+                return response()->json([
+                    'is_valid' => false,
+                    'message' => 'No se pudo conectar. Inténtalo de nuevo en unos segundos.',
+                ], 503);
+            }
+
             return response()->json([
                 'is_valid' => false,
                 'message' => 'Ocurrió un error al procesar la solicitud.',
@@ -292,18 +299,19 @@ class IaController extends Controller
 
     private function saveBitacoraConversation(array $data, string $documentContent ,string $imageContent, string $reply): void
     {
+        
         $userMessageParts = [];
 
         if (!empty($data['response'])) {
-            $userMessageParts[] = $data['response'];
+            $userMessageParts[] = ConversationService::LABEL_RESPUESTA . "\n" . $data['response'];
         }
 
         if (!empty($imageContent)) {
-            $userMessageParts[] = $imageContent;
+            $userMessageParts[] = ConversationService::LABEL_IMAGEN . "\n" . $imageContent;
         }
 
         if (!empty( $documentContent  )) {
-            $userMessageParts[] = $documentContent  ;
+            $userMessageParts[] = ConversationService::LABEL_DOCUMENTO . "\n" . $documentContent;
         }
 
         $userMessage = implode("\n\n", $userMessageParts);
@@ -330,21 +338,6 @@ class IaController extends Controller
         $this->thesisContextService->updateContextFromAnswer ( $data['idConversation'], $conversation->user_plan_id  , $data['idQuestion'],  $reply);
 
     }
-
-    // private function saveBitacoraConversation(array $data, string $reply): void
-    // {
-    //     $this->conversationService->saveMessage(
-    //         $data,
-    //         $data['response'],
-    //         'user'
-    //     );
-
-    //     $this->conversationService->saveMessage(
-    //         $data,
-    //         $reply,
-    //         'system'
-    //     );
-    // }
 
     public function getReplicatePrediction(string $id)
     {

@@ -11,8 +11,10 @@ use App\Models\Conversation;
 use App\Models\Question;
 use App\Models\ConversationSectionProgress;
 use App\Services\ConversationService;
+use App\Services\AnswerValidationService;
 use App\Services\PromptService;
 use App\Services\OpenAIService;
+use App\Services\Prompts\PlanPromptResolver;
 use Illuminate\Http\Request;
 use App\Http\Resources\SubscriptionResource;
 
@@ -20,8 +22,10 @@ class ConversationController extends Controller
 {
     private ConversationService $conversationService;
 
-    public function __construct(ConversationService $conversationService, 
-    protected PromptService $promptService, protected OpenAIService $openAIService )
+    public function __construct(ConversationService $conversationService,
+    protected PromptService $promptService, protected OpenAIService $openAIService,
+    protected PlanPromptResolver $planPromptResolver,
+    protected AnswerValidationService $answerValidationService )
     {
         $this->conversationService = $conversationService;
     }
@@ -106,14 +110,20 @@ class ConversationController extends Controller
             $nodesForAI = $plansNode->map(function ($node) {
                 return [
                     'id' => $node->id,
+                    'codigo' => $node->codigo,
                     'titulo' => $node->titulo,
                 ];
             })->values()->toArray();
 
             // 4. Llamar a la IA con el nuevo prompt basado en el diagnóstico inicial completo
             // ... Recolectar respuestas del diagnóstico y obtener nodos maestros
+            // SE REALIZARA UN FILTRO DE NODOS POR PLAN EN EL PROMPT
         
-        $promptFiltroNodes = $this->promptService->promptFiltroNodePorDiagnostico($diagnosticoArray, $nodesForAI); 
+        $promptFiltroNodes = $this->promptService->promptFiltroNodePorDiagnostico(
+            $this->planPromptResolver->forConversation($conversation),
+            $diagnosticoArray,
+            $nodesForAI
+        );
 
         $resultFiltro = $this->openAIService->json($promptFiltroNodes);
 
@@ -283,7 +293,7 @@ public function flattenNodeIds(array $nodes): array
         ]);
 
         // Construir el prompt
-        $prompt = $this->promptService->promptAssistantCoCreation([
+        $prompt = $this->promptService->promptAssistantCoCreation($this->planPromptResolver->forConversation($conversation), [
             'question' => $question->question_text,
             'detail' => $question->question_detail,
             'objective' => $planNode?->objective ?? $planNode?->titulo ?? '',
@@ -300,6 +310,7 @@ public function flattenNodeIds(array $nodes): array
             // =========================================================================
             if (!empty($aiResult['updated_specific_data']) && is_array($aiResult['updated_specific_data'])) {
                 $hasChanges = false;
+                $addedKeys = [];
                 foreach ($aiResult['updated_specific_data'] as $key => $val) {
                     $valorActual = trim((string)($assistantData[$key] ?? ''));
                     $nuevoValor = trim((string)$val);
@@ -307,12 +318,21 @@ public function flattenNodeIds(array $nodes): array
                     // Solo actualiza si el valor actual estaba vacío y el nuevo no
                     if ($valorActual === '' && $nuevoValor !== '') {
                         $assistantData[$key] = $nuevoValor;
+                        $addedKeys[] = $key;
                         $hasChanges = true;
                     }
                 }
 
                 if ($hasChanges && $thesisContext) {
+                    // Se anota de qué pregunta salió cada dato nuevo, para borrarlo
+                    // si el tesista vuelve a la pregunta anterior
+                    $planContext = $thesisContext->plan_context ?? [];
+                    foreach ($addedKeys as $key) {
+                        $planContext[ConversationService::ORIGIN_KEY][$key] = $question->id;
+                    }
+
                     $thesisContext->assistant_context = $assistantData;
+                    $thesisContext->plan_context = $planContext;
                     $thesisContext->save();
                 }
             }
@@ -387,6 +407,15 @@ public function flattenNodeIds(array $nodes): array
                 'data' => $result,
                 'errors' => null
             ], 200);
+
+        } catch (\DomainException $e) {
+            // Archivo no válido (por ejemplo, un Excel con varias hojas): el mensaje es para el usuario
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => null,
+                'errors' => null
+            ], 422);
 
         } catch (\Throwable $e) {
 
@@ -602,6 +631,8 @@ public function flattenNodeIds(array $nodes): array
 
         $planName = $conversation->userPlan->plan->name;
 
+        $planPrompts = $this->planPromptResolver->forConversation($conversation);
+
         // =========================================================
         // 3. OBTENER PREGUNTAS YA RESPONDIDAS
         // =========================================================
@@ -744,6 +775,25 @@ public function flattenNodeIds(array $nodes): array
             $node = $result['node'];
             $question = $result['question'];
 
+            // Si se puede usar "Volver a la pregunta anterior" desde esta pregunta
+            $goBack = $this->goBackStatus($conversation);
+
+            // El tesista volvió a esta pregunta: se devuelve lo recuperado (primer cuadro y tabla)
+            // y no se propone una respuesta automática
+            $restored = $this->conversationService->restoredAnswer($conversation->id, $question->id);
+
+            if ($restored) {
+                return response()->json([
+                    'completed' => false,
+                    'plan_name' => $planName,
+                    'node' => $node,
+                    'parent_node' => $node->parent,
+                    'question' => $question,
+                    'restored' => $restored,
+                    'go_back' => $goBack
+                ]);
+            }
+
             // Si la IA ya respondió 2 preguntas automáticamente
             if (!$triggerAi ||!$isPhase2 && $automaticAnswerCount >= $maxAutomaticAnswers) {
                 return response()->json([
@@ -751,7 +801,8 @@ public function flattenNodeIds(array $nodes): array
                     'plan_name' => $planName,
                     'node' => $node,
                     'parent_node' => $node->parent,
-                    'question' => $question
+                    'question' => $question,
+                    'go_back' => $goBack
                 ]);
             }
 
@@ -790,6 +841,7 @@ public function flattenNodeIds(array $nodes): array
 
                 $promptQuestion =
                     $this->promptService->promptValidationRedundanceQuestion(
+                        $planPrompts,
                         $contextoParaValidar,
                         $question->question_text,
                         $isPhase2
@@ -805,7 +857,8 @@ public function flattenNodeIds(array $nodes): array
                     'plan_name' => $planName,
                     'node' => $node,
                     'parent_node' => $node->parent,
-                    'question' => $question
+                    'question' => $question,
+                    'go_back' => $goBack
                 ]);
             }
 
@@ -816,6 +869,32 @@ public function flattenNodeIds(array $nodes): array
             if (($resultIA['show'] ?? true) === false) {
 
                 $responseAutomatic = $resultIA['resp'] ?? '';
+
+                // Antes de mostrarla, la sugerencia pasa por las mismas revisiones de
+                // "Validar información". Si no pasa, se muestra la pregunta para que la
+                // responda el usuario. Solo en la Fase 1: en la Fase 2 el sistema debe
+                // redactar sintetizando todo el plan.
+                if (!empty(trim($responseAutomatic)) && !$isPhase2) {
+                    $validation = $this->answerValidationService->validate($conversation, [
+                        'idConversation' => $conversation->id,
+                        'idQuestion' => $question->id,
+                        'question' => $question->question_text,
+                        'validation' => $question->validation_detail ?? '',
+                        'response' => $responseAutomatic,
+                    ]);
+
+                    if (!$validation['valid']) {
+                        \Log::info('RESPUESTA SUGERIDA DESCARTADA: NO PASÓ LA VALIDACIÓN', [
+                            'conversation_id' => $idConversation,
+                            'question_id' => $question->id,
+                            'inconsistent' => $validation['inconsistent'],
+                            'feedback' => $validation['result']['feedback'] ?? null,
+                            'response' => $responseAutomatic,
+                        ]);
+
+                        $responseAutomatic = '';
+                    }
+                }
 
                 // Validar que realmente exista una respuesta
                 if (!empty(trim($responseAutomatic))) {
@@ -833,7 +912,8 @@ public function flattenNodeIds(array $nodes): array
                         'parent_node' => $node->parent,
                         'question' => $question,
                         'auto_generated' => true,
-                        'suggested_answer' => $responseAutomatic
+                        'suggested_answer' => $responseAutomatic,
+                        'go_back' => $goBack
                     ]);
                 }
             }
@@ -847,7 +927,8 @@ public function flattenNodeIds(array $nodes): array
                 'plan_name' => $planName,
                 'node' => $node,
                 'parent_node' => $node->parent,
-                'question' => $question
+                'question' => $question,
+                'go_back' => $goBack
             ]);
         }
     }
@@ -895,7 +976,12 @@ public function flattenNodeIds(array $nodes): array
 
         $idConversation = $request->get('idConversation');
 
-        $conversation = Conversation::find($idConversation);
+        // Solo el dueño de la conversación puede ver su plan
+        $conversation = Conversation::where('id', $idConversation)
+            ->whereHas('userPlan', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->first();
 
         if (!$conversation) {
             return response()->json([
@@ -1213,6 +1299,7 @@ public function flattenNodeIds(array $nodes): array
                 ->toArray();    
 
         $prompt = $this->promptService->buildQuestionsForLeafNodesPrompt(
+            planPrompts: $this->planPromptResolver->forConversation($conversation),
             plan: $conversation->userPlan->plan->toArray(),
             nodesWithoutQuestions: $nodosSinPreguntas,
             allNodes: $estructuraCompleta
@@ -1251,6 +1338,13 @@ public function flattenNodeIds(array $nodes): array
             ], 500);
         }
 
+        // Cada nodo nuevo lleva exactamente 3 preguntas, como los del plan maestro
+        $questionsPerNode = 3;
+
+        // Solo los nodos que se pidieron: la IA no puede agregar preguntas a otros nodos
+        $requestedNodeIds = array_flip(array_column($nodosSinPreguntas, 'id'));
+        $savedNodeIds = [];
+
         foreach ($data['nodes'] as $nodeData) {
 
             if (
@@ -1261,17 +1355,33 @@ public function flattenNodeIds(array $nodes): array
                 continue;
             }
 
-            foreach ($nodeData['questions'] as $questionData) {
+            $nodeId = (int) $nodeData['node_id'];
 
-                if (empty($questionData['description'])) {
-                    continue;
-                }
+            // Nodo que no se pidió, o que la IA repitió en la respuesta
+            if (!isset($requestedNodeIds[$nodeId]) || isset($savedNodeIds[$nodeId])) {
+                continue;
+            }
+            $savedNodeIds[$nodeId] = true;
 
+            $questions = array_values(array_filter(
+                $nodeData['questions'],
+                fn ($questionData) => !empty($questionData['description'])
+            ));
+
+            if (count($questions) !== $questionsPerNode) {
+                \Log::warning('La IA no devolvió 3 preguntas para el nodo', [
+                    'node_id' => $nodeId,
+                    'cantidad' => count($questions),
+                ]);
+            }
+
+            foreach (array_slice($questions, 0, $questionsPerNode) as $index => $questionData) {
                 Question::create([
-                    'plan_node_id' => $nodeData['node_id'],
+                    'plan_node_id' => $nodeId,
                     'question_text' => $questionData['description'],
                     'question_detail'  => $questionData['detail'] ?? null,
                     'question_example' => $questionData['example'] ?? null,
+                    'order_index' => $index + 1,
                 ]);
             }
         }
@@ -1315,7 +1425,10 @@ public function flattenNodeIds(array $nodes): array
 
         $validated = $request->validate([
             'idConversation' => 'required|integer|exists:conversations,id',
-            'startChapterId' => 'required|integer|exists:plan_node,id',
+            // Punto de la Fase 1 desde el que se borra: una pregunta o un nodo (capítulo, sección
+            // o subsección). El servicio valida que pertenezcan a la estructura de esta conversación.
+            'startQuestionId' => 'nullable|integer',
+            'startNodeId' => 'nullable|integer|required_without:startQuestionId',
         ]);
 
         $conversation = Conversation::where('id', $validated['idConversation'])
@@ -1332,16 +1445,24 @@ public function flattenNodeIds(array $nodes): array
         }
 
         try {
-            $result = $this->conversationService->deleteChaptersAnswersFrom(
+            $result = $this->conversationService->deleteAnswersFrom(
                 (int) $validated['idConversation'],
-                (int) $validated['startChapterId']
+                isset($validated['startNodeId']) ? (int) $validated['startNodeId'] : null,
+                isset($validated['startQuestionId']) ? (int) $validated['startQuestionId'] : null
             );
 
             return response()->json([
                 'success' => true,
-                'message' => 'Las respuestas de los capítulos seleccionados fueron eliminadas correctamente.',
+                'message' => 'Las respuestas fueron eliminadas correctamente.',
                 'data' => $result
             ], 200);
+
+        } catch (\DomainException $e) {
+            // Nodo que no es de esta estructura, de la Fase 2 o sin preguntas
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
 
         } catch (\Throwable $e) {
             \Log::error('Error en deleteChaptersAnswers: ' . $e->getMessage());
@@ -1352,6 +1473,76 @@ public function flattenNodeIds(array $nodes): array
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function goBack(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $validated = $request->validate([
+            'idConversation' => 'required|integer',
+            'idQuestion' => 'required|integer',
+        ]);
+
+        $conversation = Conversation::where('id', $validated['idConversation'])
+            ->whereHas('userPlan', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Conversación no encontrada o sin permisos.'
+            ], 404);
+        }
+
+        if (!$this->isPaymentCompleted($conversation)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Acceso denegado. El pago de esta suscripción no está aprobado.'
+            ], 403);
+        }
+
+        try {
+            $result = $this->conversationService->goBack($conversation, (int) $validated['idQuestion']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Volviste a la pregunta anterior.',
+                'data' => $result
+            ], 200);
+
+        } catch (\DomainException $e) {
+            // No se puede volver (primera pregunta, capítulo cerrado, pregunta desactualizada)
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+
+        } catch (\Throwable $e) {
+            \Log::error('Error en goBack: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al volver a la pregunta anterior.'
+            ], 500);
+        }
+    }
+
+    // Si desde la pregunta actual se puede volver a la anterior, y si no, por qué
+    private function goBackStatus(Conversation $conversation): array
+    {
+        $info = $this->conversationService->goBackInfo($conversation);
+
+        return [
+            'allowed' => $info['allowed'],
+            'reason' => $info['reason'],
+        ];
     }
     
 }

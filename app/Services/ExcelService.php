@@ -44,6 +44,12 @@ class ExcelService
         }
     }
 
+// Cantidad de hojas del archivo (solo se usa la primera, por eso se exige una sola)
+public function sheetsCount($file): int
+{
+    return count(Excel::toArray([], $file));
+}
+
 public function extractTable($file): ?array
 {
     try {

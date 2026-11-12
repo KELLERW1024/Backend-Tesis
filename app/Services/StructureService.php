@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PlanNode;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -245,8 +246,9 @@ class StructureService
 
     // =================================================
     // MÉTODO PARA REORDENAR
+    // También lo usa ConversationService al crear la estructura del usuario
     // =================================================
-    private function recalculateStructure(int $planId, ?int $userPlanId): void
+    public function recalculateStructure(int $planId, ?int $userPlanId): void
     {
         $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'];
 
@@ -310,43 +312,39 @@ class StructureService
                 $root->update([
                     'titulo' => "Capítulo {$numeroRomano}. " . ltrim($tituloLimpio, '. '),
                     'orden'  => $globalOrden,
-                    'codigo' => (string)$capIndex
+                    'codigo' => (string)$capIndex,
+                    'nivel'  => 1,
                 ]);
 
-                // Renumerar subnodos de Nivel 2
-                $childrenL2 = (clone $query)->where('parent_id', $root->id)
-                    ->orderBy('orden', 'asc')
-                    ->orderBy('id', 'asc')
-                    ->get();
-
-                $l2Index = 1;
-                foreach ($childrenL2 as $childL2) {
-                    $childL2->update([
-                        'orden' => $l2Index,
-                        'codigo' => "{$capIndex}.{$l2Index}"
-                    ]);
-
-                    // Renumerar subnodos de Nivel 3
-                    $childrenL3 = (clone $query)->where('parent_id', $childL2->id)
-                        ->orderBy('orden', 'asc')
-                        ->orderBy('id', 'asc')
-                        ->get();
-
-                    $l3Index = 1;
-                    foreach ($childrenL3 as $childL3) {
-                        $childL3->update([
-                            'orden' => $l3Index,
-                            'codigo' => "{$capIndex}.{$l2Index}.{$l3Index}"
-                        ]);
-                        $l3Index++;
-                    }
-
-                    $l2Index++;
-                }
+                // Renumerar todos los subnodos, sin importar la profundidad
+                $this->renumberChildren($query, $root->id, (string)$capIndex, 2);
 
                 $capIndex++;
                 $globalOrden++;
             }
+        }
+    }
+
+    // Numera recursivamente los hijos como "código del padre.posición" (1.1, 1.1.1, 1.1.1.1, ...)
+    private function renumberChildren(Builder $query, int $parentId, string $parentCode, int $nivel): void
+    {
+        $children = (clone $query)->where('parent_id', $parentId)
+            ->orderBy('orden', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $index = 1;
+        foreach ($children as $child) {
+            $codigo = "{$parentCode}.{$index}";
+
+            $child->update([
+                'orden'  => $index,
+                'codigo' => $codigo,
+                'nivel'  => $nivel,
+            ]);
+
+            $this->renumberChildren($query, $child->id, $codigo, $nivel + 1);
+            $index++;
         }
     }
 }

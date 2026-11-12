@@ -2,20 +2,22 @@
 
 namespace App\Services;
 
-use App\Constants\Prompts;
 use App\Models\ThesisContext;
 use App\Models\Question;
+use App\Services\Prompts\PlanPrompts;
 
 class PromptService
 {
 
     // PROMPT DE VALIDACION DE RESPUESTA
-    public function buildValidationPrompt(array $data): string
+    public function buildValidationPrompt(PlanPrompts $plan, array $data): string
     {
         $sections = [];
 
         $sections[] = "
-            Eres un asesor académico especializado en elaboración y sustentación de tesis universitarias.
+            Eres un asesor académico especializado en elaboración y sustentación de tesis universitarias de {$plan->tipoTesis()}.
+
+            {$plan->enfoque()}
 
             Tu función es evaluar la respuesta proporcionada por el tesista o validar que la respuesta sea una directica válida de interacción con la data que 
             tenemos en el historial de respuetas.  
@@ -109,7 +111,7 @@ Interpreta la intención del usuario, incluso cuando se exprese informalmente, c
 
 Considera que una respuesta breve puede ser válida si responde adecuadamente a lo solicitado.
 
-Utiliza el historial para comprender el negocio, recuperar datos ya proporcionados, resolver referencias ambiguas y completar información pertinente cuando sea posible.
+Utiliza el historial para comprender el proyecto, recuperar datos ya proporcionados, resolver referencias ambiguas y completar información pertinente cuando sea posible.
 
 No penalices al usuario por omitir información que ya esté claramente disponible en el historial y que permita comprender su respuesta.
 
@@ -128,6 +130,10 @@ Si faltan datos esenciales que no pueden recuperarse del historial, reduce la pu
 No inventes información para justificar una puntuación elevada.
 
 El feedback debe ser breve, constructivo y específico. Indica qué puede mejorarse sin descalificar innecesariamente al usuario.
+
+CRITERIOS PROPIOS DE UNA TESIS DE " . mb_strtoupper($plan->tipoTesis()) . ":
+
+{$plan->validationCriteria()}
 
 FORMATO DE SALIDA:
 
@@ -149,18 +155,29 @@ No incluyas explicaciones, texto adicional, Markdown ni bloques de código fuera
             ";
 
 
-        return implode("\n\n", array_filter($sections));
+        $prompt = implode("\n\n", array_filter($sections));
+
+        $plan->log('validacion_respuesta', $prompt);
+
+        return $prompt;
     }
 
-    public function promptFiltroNodePorDiagnostico(array $diagnosticoRespuestas, array $nodesForAI)
+    public function promptFiltroNodePorDiagnostico(PlanPrompts $plan, array $diagnosticoRespuestas, array $nodesForAI)
     {
         $diagnosticoJson = json_encode($diagnosticoRespuestas, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         $nodesJson = json_encode($nodesForAI, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-        return <<<PROMPT
-Eres un experto metodológico y director de proyectos de tesis y planes de negocio.
+        // Nodos que la IA debe incluir siempre, identificados por su "codigo" en cada plan
+        $nodosObligatorios = $plan->mandatoryNodes();
 
-Tu tarea es analizar las respuestas del DIAGNÓSTICO INICIAL proporcionadas por el tesista y seleccionar, EXCLUSIVAMENTE de la lista de PLAN NODES proporcionada, los nodos, capítulos y secciones que sean estrictamente necesarios y pertinentes para estructurar el proyecto de forma precisa y personalizada.
+        $prompt = <<<PROMPT
+Eres un experto metodológico y director de proyectos de tesis de {$plan->tipoTesis()}.
+
+{$plan->enfoque()}
+
+Tu tarea es analizar las respuestas del DIAGNÓSTICO INICIAL proporcionadas por el tesista y seleccionar,
+EXCLUSIVAMENTE de la lista de PLAN NODES proporcionada, los nodos, capítulos y secciones que sean 
+pertinentes para estructurar el proyecto de forma precisa y personalizada.
 
 DIAGNÓSTICO INICIAL DEL USUARIO:
 {$diagnosticoJson}
@@ -171,11 +188,14 @@ REGLAS OBLIGATORIAS:
 3. NO debes modificar ningún título ni ID.
 4. Solo puedes seleccionar IDs que aparezcan exactamente en la lista de PLAN NODES proporcionada.
 5. REGLA CRÍTICA DE JERARQUÍA: Si seleccionas un subnodo o sección específica, DEBES incluir obligatoriamente el ID de su nodo padre y de su Capítulo principal correspondiente para no romper la estructura visual.
-6. EXENCIÓN Y OBLIGATORIEDAD CRÍTICA: Debes incluir OBLIGATORIAMENTE en la selección los nodos correspondientes al "Resumen Ejecutivo", "Introducción", "Conclusiones" y "Recomendaciones" (o sus títulos equivalentes en la lista), ya que son apartados metodológicos obligatorios para todos los proyectos, independientemente del rubro.
-7. Excluye únicamente aquellos contenidos que por la naturaleza del diagnóstico no apliquen al proyecto.
+6. NODOS OBLIGATORIOS (REGLA CRÍTICA): Debes incluir SIEMPRE, sin excepción e independientemente del rubro, alcance o etapa indicados en el diagnóstico, los siguientes nodos, porque son apartados metodológicos exigidos en toda tesis de este tipo:
+   a) Los nodos titulados "Resumen ejecutivo", "Introducción", "Conclusiones" y "Recomendaciones" (o sus títulos equivalentes en la lista).
+{$nodosObligatorios}
+7. NODOS OPCIONALES: Solo puedes excluir nodos que no estén comprendidos en la regla 6, y únicamente cuando por la naturaleza del diagnóstico claramente no apliquen al proyecto. Ante la duda, inclúyelo.
 8. La propiedad "nodes" DEBE ser una lista plana de objetos que contengan únicamente la propiedad "id".
 9. Mantén el orden original en el que los IDs aparecen en la lista de PLAN NODES.
 10. No devuelvas explicaciones, comentarios ni Markdown. La respuesta DEBE ser exclusivamente un JSON válido.
+11. Antes de responder, verifica que TODOS los nodos indicados en la regla 6 estén incluidos en tu lista "nodes".
 
 FORMATO DE SALIDA OBLIGATORIO:
 {
@@ -189,9 +209,13 @@ FORMATO DE SALIDA OBLIGATORIO:
 LISTA DE PLAN NODES:
 {$nodesJson}
 PROMPT;
+
+        $plan->log('filtro_nodos_diagnostico', $prompt);
+
+        return $prompt;
     }
 
-    public function promptAssistantCoCreation(array $data): string
+    public function promptAssistantCoCreation(PlanPrompts $plan, array $data): string
     {
         $question = $data['question'] ?? '';
         $detail = $data['detail'] ?? '';
@@ -200,9 +224,17 @@ PROMPT;
         $assistantContext = json_encode($data['assistant_context'] ?? [], JSON_UNESCAPED_UNICODE);
         $chatMessages = json_encode($data['chat_messages'] ?? [], JSON_UNESCAPED_UNICODE);
 
-        return <<<PROMPT
-            Eres un consultor experto y redactor académico de tesis y planes de negocio, especializado en modelamiento cuantitativo, costos y operaciones.
+        $example = $plan->coCreationExample();
+        $exampleBrecha = $example['brecha'];
+        $exampleVariable = json_encode($example['variable'], JSON_UNESCAPED_UNICODE);
+
+        $prompt = <<<PROMPT
+            Eres un {$plan->coCreationRole()}.
             Tu misión es entrevistar al usuario paso a paso para co-crear la respuesta de la pregunta actual de forma profesional, actuando como un "Resolutor de Brechas".
+
+            {$plan->enfoque()}
+
+            {$plan->coCreationGuide()}
 
             INFORMACIÓN DE LA PREGUNTA ACTUAL:
             - Pregunta: {$question}
@@ -218,21 +250,30 @@ PROMPT;
             HISTORIAL DEL CHAT ACTUAL:
             {$chatMessages}
 
-            // ... (código anterior de la función)
-
             INSTRUCCIONES:
-            1. "chat_message": Responde de forma interactiva y directa. Si faltan datos numéricos para calcular algo de la pregunta actual, ofrécele al usuario calcularlo juntos o sugerir un valor.
-            2. "brechas_detectadas": Enumera EXCLUSIVAMENTE los datos precisos y específicos que faltan para responder a la "PREGUNTA ACTUAL". 
-            - REGLA DE ENFOQUE (CRÍTICA): NO incluyas brechas generales del negocio. Si la pregunta es sobre el "precio de sesión", la brecha debe ser solo sobre el precio. Si ya tienes todos los datos para responder a la pregunta, devuelve un arreglo vacío [].
-            - REGLA DE LENGUAJE: El texto descriptivo de la brecha debe ser EXTREMADAMENTE CLARO. Escríbelo como una petición corta o una pregunta directa (Ejemplo: "¿Cuánto cobrarás por cada sesión?" o "Número estimado de atenciones al mes").
+            1. "chat_message": Responde de forma interactiva y directa.
+            - REGLA DE PREGUNTAS ABIERTAS (CRÍTICA): Pregunta sin sugerir la respuesta, porque los datos de la tesis deben venir del usuario. No incluyas opciones, ejemplos ni posibles respuestas dentro de la pregunta, y no busques un hecho del proyecto con una pregunta que se responda con "sí" o "no".
+              Incorrecto: "¿Sufren por la falta de variedad o precios altos?"
+              Correcto: "¿Qué problemas enfrentan hoy tus clientes al comprar este producto?"
+            - REGLA DE HECHOS: Los hechos del proyecto (problemas, clientes, competidores, procesos, situación del negocio) solo pueden venir del usuario. Nunca los propongas, aunque diga que no los conoce: en ese caso, indícale cómo podría averiguarlos.
+            - REGLA DE VALORES NUMÉRICOS: Si falta un valor numérico para calcular algo de la pregunta actual, primero pídeselo con una pregunta abierta, sin mencionar ninguna cifra. Solo si es una DECISIÓN DEL NEGOCIO (precio, margen, meta de ventas) y el usuario responde que no la conoce o te pide una propuesta, propón un valor en ese mismo mensaje usando los datos disponibles, aclarando que es un supuesto y registrándolo en "variables_negocio" con estado "Supuesto".
+            - REGLA DE DATOS EXTERNOS (CRÍTICA): Los HECHOS EXTERNOS (población, tamaño de mercado, estadísticas, datos de instituciones o del sector) nunca se proponen ni se estiman. No tienes acceso a internet: si te piden investigar, buscar datos o dar un enlace, empieza tu mensaje con "No tengo acceso a internet, así que no puedo investigar ese dato." y regístralo como pendiente de investigación. No des cifras externas de memoria ni enlaces que el usuario no haya aportado. Si en el historial diste un dato externo sin fuente concreta, empieza tu mensaje diciendo que no tienes fuente para esa cifra y que la retiras, y regístrala como pendiente de investigación.
+            2. "brechas_detectadas": Enumera EXCLUSIVAMENTE los datos precisos y específicos que faltan para responder a la "PREGUNTA ACTUAL".
+            - REGLA DE PENDIENTES: Todo hecho externo que la pregunta necesite y que el usuario no haya dado con fuente concreta se registra como brecha, siempre con este formato y no como pregunta: "Pendiente de investigación: [dato] (fuente sugerida: [institución o tipo de documento])". Ejemplo: "Pendiente de investigación: población de Miraflores (fuente sugerida: INEI)". Indica dónde buscarlo, sin enlaces ni cifras. Esta regla tiene prioridad sobre la REGLA DE LENGUAJE.
+            - REGLA DE ENFOQUE (CRÍTICA): NO incluyas brechas generales del proyecto. La brecha debe referirse solo a lo que pide la pregunta actual. Si ya tienes todos los datos para responder a la pregunta, devuelve un arreglo vacío [].
+            - REGLA DE LENGUAJE: El texto descriptivo de la brecha debe ser EXTREMADAMENTE CLARO. Escríbelo como una petición corta o una pregunta directa y abierta, sin opciones ni posibles respuestas (Ejemplo: "{$exampleBrecha}").
             - REGLA DE ESTABILIDAD: Si el usuario ya te dio el dato, NO lo vuelvas a pedir.
             - FORMATO OBLIGATORIO: Cada brecha debe ser un objeto JSON con dos propiedades: "dato" y "criticidad" ("Crítica", "Importante", "Recomendable", "Opcional").
             3. "variables_negocio": Aquí colocarás TODOS los resultados matemáticos y SUPUESTOS. Cada variable será un objeto JSON.
-            - REGLA DE ESTADOS: Define el "estado" como "Calculado" o "Supuesto".
-            - REGLA DE FÓRMULA INDIVIDUAL: Para CADA variable, agrega un campo llamado "formula". Si es "Calculado", escribe la operación exacta (ej. "18 usuarios * 26 días"). Si es "Supuesto", justifica brevemente. Si no hay cálculo, pon "".
+            - REGLA DE ESTADOS: Define el "estado" como "Calculado" o "Supuesto". "Supuesto" solo se usa para decisiones del negocio, nunca para hechos externos. No calcules a partir de un hecho externo que siga pendiente de investigación.
+            - REGLA DE FÓRMULA INDIVIDUAL: Para CADA variable, agrega un campo llamado "formula". Si es "Calculado", escribe la operación exacta. Si es "Supuesto", justifica brevemente. Si no hay cálculo, pon "".
             4. "draft_text": Es el borrador formal (Propuesta Académica) de la respuesta técnica.
+            - REGLA DE CIFRAS EXTERNAS: Una cifra externa solo puede aparecer en el borrador si el usuario la dio junto con una fuente concreta (documento o publicación identificable; la portada de un sitio web no es una fuente concreta). Sin esa fuente, la cifra no entra al borrador ni se presenta el dato como resuelto.
+            - REGLA DE CONTENIDO: Redacta siempre el borrador con lo que ya se sabe, aunque sea parcial: incluye todos los datos que dio el usuario y las cifras externas con fuente concreta, mencionando esa fuente. Omite solo lo que no tiene respaldo. Déjalo vacío únicamente si todavía no hay ningún dato del proyecto para esta pregunta.
+            - REGLA DE EVIDENCIA: Aplica al borrador y a tus mensajes lo siguiente:
+            {$plan->alcanceEvidencia()}
             5. "progress_percentage": Estimación (0-100) de qué tan completa está la respuesta.
-            6. "is_complete": true si la respuesta ya está lista para usarse.
+            6. "is_complete": true si la respuesta ya está lista para usarse. Debe ser false si la respuesta depende de un dato pendiente de investigación.
             7. "updated_specific_data": ¡TAREA CRÍTICA DE EXTRACCIÓN DE DATOS CRUDOS INMUTABLES! Extrae de la memoria ÚNICAMENTE HECHOS REALES dados por el usuario. 
             - PROHIBICIÓN ABSOLUTA: NO guardes aquí estimaciones ni resultados de cálculos. Esos van en "variables_negocio".
             - REGLA DE LÍMITE: No generes más de 5 a 8 claves dinámicas. 
@@ -246,19 +287,23 @@ PROMPT;
                 "is_complete": false,
                 "brechas_detectadas": [
                     {
-                        "dato": "¿Cuánto cobrarás por sesión?",
+                        "dato": "{$exampleBrecha}",
                         "criticidad": "Crítica"
                     }
                 ],
                 "variables_negocio": [
-                    {"nombre": "capacidad_maxima", "valor": "468", "estado": "Calculado", "formula": "18 diarios * 26 días laborables"}
+                    {$exampleVariable}
                 ],
                 "updated_specific_data": {}
             }
             PROMPT;
+
+        $plan->log('asistente_cocreacion', $prompt);
+
+        return $prompt;
     }
 
-   public function promptValidationRedundanceQuestion( string|array $history,  string $question, bool $isPhase2 = false  ): string {
+   public function promptValidationRedundanceQuestion( PlanPrompts $plan, string|array $history,  string $question, bool $isPhase2 = false  ): string {
 
     $sections = [];
 
@@ -276,7 +321,9 @@ FASE2;
     }
 
     $sections[] = <<<PROMPT
-Eres un asesor académico especializado en investigación, elaboración y sustentación de tesis universitarias.
+Eres un asesor académico especializado en investigación, elaboración y sustentación de tesis universitarias de {$plan->tipoTesis()}.
+
+{$plan->enfoque()}
 
 Tu función es determinar si la pregunta actual necesita ser presentada nuevamente al usuario o si puede ser respondida utilizando exclusivamente la información que el usuario ya proporcionó anteriormente en esta conversación.
 {$modoFase2}
@@ -323,6 +370,9 @@ No existe información histórica disponible.
 Por lo tanto, no debes intentar responder la pregunta utilizando conocimientos externos o suposiciones.
 PROMPT;
     }
+
+    // Misma regla que la redacción del párrafo: la respuesta sugerida no debe exagerar la evidencia
+    $sections[] = "AL REDACTAR LA RESPUESTA (\"resp\"), APLICA ESTA REGLA:\n\n" . $plan->alcanceEvidencia();
 
     $sections[] = <<<PROMPT
 REGLAS DE EVALUACIÓN:
@@ -449,17 +499,19 @@ O:
 }
 PROMPT;
 
-    return implode("\n\n", array_filter($sections));
+    $prompt = implode("\n\n", array_filter($sections));
+
+    $plan->log('redundancia_pregunta', $prompt, ['fase_2' => $isPhase2]);
+
+    return $prompt;
 }
 
-    public function buildMessagesBitacoraResponseCurrent( array $data, array $history , string   $documentContent,string   $imageContent, bool $isApa): array {
+    public function buildMessagesBitacoraResponseCurrent( PlanPrompts $plan, array $data, array $history , string   $documentContent,string   $imageContent, bool $isApa): array {
 
+        // Capítulo raíz y sección (nodo) a los que pertenece la pregunta
         $parentNode = $data['parent_node'] ?? [];
-        $promptIni = str_replace(
-            '[ESPECIALIDAD:]',
-            $parentNode['titulo'] ?? '',
-            Prompts::PROMPT_INICIAL
-        );
+        $sectionNode = $data['section_node'] ?? [];
+        $promptIni = $plan->systemPrompt();
 
         $studentInput = [];
 
@@ -478,10 +530,10 @@ PROMPT;
         $response = implode("\n\n", $studentInput);
         
             $promptEsp = strtr(
-                Prompts::PROMPT_ESPECIFICO,
+                $plan->specificPrompt(),
                 [
                     '[Capítulo]' => $parentNode['titulo'] ?? '',
-                    '[Descripcion Capítulo]' => $parentNode['titulo'] ?? '',
+                    '[Sección]' => trim(($sectionNode['codigo'] ?? '') . ' ' . ($sectionNode['titulo'] ?? '')),
                     '[Pregunta]' => $data['question'],
                     '[Objetivo]' => $data['objective'] ?? '',
                     '[Validacion]' => $data['validation'],
@@ -508,42 +560,79 @@ PROMPT;
             'content' => $promptEsp
         ];
 
+        $plan->log('redaccion_respuesta', $promptIni, [
+            'capitulo' => $parentNode['titulo'] ?? null,
+            'seccion'  => $sectionNode['titulo'] ?? null,
+        ]);
+
         return $messages;
     }
 
     // PARA INDICAR QUE LA INFORMACION SEA CONVERTIDA EN TABLA
-    public function buildMessageTable(string $resp): string
+    // La pregunta, la sección y el objetivo le indican a la IA qué debe organizar la tabla,
+    // para que las columnas no se improvisen y cada dato quede en la columna que le corresponde
+    public function buildMessageTable(PlanPrompts $plan, string $resp, string $question, $sectionNode = null, ?string $objective = null): string
     {
-        return <<<PROMPT
-        A partir de la siguiente respuesta:
+        $seccion = trim(($sectionNode['codigo'] ?? '') . ' ' . ($sectionNode['titulo'] ?? ''));
+        $seccion = $seccion !== '' ? $seccion : 'No especificada';
+        $objetivo = trim((string) $objective) !== '' ? $objective : 'No especificado';
 
-        {$resp}
+        $prompt = <<<PROMPT
+Eres un asistente que organiza en una tabla la información que dio un tesista
+en su proyecto de tesis de {$plan->tipoTesis()}.
 
-        Convierte la información en una tabla.
+CONTEXTO:
+- Sección: {$seccion}
+- Pregunta: {$question}
+- Objetivo de la sección: {$objetivo}
 
-        Responde únicamente con JSON válido.
+INFORMACIÓN DEL TESISTA (única fuente de datos):
+{$resp}
 
-        Formato esperado:
+CÓMO CONSTRUIR LA TABLA:
+1. Define las columnas a partir de lo que pide la PREGUNTA. Antes de llenarlas, ten claro qué significa
+   cada columna (por ejemplo, una "barrera" es un obstáculo o dificultad; un "requisito" es algo que
+   el negocio debe tener o hacer).
+2. Cada fila representa un elemento que el tesista mencionó.
+3. Si la pregunta pide varias cosas distintas (por ejemplo, espacios no cubiertos y barreras), NO
+   emparejes en una misma fila elementos que no tienen relación entre sí. En ese caso usa una columna
+   "Tipo" que indique a qué corresponde cada elemento, con una fila por elemento.
+4. Clasifica cada elemento por su SIGNIFICADO, no por cómo lo agrupó el tesista en su texto. Las acciones
+   o requisitos que el negocio debe cumplir (por ejemplo, "ofrecer delivery" o "contratar personal") NO
+   son barreras, aunque el tesista los mencione junto a ellas. Si un elemento no corresponde a ninguna de
+   las categorías que pide la pregunta, clasifícalo con el tipo que realmente tiene (por ejemplo,
+   "Requisito") en lugar de forzarlo en otra categoría.
+5. NO inventes información: no agregues elementos, filas, causas, cifras ni datos que el tesista no
+   mencionó, aunque parezcan lógicos o necesarios para completar la tabla.
+6. Incluye TODOS los elementos que mencionó el tesista; no omitas ninguno.
+7. Puedes resumir lo que dijo el tesista con palabras más breves, pero sin cambiar su sentido.
+8. Si una celda no tiene información en la fuente, escribe "—".
+9. El título debe describir el contenido de la tabla según la pregunta.
 
-        {
-            "title": "string",
-            "columns": ["columna1", "columna2"],
-            "rows": [
-            ["valor1", "valor2"],
-            ["valor1", "valor2"]
-            ]
-        }
+FORMATO DE RESPUESTA:
+Devuelve únicamente un JSON válido, sin explicaciones, sin markdown y sin bloques de código:
 
-        Reglas:
-        - No agregues explicaciones.
-        - No uses markdown.
-        - No uses bloques de código.
-        - La respuesta debe ser únicamente JSON válido.
-        - Detecta automáticamente las columnas y filas.
-        - Si la información no puede representarse como una tabla o no contiene datos tabulares, responde únicamente:
+{
+    "title": "string",
+    "columns": ["columna1", "columna2"],
+    "rows": [
+        ["valor1", "valor2"],
+        ["valor1", "valor2"]
+    ]
+}
 
-        null
-        PROMPT;
+Si la información no puede representarse como una tabla o no contiene datos tabulares, devuelve:
+
+{
+    "title": null,
+    "columns": [],
+    "rows": []
+}
+PROMPT;
+
+        $plan->log('generar_cuadro', $prompt, ['seccion' => $seccion]);
+
+        return $prompt;
     }
     
     // DIAGNOSTICO ESPECIFICO PARA VEFICAR EL RUBRO EY LOS NODOS DEL PLAN
@@ -845,6 +934,7 @@ return $prompt;
 
     }
 public function buildQuestionsForLeafNodesPrompt(
+    PlanPrompts $planPrompts,
     array $plan,
     array $nodesWithoutQuestions,
     array $allNodes
@@ -865,9 +955,11 @@ public function buildQuestionsForLeafNodesPrompt(
         JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
     );
 
-    return <<<PROMPT
+    $prompt = <<<PROMPT
 
-Eres un asesor académico especializado en elaboración de tesis.
+Eres un asesor académico especializado en elaboración de tesis de {$planPrompts->tipoTesis()}.
+
+{$planPrompts->enfoque()}
 
 Debes generar preguntas académicas para los nodos finales que actualmente
 no tienen preguntas asociadas.
@@ -920,7 +1012,7 @@ REGLAS:
 
 10. No agregues capítulos ni nodos nuevos.
 
-11. Genera entre 2 y 5 preguntas por nodo.
+11. Genera EXACTAMENTE 3 preguntas por nodo: ni más ni menos.
 
 12. Cada pregunta debe ser clara, específica y académicamente útil.
 
@@ -944,17 +1036,12 @@ FORMATO DE RESPUESTA:
                     "example": "Ejemplo conciso de redacción de la respuesta"
                 },
                 {
-                    "description": "Otra pregunta relacionada con el nodo",
+                    "description": "Segunda pregunta relacionada con el nodo",
                     "detail": "Explicación clara de qué debe considerar el usuario para responder",
                     "example": "Ejemplo conciso de redacción de la respuesta"
-                }
-            ]
-        },
-        {
-            "node_id": 15,
-            "questions": [
+                },
                 {
-                    "description": "Pregunta relacionada con el nodo",
+                    "description": "Tercera pregunta relacionada con el nodo",
                     "detail": "Explicación clara de qué debe considerar el usuario para responder",
                     "example": "Ejemplo conciso de redacción de la respuesta"
                 }
@@ -963,13 +1050,20 @@ FORMATO DE RESPUESTA:
     ]
 }
 
+Cada nodo de la lista debe aparecer una sola vez en "nodes", con sus 3 preguntas.
+
 PROMPT;
+
+    $planPrompts->log('preguntas_nodos_hoja', $prompt);
+
+    return $prompt;
 }
 
 // =======================================================
- // PROMPT PARA VEFICAR SI ES NECESARIO ACTUALIZAR EL CONTEXTO 
+ // PROMPT PARA VEFICAR SI ES NECESARIO ACTUALIZAR EL CONTEXTO
 //  ==================================================
     public function promptUpdateThesisContext(
+        PlanPrompts $plan,
         ThesisContext $context,
         Question $question,
         string $answer
@@ -985,37 +1079,35 @@ PROMPT;
             'answer' => $answer,
         ]);
 
-        return <<<PROMPT
+        // Cada plan da su propio significado a las columnas de thesis_contexts
+        $labels = $plan->contextLabels();
+
+        $contextoActual = '';
+        $significadoCampos = '';
+        foreach ($labels as $field => $label) {
+            $contextoActual .= "{$label}:\n{$context->{$field}}\n\n";
+            $significadoCampos .= "- \"{$field}\": {$label}\n";
+        }
+
+        $prompt = <<<PROMPT
 
 Eres un sistema encargado de mantener el contexto
-estructurado de un proyecto de plan de negocio.
+estructurado de un proyecto de tesis de {$plan->tipoTesis()}.
+
+{$plan->enfoque()}
 
 Tu tarea NO es responder la pregunta.
 
 Tu tarea es determinar si la respuesta del usuario
 aporta información importante y estable sobre el
-negocio que debería incorporarse al contexto.
+proyecto que debería incorporarse al contexto.
 
 CONTEXTO ACTUAL:
 
-Nombre del negocio:
-{$context->business_name}
+{$contextoActual}
+SIGNIFICADO DE CADA CAMPO DE "updates":
 
-Sector:
-{$context->business_sector}
-
-Producto o servicio:
-{$context->product_service}
-
-Cliente objetivo:
-{$context->target_customer}
-
-Problema principal:
-{$context->main_problem}
-
-Propuesta de valor:
-{$context->value_proposition}
-
+{$significadoCampos}
 
 PREGUNTA DEL PLAN:
 
@@ -1030,11 +1122,11 @@ RESPUESTA DEL USUARIO:
 Analiza la respuesta.
 
 Si la respuesta aporta información relevante
-sobre el negocio, devuelve los campos que deberían
+sobre el proyecto, devuelve los campos que deberían
 actualizarse.
 
 Si la respuesta NO aporta información importante
-para el contexto general del negocio, no actualices.
+para el contexto general del proyecto, no actualices.
 
 IMPORTANTE:
 
@@ -1043,7 +1135,9 @@ IMPORTANTE:
 - No copies información innecesariamente.
 - No incluyas información específica que solamente
   sirve para responder esta pregunta.
-- El contexto debe representar el negocio completo.
+- El contexto debe representar el proyecto completo.
+- Cada campo debe contener únicamente la información
+  que corresponde a su significado.
 - Si la respuesta contradice claramente el contexto
   actual, indícalo.
 - Devuelve únicamente JSON.
@@ -1065,7 +1159,119 @@ Formato:
 }
 
 PROMPT;
+
+        $plan->log('actualizar_contexto', $prompt, ['question_id' => $question->id]);
+
+        return $prompt;
     }
 
-    
+    // =======================================================
+    // PROMPT PARA DETECTAR INCONGRUENCIAS CON EL CONTEXTO DEL PROYECTO
+    // =======================================================
+    public function promptCoherenceContext(PlanPrompts $plan, string $contextText, string $response): string
+    {
+        $elementosCentrales = '- ' . implode("\n- ", array_values($plan->contextLabels()));
+
+        $prompt = <<<PROMPT
+
+Eres un sistema de validación de coherencia para una tesis de {$plan->tipoTesis()}.
+
+Tu objetivo es determinar si una nueva respuesta del usuario
+presenta una INCONGRUENCIA IMPORTANTE con el contexto actual
+de su proyecto.
+
+{$plan->enfoque()}
+
+CONTEXTO ACTUAL DE LA TESIS:
+
+{$contextText}
+
+NUEVA RESPUESTA DEL USUARIO:
+
+{$response}
+
+Analiza principalmente la relación entre:
+
+{$elementosCentrales}
+
+IMPORTANTE:
+
+No consideres como incongruencia:
+
+- información adicional compatible con el proyecto;
+- detalles nuevos que complementan el contexto;
+- cambios menores;
+- explicaciones más específicas;
+- nuevas estrategias o actividades compatibles con el proyecto.
+
+Considera una incongruencia cuando la nueva respuesta
+cambie de manera clara y significativa elementos centrales
+del proyecto previamente establecido.
+
+{$plan->coherenceExamples()}
+
+Devuelve únicamente un JSON válido con esta estructura:
+
+{
+    "is_inconsistent": true
+}
+
+Si no existe una contradicción importante:
+
+{
+    "is_inconsistent": false
+}
+
+PROMPT;
+
+        $plan->log('coherencia_contexto', $prompt);
+
+        return $prompt;
+    }
+
+    // =======================================================
+    // PROMPT PARA CONSOLIDAR UN CAPÍTULO TERMINADO EN EL RESUMEN GENERAL
+    // =======================================================
+    public function promptConsolidateChapter(
+        PlanPrompts $plan,
+        int $numeroCapitulo,
+        string $chapterTitle,
+        string $contenidoCapitulo,
+        ?string $resumenGeneralAnterior
+    ): string {
+        $prompt = <<<PROMPT
+            Eres un director académico y metodológico de proyectos de tesis de {$plan->tipoTesis()}.
+
+            {$plan->enfoque()}
+
+            Se ha completado el capítulo {$numeroCapitulo}: "{$chapterTitle}".
+
+            RESPUESTAS COMPLETADAS EN ESTE CAPÍTULO:
+            {$contenidoCapitulo}
+
+            RESUMEN GENERAL ACUMULADO PREVIO (Capítulos anteriores):
+            {$resumenGeneralAnterior}
+
+            REGLAS DE FIDELIDAD DEL RESUMEN (tienen prioridad sobre el objetivo):
+            - Usa únicamente lo que aparece en las respuestas y en el resumen previo. Los temas que se indican más abajo solo se destacan si aparecen: si un tema (por ejemplo, precio, costos, capacidad, inversión o resultados) no aparece, no lo menciones ni digas que se avanzó en él.
+            - Conserva cada dato con su unidad y su periodo: "medio día por avería" no puede pasar a "pérdida diaria de medio día".
+            - No afirmes decisiones que no estén en las respuestas.
+            - Una encuesta de intención informa lo que respondieron los encuestados: no confirma la demanda ni la viabilidad del proyecto.
+            {$plan->alcanceEvidencia()}
+
+            Tu objetivo:
+            1. "resumen_capitulo": Redacta un resumen breve, preciso y sustancial de lo respondido en este capítulo (máximo 120-180 palabras), {$plan->consolidationFocus()}.
+            2. "nuevo_resumen_general": Si no había resumen general previo, usa el resumen de este capítulo. Si ya existía uno previo, intégralos en un solo texto fluido y unificado (máximo 120-1200 palabras) que sintetice toda la columna vertebral del proyecto hasta el momento.
+
+            RESPONDE ÚNICAMENTE CON ESTE FORMATO JSON:
+            {
+                "resumen_capitulo": "Texto del resumen del capítulo actual...",
+                "nuevo_resumen_general": "Texto consolidado de todos los capítulos hasta el actual..."
+            }
+            PROMPT;
+
+        $plan->log('consolidar_capitulo', $prompt, ['capitulo' => $numeroCapitulo]);
+
+        return $prompt;
+    }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\PlanesController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\IaController;
+use App\Http\Controllers\Conversation\AnnexController;
 use App\Http\Controllers\Conversation\StructureController;
 use App\Http\Controllers\Coupon\CouponController;
 use App\Http\Controllers\Document\DocumentController;
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Payment\PagoController;
-use App\Http\Controllers\Admin\DashboardController; // <-- AGREGA ESTA LÍNEA AQUÍ
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\TokenUsageController;
 use App\Http\Controllers\Payment\WebhookController;
 
 // Ruta de prueba: usuario logueado
@@ -27,6 +29,7 @@ Route::prefix('auth')->group(function ($router) {
     Route::post('/forgot-password-code',[AuthController::class,'forgotPasswordCode']);
     Route::post('/verify-code',[AuthController::class,'verifyCode']);
     Route::post('/reset-password-code',[AuthController::class,'resetPasswordCode']);
+    Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api')->name('refresh');
 });
 
 // Webhook externo (sin auth)
@@ -70,8 +73,13 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/payment/{id}/approve', [PagoController::class, 'approvePayment']);
         Route::post('/payment/{id}/reject', [PagoController::class, 'rejectPayment']);
 
-
+        
         Route::get('/admin/stats', [DashboardController::class, 'getAdminStats']);
+        Route::get('/admin/plan-performance', [DashboardController::class, 'getPlanPerformance']);
+        Route::get('/admin/monthly-earnings', [DashboardController::class, 'getMonthlyEarnings']);
+
+        // Módulo "Tokens por usuario"
+        Route::get('/admin/token-usage', [TokenUsageController::class, 'index']);
  });
 
     // =========================================================================
@@ -105,6 +113,13 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::get('conversation/diagnosticplan',[ConversationController::class,'getDiagnosticoPlan']);
     Route::get('conversation/conversationPlan',[ConversationController::class,'getConversationPlan']);
     Route::post('/conversation/delete-chapters-answers', [ConversationController::class, 'deleteChaptersAnswers']);
+    Route::post('/conversation/go-back', [ConversationController::class, 'goBack']);
+
+    // Anexos del plan (imágenes o Excel al final del documento)
+    Route::get('/conversation/annexes', [AnnexController::class, 'index']);
+    Route::post('/conversation/annexes', [AnnexController::class, 'store']);
+    Route::patch('/conversation/annexes/{id}/move', [AnnexController::class, 'move']);
+    Route::delete('/conversation/annexes/{id}', [AnnexController::class, 'destroy']);
     
     // Pagos del usuario
     Route::post('payment/validate', [CouponController::class, 'validateCoupon']);
