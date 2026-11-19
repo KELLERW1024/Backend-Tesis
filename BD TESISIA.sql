@@ -230,11 +230,17 @@ CREATE TABLE user_answers (
 -- ============================================
 CREATE TABLE references_library (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    conversation_id BIGINT NOT NULL,
     authors TEXT NOT NULL,
     publication_year VARCHAR(10),
     title TEXT NOT NULL,
+    container_title VARCHAR(255) NULL,
+    volume VARCHAR(50) NULL,
+    issue VARCHAR(50) NULL,
+    pages VARCHAR(50) NULL,
     publisher VARCHAR(255),
     url TEXT,
+    doi VARCHAR(100),
     source_type ENUM(
         'book',
         'journal_article',
@@ -242,11 +248,15 @@ CREATE TABLE references_library (
         'thesis',
         'report',
         'conference_paper'
-    ) DEFAULT 'book',
-    reference_hash CHAR(64) UNIQUE NOT NULL,
-    doi VARCHAR(100),
+    ) DEFAULT 'web_page',
+    in_text_citation VARCHAR(255) NULL,
+    reference_hash CHAR(64) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE (conversation_id, reference_hash),
+
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
 );
 
 -- ============================================

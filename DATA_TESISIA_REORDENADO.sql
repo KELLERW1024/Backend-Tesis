@@ -310,7 +310,7 @@ VALUES
 
     (44, 1, NULL, '3.2',   2, 37, 'Análisis competitivo', 2,1, NULL),
     (45, 1, NULL, '3.2.1', 3, 44, 'Cinco Fuerzas de Porter', 1,1, NULL),
-    (46, 1, NULL, '3.2.1.1', 4, 45, 'Clientes.', 1,1, NULL),
+    (46, 1, NULL, '3.2.1.1', 4, 45, 'Clientes', 1,1, NULL),
     (47, 1, NULL, '3.2.1.2', 4, 45, 'Competidores', 2,1, NULL),
     (48, 1, NULL, '3.2.1.3', 4, 45, 'Proveedores', 3,1, NULL),
     (49, 1, NULL, '3.2.1.4', 4, 45, 'Productos sustitutos', 4,1, NULL),
@@ -326,6 +326,8 @@ VALUES
     (58, 1, NULL, '3.3.6', 3, 52, 'Resultados', 6,1, NULL),
     (59, 1, NULL, '3.3.7', 3, 52, 'Tamaño de mercado', 7,1, NULL),
     (60, 1, NULL, '3.3.8', 3, 52, 'Demanda potencial, disponible, efectiva y objetivo', 8,1, NULL),
+    
+    -- NO TIENE PREGUNTAS 
     (61, 1, NULL, '3.3.9', 3, 52, 'Proyección de demanda', 9,1, NULL),
 
     -- CAPÍTULO IV

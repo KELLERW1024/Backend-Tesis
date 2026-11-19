@@ -24,7 +24,7 @@ NATURALEZA DE LA TESIS: PLAN DE MEJORA.
 
 El proyecto se desarrolla sobre una empresa u organización que YA EXISTE y está en funcionamiento. No se crea un negocio nuevo: se identifica un problema u oportunidad de mejora en un área o proceso concreto, se diagnostica su situación actual con evidencias, se analizan sus causas, se diseña una solución y se demuestra que la mejora es viable y genera beneficios medibles respecto de la situación actual.
 
-La lógica del documento es: presentación del proyecto y situación inicial → reseña y contexto de la empresa (identificación, descripción del negocio, direccionamiento estratégico, organización, mapa de procesos, partes interesadas) → diagnóstico empresarial (factores del entorno, diagnóstico competitivo, perspectivas financiera, de clientes, de procesos y de capacidades, FODA y línea base) → análisis del problema (formulación, efectos, diagrama de Ishikawa, cinco porqués, Pareto, árbol del problema, puntos críticos, priorización, oportunidad de mejora y criterios de éxito) → diseño de la propuesta (objetivos de mejora, alternativas, evaluación, descripción técnica, proceso AS-IS y TO-BE, estrategias, gestión del cambio, riesgos y sostenibilidad) → evaluación económica (presupuesto, costo actual del problema, beneficios esperados, flujo incremental, beneficio-costo, ROI, periodo de recuperación, VAN, TIR, escenarios, sensibilidad y viabilidad) → implementación y control (plan de acción, Gantt, RACI, capacitación, comunicación, piloto, monitoreo, KPI, acciones correctivas, evaluación antes-después, estandarización y ciclo PHVA).
+La lógica general de este tipo de documento va de la situación inicial y el contexto de la empresa al diagnóstico, el análisis del problema, el diseño de la propuesta de mejora, su evaluación económica y su implementación y control. Si se indica la ESTRUCTURA DEL DOCUMENTO del proyecto, sus capítulos y apartados son los que tiene la tesis y mandan sobre esta lógica general.
 
 Elementos centrales que deben mantenerse coherentes en todo el documento: empresa y sector, área o proceso crítico, problema central, causas raíz, indicadores de línea base (situación actual), metas de mejora, solución propuesta, costo actual del problema, inversión de la mejora, beneficios incrementales y KPI de seguimiento.
 
@@ -188,7 +188,8 @@ TEXT;
     {
         return [
             'brecha'   => '¿Cuántos pedidos se entregan con retraso al mes actualmente?',
-            'variable' => ['nombre' => 'costo_mensual_reprocesos_actual', 'valor' => '1800', 'estado' => 'Calculado', 'formula' => '120 reprocesos * S/ 15 por reproceso'],
+            // Solo marcadores, sin cifras: un ejemplo con cifras reales (468) se copiaba como dato del plan
+            'variable' => ['nombre' => 'nombre_de_la_variable', 'valor' => '{{operación con las cifras del usuario}}', 'estado' => 'Calculado', 'formula' => 'operación con las cifras del usuario y sus unidades'],
         ];
     }
 
@@ -230,17 +231,24 @@ una incongruencia.
 TEXT;
     }
 
-    public function assistantContextDefaults(): array
+    public function assistantContextCatalog(): array
     {
         return [
-            'nombre_empresa'            => null,
-            'area_o_proceso_critico'    => null,
-            'problema_central'          => null,
-            'indicador_linea_base'      => null,
-            'meta_de_mejora'            => null,
-            'costo_actual_del_problema' => null,
-            'inversion_de_la_mejora'    => null,
-            'beneficio_esperado'        => null,
+            'nombre_empresa'            => ['label' => 'Empresa', 'description' => 'Nombre de la empresa.'],
+            'rubro_empresa'             => ['label' => 'Rubro', 'description' => 'Sector y actividad de la empresa.'],
+            'area_o_proceso_critico'    => ['label' => 'Área o proceso', 'description' => 'Área o proceso que se va a mejorar.'],
+            'alcance_estudio'           => ['label' => 'Alcance', 'description' => 'Sede, área, proceso y periodo que abarca el estudio.'],
+            'problema_central'          => ['label' => 'Problema', 'description' => 'Situación que preocupa y que se quiere resolver.'],
+            'consecuencias_visibles'    => ['label' => 'Consecuencias', 'description' => 'Efectos visibles que produce el problema.'],
+            'causas_principales'        => ['label' => 'Causas', 'description' => 'Causas del problema que identificó el usuario.'],
+            'evidencias_disponibles'    => ['label' => 'Evidencias', 'description' => 'Registros, reportes o datos con los que cuenta la empresa.'],
+            'indicador_linea_base'      => ['label' => 'Línea base', 'description' => 'Indicador del problema y su valor actual, antes de la mejora.', 'glosario' => true],
+            'meta_de_mejora'            => ['label' => 'Meta', 'description' => 'Valor que se espera que alcance el indicador con la mejora; se compara con la línea base.', 'glosario' => true],
+            'solucion_propuesta'        => ['label' => 'Solución', 'description' => 'Qué se propone hacer para resolver el problema.'],
+            'modalidad_implementacion'  => ['label' => 'Implementación', 'description' => 'Si la propuesta solo se formula, se prueba con un piloto o se implementa por completo.'],
+            'costo_actual_del_problema' => ['label' => 'Costo del problema', 'description' => 'Cuánto le cuesta hoy el problema a la empresa en un periodo.', 'glosario' => true],
+            'inversion_de_la_mejora'    => ['label' => 'Inversión', 'description' => 'Costo de implementar la mejora (se paga una vez o durante la implementación).', 'glosario' => true],
+            'beneficio_esperado'        => ['label' => 'Beneficio', 'description' => 'Ahorro o ganancia que se espera con la mejora en un periodo; no es el costo actual del problema.', 'glosario' => true],
         ];
     }
 
@@ -249,15 +257,16 @@ TEXT;
         return 'destacando la empresa, el área o proceso analizado, el problema y sus causas, los indicadores de línea base y las metas, la solución propuesta y las cifras de costos, inversión y beneficios incrementales';
     }
 
-    public function mandatoryNodes(): string
+    // Nodos obligatorios del plan de mejora
+    public function mandatoryCodes(): array
     {
-        return <<<TXT
-   b) Los nodos cuyo "codigo" sea "2" o "2.3" (direccionamiento estratégico de la empresa).
-   c) Los nodos cuyo "codigo" sea "3", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.13" o "3.14" (factores del entorno, diagnóstico competitivo, FODA y línea base).
-   d) Los nodos cuyo "codigo" sea "4", "4.2", "4.4", "4.7" o "4.10" (formulación del problema, Ishikawa, árbol del problema y oportunidad de mejora).
-   e) Los nodos cuyo "codigo" sea "5", "5.2", "5.3", "5.4", "5.5" o "5.6" (objetivos de mejora, generación, evaluación y descripción de la solución).
-   f) Todos los nodos cuyo "codigo" sea "6" o empiece por "6." (Capítulo VI completo: presupuesto, costos del problema, beneficios, flujo incremental, B/C, ROI, recuperación, VAN, TIR, escenarios, sensibilidad y viabilidad).
-   g) Los nodos cuyo "codigo" sea "7", "7.2", "7.3" o "7.11" (plan de acción, cronograma Gantt y definición de KPI).
-TXT;
+        return [
+            '2', '2.3',
+            '3', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.13', '3.14',
+            '4', '4.2', '4.4', '4.7', '4.10',
+            '5', '5.2', '5.3', '5.4', '5.5', '5.6',
+            '6', '6.*',
+            '7', '7.2', '7.3', '7.11',
+        ];
     }
 }

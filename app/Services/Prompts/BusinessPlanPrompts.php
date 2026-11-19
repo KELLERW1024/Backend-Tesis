@@ -24,7 +24,7 @@ NATURALEZA DE LA TESIS: PLAN DE NEGOCIO.
 
 El proyecto consiste en la creación o puesta en marcha de un emprendimiento o unidad de negocio nueva. La tesis debe demostrar que existe una oportunidad de mercado y que el negocio es viable comercial, técnica, organizacional y financieramente.
 
-La lógica del documento es: idea y oportunidad de negocio → plan estratégico y organizacional (misión, visión, valores, objetivos, FODA, ventaja competitiva y estrategias) → análisis del entorno y del mercado (PESTEL, cinco fuerzas de Porter, demanda y oferta) → plan de marketing (producto, precio, plaza y promoción) → plan de operaciones → organización de la empresa → plan financiero (inversión, financiamiento, costos, presupuestos, estados financieros, flujo de caja, VAN, TIR, ratios, sensibilidad y escenarios).
+La lógica general de este tipo de documento va de la idea y la oportunidad de negocio a la estrategia, el análisis del entorno y del mercado, la propuesta comercial y operativa, la organización y la evaluación financiera. Si se indica la ESTRUCTURA DEL DOCUMENTO del proyecto, sus capítulos y apartados son los que tiene la tesis y mandan sobre esta lógica general.
 
 Elementos centrales que deben mantenerse coherentes en todo el documento: nombre del negocio, sector o rubro, producto o servicio, cliente objetivo o segmento, necesidad u oportunidad que atiende, propuesta de valor, precio, demanda estimada, capacidad, inversión y proyecciones financieras.
 TEXT;
@@ -162,7 +162,8 @@ TEXT;
     {
         return [
             'brecha'   => '¿Cuánto cobrarás por cada sesión?',
-            'variable' => ['nombre' => 'capacidad_maxima', 'valor' => '468', 'estado' => 'Calculado', 'formula' => '18 diarios * 26 días laborables'],
+            // Solo marcadores, sin cifras: un ejemplo con cifras reales (468) se copiaba como dato del plan
+            'variable' => ['nombre' => 'nombre_de_la_variable', 'valor' => '{{operación con las cifras del usuario}}', 'estado' => 'Calculado', 'formula' => 'operación con las cifras del usuario y sus unidades'],
         ];
     }
 
@@ -204,16 +205,29 @@ una incongruencia.
 TEXT;
     }
 
-    public function assistantContextDefaults(): array
+    public function assistantContextCatalog(): array
     {
         return [
-            'nombre_proyecto_empresa'   => null,
-            'alcance_geografico'        => null,
-            'capacidad_operativa'       => null,
-            'precio_o_tarifa'           => null,
-            'costos_o_inversion'        => null,
-            'demanda_o_volumen'         => null,
-            'impacto_o_meta_financiera' => null,
+            'nombre_negocio'      => ['label' => 'Nombre del negocio', 'description' => 'Nombre comercial del negocio o empresa.'],
+            'lema'                => ['label' => 'Lema', 'description' => 'Lema o eslogan del negocio.'],
+            'etapa_negocio'       => ['label' => 'Etapa', 'description' => 'Si es una idea, está en preparación, realiza pruebas o ya funciona.'],
+            'actividad_principal' => ['label' => 'Actividad', 'description' => 'Qué hace principalmente (producir, revender, distribuir, prestar servicios o conectar partes) y su rubro.'],
+            'producto_servicio'   => ['label' => 'Producto o servicio', 'description' => 'Qué ofrece, con su línea o variedad (por ejemplo, "relojes originales y alternativos").'],
+            'segmento_clientes'   => ['label' => 'Clientes', 'description' => 'A quién vende y su perfil: quién compra, quién paga y quién usa o consume.'],
+            'ubicacion_alcance'   => ['label' => 'Ubicación y alcance', 'description' => 'Dónde funciona y qué alcance tendrá al inicio.'],
+            'canal_venta_entrega' => ['label' => 'Venta, cobro y entrega', 'description' => 'Cómo vende (local, delivery, en línea…), cómo cobra (efectivo, Yape, tarjeta…) y cómo entrega.'],
+            'propuesta_valor'     => ['label' => 'Propuesta de valor', 'description' => 'Qué lo diferencia de las alternativas.'],
+            'competidores'        => ['label' => 'Competencia', 'description' => 'Competidores o alternativas que mencionó el usuario.'],
+            'precio_o_tarifa'     => ['label' => 'Precio', 'description' => 'Precios o tarifas del producto o servicio.'],
+            'capacidad_operativa' => ['label' => 'Capacidad', 'description' => 'Lo máximo que el negocio puede atender o producir en un periodo con sus recursos (unidades, turnos, equipos, personal); no es lo que espera vender.', 'glosario' => true],
+            'mercado_potencial'   => ['label' => 'Mercado potencial', 'description' => 'Total de personas o empresas que podrían necesitar el producto o servicio en la zona (dato externo, con su fuente).', 'glosario' => true],
+            'mercado_objetivo'    => ['label' => 'Mercado objetivo', 'description' => 'Parte del mercado potencial a la que el negocio se dirige, según su segmento y alcance.', 'glosario' => true],
+            'demanda_estimada'    => ['label' => 'Demanda', 'description' => 'Cantidad de clientes o de ventas que se espera tener en un periodo, dentro del mercado objetivo.', 'glosario' => true],
+            'meta_ventas'         => ['label' => 'Meta de ventas', 'description' => 'Ventas que el negocio se propone alcanzar en un periodo (unidades o soles); no puede superar la capacidad.', 'glosario' => true],
+            'costos_principales'  => ['label' => 'Costos', 'description' => 'Costos fijos y variables que mencionó el usuario.'],
+            'inversion_inicial'   => ['label' => 'Inversión', 'description' => 'Monto de la inversión inicial y sus componentes.'],
+            'financiamiento'      => ['label' => 'Financiamiento', 'description' => 'Aporte propio, préstamo, tasa y plazo.'],
+            'meta_financiera'     => ['label' => 'Meta financiera', 'description' => 'Meta de ingresos, utilidad o rentabilidad (por ejemplo, recuperar la inversión en dos años).', 'glosario' => true],
         ];
     }
 
@@ -222,12 +236,10 @@ TEXT;
         return 'destacando el producto o servicio, el segmento de clientes, precios, demanda, capacidad, costos, inversión, resultados financieros y las decisiones tomadas';
     }
 
-    public function mandatoryNodes(): string
+    // Capítulo II completo; Capítulo III: PESTEL (3.1) y análisis competitivo con las Cinco Fuerzas
+    // de Porter y la MEFE (3.2); Capítulo VII completo (plan financiero)
+    public function mandatoryCodes(): array
     {
-        return <<<TXT
-   b) Todos los nodos cuyo "codigo" sea "2" o empiece por "2." (Capítulo II completo: factores internos y MEFI, visión, misión, valores, objetivo general, objetivos específicos, FODA, FODA cruzada, ventaja competitiva y estrategias).
-   c) Los nodos cuyo "codigo" sea "3" o empiece por "3.1" o "3.2" (Análisis PESTEL con todos sus factores, Cinco Fuerzas de Porter con cada una de sus fuerzas y Matriz MEFE).
-   d) Todos los nodos cuyo "codigo" sea "7" o empiece por "7." (Capítulo VII completo: supuestos, inversiones, capital de trabajo, financiamiento, costos, presupuestos, estados financieros, flujo de caja, VAN, TIR, ratios, sensibilidad, escenarios y viabilidad).
-TXT;
+        return ['2', '2.*', '3', '3.1', '3.1.*', '3.2', '3.2.*', '7', '7.*'];
     }
 }

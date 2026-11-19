@@ -45,4 +45,21 @@ return [
         'token' => env('REPLICATE_API_TOKEN'),
     ],
 
+    // Búsqueda de fuentes para las referencias ("Agregar fuente" → "Buscar")
+    'sources' => [
+        'daily_limit' => (int) env('SOURCES_DAILY_LIMIT', 20),
+        'search_model' => env('SOURCES_SEARCH_MODEL', 'gpt-5-mini'),
+        'official_domains' => [
+            'gob.pe',
+            'inei.gob.pe',
+            'bcrp.gob.pe',
+            'sunat.gob.pe',
+            'produce.gob.pe',
+            'minsa.gob.pe',
+            'dge.gob.pe',
+            'datosabiertos.gob.pe',
+            'mincetur.gob.pe',
+            'midagri.gob.pe',
+        ],
+    ],
 ];

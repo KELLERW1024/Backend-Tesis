@@ -11,6 +11,9 @@ use App\Models\UserAnswers;
 use App\Models\PlanNode;
 use App\Models\Annex;
 use App\Services\ExcelService;
+use App\Services\ReferenceService;
+use App\Services\ThesisContextService;
+use App\Services\Prompts\PlanPromptResolver;
 use App\Models\UserSubscription;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\PhpWord;
@@ -115,6 +118,101 @@ class DocumentController extends Controller
         return response()->download($tempFile)->deleteFileAfterSend(true);
     }
 
+    // Cada línea es un párrafo; las viñetas ("- ", "• ", "1. ") van como lista con sangría francesa
+    private function addParagraphs($section, string $text, array $paragraphStyle): void
+    {
+        $font = ['name' => 'Arial', 'size' => 11];
+        $listStyle = [...$paragraphStyle, 'indentation' => ['left' => 720, 'hanging' => 360]];
+
+        foreach (preg_split('/\R/u', $text) as $line) {
+            $line = trim($line);
+
+            if ($line === '') {
+                continue;
+            }
+
+            if (preg_match('/^(?:[-•*·]|\d{1,2}[.)])\s+/u', $line)) {
+                // "- texto" o "* texto" → "• texto"; las numeradas se dejan como están
+                $line = preg_replace('/^[-*·]\s+/u', '• ', $line);
+                $section->addText($this->cleanText($line), $font, $listStyle);
+                continue;
+            }
+
+            $section->addText($this->cleanText($line), $font, $paragraphStyle);
+        }
+    }
+
+    // Portada en hoja propia; lo que falta va resaltado en amarillo para completarlo en Word
+    private function addCover($section, array $cover, string $author): void
+    {
+        $center = ['alignment' => Jc::CENTER, 'spaceBefore' => 0, 'spaceAfter' => 0, 'lineHeight' => 1.0];
+        $line = function (string $value, string $placeholder, array $font = []) use ($section, $center) {
+            $value = trim($value);
+            $font = ['name' => 'Arial', 'size' => 11, ...$font];
+
+            $section->addText(
+                $this->cleanText($value !== '' ? $value : $placeholder),
+                $value !== '' ? $font : [...$font, 'fgColor' => 'yellow'],
+                $center
+            );
+        };
+        $gap = fn (int $lines = 1) => $section->addTextBreak($lines, ['size' => 11], $center);
+
+        $line(mb_strtoupper($cover['universidad'] ?? ''), '[NOMBRE DE LA UNIVERSIDAD]', ['bold' => true]);
+        $line($cover['facultad'] ?? '', '[Facultad]');
+        $line($cover['escuela'] ?? '', '[Escuela profesional]');
+        $gap(4);
+
+        $line($cover['titulo'] ?? '', '[Título de la tesis]', ['bold' => true, 'size' => 14]);
+        $gap(3);
+
+        $line('Tesis para optar el título profesional de', '');
+        $line($cover['titulo_profesional'] ?? '', '[Título profesional]');
+        $gap(3);
+
+        $line('Autor', '', ['bold' => true]);
+        $line($author, '[Nombre del autor]');
+        $gap();
+
+        $line('Asesor', '', ['bold' => true]);
+        $line($cover['asesor'] ?? '', '[Nombre del asesor]');
+        $gap(4);
+
+        $line(($cover['ciudad'] ?? '') !== '' ? $cover['ciudad'] . ' – Perú' : '', '[Ciudad] – Perú');
+        $line((string) now()->year, '');
+    }
+
+    // Índice (niveles 1 a 3) con vínculos; Word completa los números de página al abrir
+    private function addTableOfContents($section): void
+    {
+        $section->addText(
+            'Índice',
+            ['name' => 'Arial', 'size' => 11, 'bold' => true],
+            ['alignment' => Jc::CENTER, 'pageBreakBefore' => true, 'spaceAfter' => 240]
+        );
+
+        $section->addTOC(['name' => 'Arial', 'size' => 11], ['tabLeader' => 'dot'], 1, 3);
+    }
+
+    // Nota APA bajo tablas y figuras: "Nota." en cursiva y la fuente (o "Elaboración propia")
+    private function addNote($section, ?string $source): void
+    {
+        $source = trim(preg_replace('/^(fuente|nota)\s*[:.]\s*/iu', '', trim((string) $source)));
+        $source = $source !== '' ? $source : 'Elaboración propia';
+        $source = preg_match('/[.!?]$/u', $source) ? $source : $source . '.';
+
+        $textRun = $section->addTextRun(['alignment' => Jc::START]);
+        $textRun->addText('Nota.', ['italic' => true, 'size' => 10]);
+        $textRun->addText(' ' . $this->cleanText($source), ['size' => 10]);
+    }
+
+    // "ventas_2024-final" → "Ventas 2024 final" (título de tablas que vienen de un archivo Excel)
+    public static function readableTitle(string $title): string
+    {
+        $title = trim(preg_replace('/\s+/u', ' ', str_replace(['_', '-'], ' ', $title)));
+
+        return mb_strtoupper(mb_substr($title, 0, 1)) . mb_substr($title, 1);
+    }
     function cleanText($text)
     {
         if (is_array($text) || is_object($text)) {
@@ -129,10 +227,8 @@ class DocumentController extends Controller
         // convierte UTF-8 real
         $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
 
-        // reemplaza entidades peligrosas para XML
-        $text = str_replace('&', 'and', $text);
-
-        return $text;
+        // Escapa &, < y > para el XML del Word: así "&" se ve como "&" (antes se cambiaba por "and")
+        return htmlspecialchars($text, ENT_XML1 | ENT_NOQUOTES, 'UTF-8');
     }
     public function generar2(Request $request)
     {
@@ -492,21 +588,6 @@ class DocumentController extends Controller
             ->get();
 
 
-Log::info('NODOS NIVEL 1', [
-    'nodes' => $nodes
-        ->where('nivel', 1)
-        ->map(function ($node) {
-            return [
-                'id' => $node->id,
-                'titulo' => $node->titulo,
-                'parent_id' => $node->parent_id,
-                'orden' => $node->orden,
-            ];
-        })
-        ->values()
-        ->toArray()
-]);
-
 
             /*
             |--------------------------------------------------------------------------
@@ -522,13 +603,6 @@ Log::info('NODOS NIVEL 1', [
             |--------------------------------------------------------------------------
             */
 
-            Log::info('GENERAR DOCUMENTO', [
-                'conversation_id' => $idConversation,
-                'plan_id' => $plan->id,
-                'total_nodes' => $nodes->count(),
-                'root_nodes' => $nodeTree->count(),
-            ]);
-
             /*
             |--------------------------------------------------------------------------
             | CREAR WORD
@@ -538,9 +612,12 @@ Log::info('NODOS NIVEL 1', [
             $phpWord = new PhpWord();
 
             $phpWord->setDefaultFontName('Arial');
-            $phpWord->setDefaultFontSize(12);
+            $phpWord->setDefaultFontSize(11);
 
             $section = $phpWord->addSection([
+                
+                'pageSizeW'    => 11906,
+                'pageSizeH'    => 16838,
                 'marginTop'    => 1440,
                 'marginBottom' => 1440,
                 'marginLeft'   => 1440,
@@ -549,17 +626,20 @@ Log::info('NODOS NIVEL 1', [
 
             /*
             |--------------------------------------------------------------------------
-            | HEADER
+            | NÚMERO DE PÁGINA (encabezado, a la derecha: APA 7)
             |--------------------------------------------------------------------------
             */
+
+            // La portada (primera página) va sin número: encabezado vacío para la primera página
+            $section->addHeader(\PhpOffice\PhpWord\Element\Header::FIRST);
 
             $header = $section->addHeader();
 
             $header->addPreserveText(
                 '{PAGE}',
                 [
-                    'name' => 'Times New Roman',
-                    'size' => 12
+                    'name' => 'Arial',
+                    'size' => 11
                 ],
                 [
                     'alignment' => Jc::END
@@ -588,41 +668,25 @@ Log::info('NODOS NIVEL 1', [
             |--------------------------------------------------------------------------
             */
 
-            $phpWord->addTitleStyle(
-                1,
-                [
-                    'bold' => true,
-                    'size' => 16,
-                    'name' => 'Arial',
-                ]
-            );
+            // Títulos APA 7: Arial 11, doble espacio; nivel 1 centrado y del 2 al 5 según APA
+            $titleParagraph = ['lineHeight' => 2.0, 'spaceBefore' => 0, 'spaceAfter' => 0, 'keepNext' => true];
 
-            $phpWord->addTitleStyle(
-                2,
-                [
-                    'bold' => true,
-                    'size' => 14,
-                    'name' => 'Arial',
-                ]
-            );
+            $apaHeadings = [
+                1 => [['bold' => true], ['alignment' => Jc::CENTER, 'pageBreakBefore' => true]],
+                2 => [['bold' => true], ['alignment' => Jc::START]],
+                3 => [['bold' => true, 'italic' => true], ['alignment' => Jc::START]],
+                4 => [['bold' => true], ['alignment' => Jc::START, 'indentation' => ['firstLine' => 720]]],
+                5 => [['bold' => true, 'italic' => true], ['alignment' => Jc::START, 'indentation' => ['firstLine' => 720]]],
+                6 => [['bold' => true, 'italic' => true], ['alignment' => Jc::START, 'indentation' => ['firstLine' => 720]]],
+            ];
 
-            $phpWord->addTitleStyle(
-                3,
-                [
-                    'bold' => true,
-                    'size' => 13,
-                    'name' => 'Arial',
-                ]
-            );
-
-            $phpWord->addTitleStyle(
-                4,
-                [
-                    'bold' => true,
-                    'size' => 12,
-                    'name' => 'Arial',
-                ]
-            );
+            foreach ($apaHeadings as $depth => [$font, $paragraph]) {
+                $phpWord->addTitleStyle(
+                    $depth,
+                    [...$font, 'size' => 11, 'name' => 'Arial'],
+                    [...$paragraph, ...$titleParagraph]
+                );
+            }
 
             /*
             |--------------------------------------------------------------------------
@@ -639,10 +703,21 @@ Log::info('NODOS NIVEL 1', [
             |--------------------------------------------------------------------------
             */
 
-            $section->addTitle(
-                $this->cleanText($plan->name ?? 'Plan de Tesis'),
-                1
+            // Portada (datos del diagnóstico; lo que falta queda como marcador para completar)
+            // e índice general con vínculos. El título genérico del plan ya no se usa.
+            $owner = $conversation->userPlan->user;
+            $this->addCover(
+                $section,
+                app(ThesisContextService::class)->coverData(
+                    $conversation,
+                    app(PlanPromptResolver::class)->forConversation($conversation)
+                ),
+                trim(($owner->name ?? '') . ' ' . ($owner->last_name ?? ''))
             );
+            $this->addTableOfContents($section);
+
+            // Word actualiza los campos al abrir el archivo: así el índice muestra los números de página
+            $phpWord->getSettings()->setUpdateFields(true);
 
             /*
             |--------------------------------------------------------------------------
@@ -661,22 +736,13 @@ Log::info('NODOS NIVEL 1', [
             //     );
             // }
             
-            $capituloIndex = 1;
-
+            // APA 7: los títulos no se numeran. Cada título principal (nivel 1) empieza en una hoja nueva
+            // por su estilo (pageBreakBefore), sin un párrafo de salto que pueda dejar una hoja en blanco
             foreach ($nodeTree as $node) {
-
-                // Si es Fase 2 (Resumen, Introducción, Conclusiones, Recomendaciones), no lleva número
-                if ((int) $node->execution_phase === 2) {
-                    $numero = '';
-                } else {
-                    $numero = (string) $capituloIndex;
-                    $capituloIndex++; // Solo incrementa en capítulos reales de Fase 1
-                }
 
                 $this->addNodeToDocument(
                     $section,
                     $node,
-                    $numero,
                     $paragraphStyle,
                     $contadorFigura,
                     $contadorTabla
@@ -684,6 +750,9 @@ Log::info('NODOS NIVEL 1', [
             }
 
    
+
+            // APA 7: la lista de referencias va después del contenido y antes de los anexos
+            $this->addReferencesToDocument($section, $conversation->id);
 
             $this->addAnexosToDocument($section, $conversation->id);
 
@@ -809,11 +878,15 @@ Log::info('NODOS NIVEL 1', [
     {
         $numColumns = count($tableData['columns']);
 
+        // APA 7: sin líneas verticales ni sombreado; solo una línea arriba, otra bajo el encabezado y otra al final
+        // (Sin bordes de tabla: declararlos con grosor 0 dejaba líneas blancas que siguen existiendo)
         $table = $section->addTable([
-            'borderSize' => 6,
-            'borderColor' => '000000',
             'cellMargin' => 80,
         ]);
+        $line = ['size' => 8, 'color' => '000000'];
+        $headerBorders = ['borderTopSize' => $line['size'], 'borderTopColor' => $line['color'], 'borderBottomSize' => $line['size'], 'borderBottomColor' => $line['color']];
+        $lastRowBorders = ['borderBottomSize' => $line['size'], 'borderBottomColor' => $line['color']];
+        $lastRow = count($tableData['rows']) - 1;
 
         // Ancho de columnas
         $pageWidth = 9000;
@@ -823,9 +896,7 @@ Log::info('NODOS NIVEL 1', [
         $table->addRow();
 
         foreach ($tableData['columns'] as $column) {
-            $table->addCell($cellWidth, [
-                    'bgColor' => 'D9D9D9',
-                ])->addText(
+            $table->addCell($cellWidth, $headerBorders)->addText(
                     $this->cleanText((string) $column),
                     [
                         'bold' => true,
@@ -835,14 +906,53 @@ Log::info('NODOS NIVEL 1', [
         }
 
         // Filas, respetando el número de columnas
-        foreach ($tableData['rows'] as $row) {
+        foreach (array_values($tableData['rows']) as $rowIndex => $row) {
             $table->addRow();
 
             for ($i = 0; $i < $numColumns; $i++) {
                 $cell = $row[$i] ?? '';
 
-                $table->addCell($cellWidth)
+                $table->addCell($cellWidth, $rowIndex === $lastRow ? $lastRowBorders : [])
                     ->addText($this->cleanText((string) $cell));
+            }
+        }
+    }
+
+    // APA 7: página nueva, título "Referencias" (nivel 1), orden alfabético,
+    // doble espacio y sangría francesa de 1,27 cm; títulos de obras y revistas en cursiva
+    private function addReferencesToDocument($section, int $conversationId): void
+    {
+        $referenceService = app(ReferenceService::class);
+        $references = $referenceService->forConversation($conversationId);
+
+        if ($references->isEmpty()) {
+            return;
+        }
+
+        $section->addTitle('Referencias', 1);
+
+        foreach ($references as $reference) {
+            $textRun = $section->addTextRun([
+                'alignment' => Jc::START,
+                'lineHeight' => 2.0,
+                'spaceBefore' => 0,
+                'spaceAfter' => 0,
+                'indentation' => ['left' => 720, 'hanging' => 720],
+            ]);
+
+            foreach ($referenceService->formatRuns($reference) as $run) {
+                $font = ['name' => 'Arial', 'size' => 11, 'italic' => $run['italic']];
+
+                if ($run['url']) {
+                    $textRun->addLink(
+                        $run['url'],
+                        htmlspecialchars($run['text'], ENT_XML1 | ENT_NOQUOTES, 'UTF-8'),
+                        [...$font, 'color' => '0563C1', 'underline' => 'single']
+                    );
+                    continue;
+                }
+
+                $textRun->addText($this->cleanText($run['text']), $font);
             }
         }
     }
@@ -855,7 +965,6 @@ Log::info('NODOS NIVEL 1', [
             return;
         }
 
-        $section->addPageBreak();
         $section->addTitle('Anexos', 1);
 
         $numero = 1;
@@ -895,11 +1004,7 @@ Log::info('NODOS NIVEL 1', [
                 ]);
             }
 
-            $section->addText(
-                'Fuente: ' . $this->cleanText($anexo->source ?: 'Elaboración propia'),
-                ['italic' => true, 'size' => 10],
-                ['alignment' => Jc::START]
-            );
+            $this->addNote($section, $anexo->source);
 
             $numero++;
         }
@@ -908,7 +1013,6 @@ Log::info('NODOS NIVEL 1', [
    private function addNodeToDocument(
         $section,
         $node,
-        $numero, // NEW
         $paragraphStyle,
         &$contadorFigura,
         &$contadorTabla, 
@@ -934,19 +1038,16 @@ Log::info('NODOS NIVEL 1', [
         //     );
         // }
 
-        /*
-        |--------------------------------------------------------------------------
-        | MODIFICACIÓN 1: Solo anteponer número si $numero no está vacío
-        |--------------------------------------------------------------------------
-        */
+        // APA 7: el título va tal como está en el plan, sin numeración agregada.
+        // Los niveles 1 a 3 no llevan punto final (se quita un punto suelto, no los puntos suspensivos)
+        if ($nivelTitulo <= 3) {
+            $titulo = preg_replace('/(?<!\.)\.\s*$/u', '', $titulo);
+        }
+
         if (!empty($titulo)) {
 
-            $textoTitulo = !empty($numero) 
-                ? $numero . ' ' . $this->cleanText($titulo)
-                : $this->cleanText($titulo);
-
             $section->addTitle(
-                $textoTitulo,
+                $this->cleanText($titulo),
                 $nivelTitulo
             );
         }
@@ -1031,15 +1132,7 @@ Log::info('NODOS NIVEL 1', [
             */
 
             if (!empty($answer->answer_text)) {
-
-                $section->addText(
-                    $this->cleanText($answer->answer_text),
-                    [
-                        'name' => 'Arial',
-                        'size' => 11,
-                    ],
-                    $paragraphStyle
-                );
+                $this->addParagraphs($section, $answer->answer_text, $paragraphStyle);
             }
 
             /*
@@ -1085,8 +1178,9 @@ Log::info('NODOS NIVEL 1', [
                 |--------------------------------------------------------------------------
                 */
 
+                // APA 7: "Figura 1" en negrita y, debajo, el título en cursiva
                 $section->addText(
-                    'Figura ' . $contadorFigura . '.',
+                    'Figura ' . $contadorFigura,
                     [
                         'bold' => true,
                     ],
@@ -1104,11 +1198,11 @@ Log::info('NODOS NIVEL 1', [
                     $section->addText(
                         $this->cleanText($file->description),
                         [
-                            'bold' => false,
-                            'size' => 10,
+                            'italic' => true,
                         ],
                         [
                             'alignment' => Jc::START,
+                            'keepNext' => true,
                         ]
                     );
                 }
@@ -1135,18 +1229,7 @@ Log::info('NODOS NIVEL 1', [
                 */
 
                 if (!empty($file->fuente)) {
-
-                    $section->addText(
-                        'Fuente: ' .
-                        $this->cleanText($file->fuente),
-                        [
-                            'italic' => true,
-                            'size' => 10,
-                        ],
-                        [
-                            'alignment' => Jc::START,
-                        ]
-                    );
+                    $this->addNote($section, $file->fuente);
                 }
 
                 $contadorFigura++;
@@ -1203,9 +1286,12 @@ Log::info('NODOS NIVEL 1', [
                 */
 
                 $section->addText(
-                    'Tabla ' . $contadorTabla . '.',
+                    'Tabla ' . $contadorTabla,
                     [
                         'bold' => true,
+                    ],
+                    [
+                        'keepNext' => true,
                     ]
                 );
 
@@ -1218,9 +1304,12 @@ Log::info('NODOS NIVEL 1', [
                 if (!empty($tableInfo->nombre)) {
 
                     $section->addText(
-                        $this->cleanText($tableInfo->nombre),
+                        $this->cleanText(self::readableTitle($tableInfo->nombre)),
                         [
-                            'bold' => false,
+                            'italic' => true,
+                        ],
+                        [
+                            'keepNext' => true,
                         ]
                     );
                 }
@@ -1239,24 +1328,11 @@ Log::info('NODOS NIVEL 1', [
                 |--------------------------------------------------------------------------
                 */
 
-                if (!empty($tableInfo->fuente)) {
-
-                    $section->addText(
-                        'Fuente: ' .
-                        $this->cleanText(
-                            $tableInfo->fuente
-                        ),
-                        [
-                            'italic' => true,
-                            'size' => 10,
-                        ]
-                    );
-                }
+                // APA 7: la tabla lleva su nota; sin fuente registrada (tablas de Excel antiguas), "Elaboración propia"
+                $this->addNote($section, $tableInfo->fuente);
 
                 $contadorTabla++;
             }
-
-            $section->addTextBreak();
         }
 
         /*
@@ -1286,23 +1362,11 @@ Log::info('NODOS NIVEL 1', [
         //     );
         // }
 
-        /*
-        |--------------------------------------------------------------------------
-        | MODIFICACIÓN 2: Si el padre tiene número (ej. "1"), el hijo será "1.1".
-        | Si el padre no tiene número (sección preliminar/Fase 2), se envía vacío.
-        |--------------------------------------------------------------------------
-        */
+        foreach ($node->children as $child) {
 
-        foreach ($node->children as $index => $child) {
-
-           $numeroHijo = !empty($numero) 
-                ? $numero . '.' . ($index + 1)
-                : '';
-                
             $this->addNodeToDocument(
                 $section,
                 $child,
-                $numeroHijo,
                 $paragraphStyle,
                 $contadorFigura,
                 $contadorTabla

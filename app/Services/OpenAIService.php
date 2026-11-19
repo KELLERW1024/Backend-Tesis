@@ -116,6 +116,49 @@ class OpenAIService
         return $content;
     }
 
+    public function webSearch(string $prompt, array $domains): array
+    {
+        $response = $this->client()
+            ->timeout(120)
+            ->post($this->url, [
+                'model' => config('services.sources.search_model', 'gpt-5-mini'),
+                'reasoning' => ['effort' => 'low'],
+                'tools' => [[
+                    'type' => 'web_search',
+                    'filters' => ['allowed_domains' => array_values($domains)],
+                ]],
+                'input' => $prompt,
+            ]);
+
+        if ($response->failed()) {
+            throw new \Exception($response->body());
+        }
+
+        // Tokens consumidos por el usuario (user_token_quota)
+        $this->tokenUsageService->record($response->json('usage'));
+
+        $text = '';
+        $citations = [];
+
+        foreach ($response->json('output') ?? [] as $item) {
+            if (($item['type'] ?? '') !== 'message') {
+                continue;
+            }
+
+            foreach ($item['content'] ?? [] as $content) {
+                $text .= $content['text'] ?? '';
+
+                foreach ($content['annotations'] ?? [] as $annotation) {
+                    if (($annotation['type'] ?? '') === 'url_citation' && !empty($annotation['url'])) {
+                        $citations[] = ['url' => $annotation['url'], 'title' => $annotation['title'] ?? ''];
+                    }
+                }
+            }
+        }
+
+        return ['text' => $text, 'citations' => $citations];
+    }
+
     // Metodo que limpia lo obtenido en el archivo excel
     public function inputCadenaOutputString(string $content): string
     {

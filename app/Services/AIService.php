@@ -62,13 +62,6 @@ class AIService
         // Pasamos $conversationId aquí
         $contexto = $this->construirContexto($context, $conversationId);
 
-        \Log::info('EVALUANDO INCONGRUENCIA CON IA', [
-            'conversation_id' => $conversationId,
-            'pregunta' => $pregunta,
-            'respuesta' => $respuesta,
-            'contexto_usado' => $contexto,
-        ]);
-
         if (empty(trim($contexto))) {
             return [
                 'hay_incongruencia' => false,
@@ -86,69 +79,13 @@ class AIService
 
         $resultado = $this->openAIService->json($prompt);
 
-        \Log::info('RESULTADO INCONGRUENCIA IA', [
-            'resultado' => $resultado
-        ]);
-
         return $this->normalizarResultado($resultado);
     }
 
+    // Mismo contexto que usa el control de coherencia (resumen, datos conocidos y diagnóstico)
     private function construirContexto(?ThesisContext $context, int $conversationId): string {
 
-        $resumenGeneral = $context?->plan_context['resumen_general'] ?? null;
-        $assistantData = $context?->assistant_context ?? [];
-
-        // Si ya hay resumen general
-        if (!empty($resumenGeneral)) {
-            $texto = "RESUMEN CONSOLIDADO DEL PROYECTO:\n" . $resumenGeneral . "\n\n";
-
-            $datosValidos = array_filter($assistantData, fn($v) => !empty($v));
-            if (!empty($datosValidos)) {
-                $texto .= "DATOS CLAVE REGISTRADOS:\n";
-                foreach ($datosValidos as $k => $v) {
-                    $texto .= "- " . ucfirst(str_replace('_', ' ', $k)) . ": {$v}\n";
-                }
-            }
-            return trim($texto);
-        }
-
-        // ====================================================
-        // Incluir el Diagnóstico Inicial + Historial reciente
-        // ====================================================
-        $diagnosticoInicial = $context?->plan_context['diagnostico_inicial'] ?? [];
-        $textoDiagnostico = "";
-        
-        if (!empty($diagnosticoInicial)) {
-            $textoDiagnostico = "DIAGNÓSTICO INICIAL DEL PROYECTO (8 PREGUNTAS):\n";
-            foreach ($diagnosticoInicial as $diag) {
-                $textoDiagnostico .= "- Respuesta: {$diag['answer']}\n";
-            }
-            $textoDiagnostico .= "\n";
-        }
-
-
-        // Capítulo 1: Usamos app() para no romper dependencias circulares
-        $conversationService = app(ConversationService::class);
-        $historial5 = $conversationService->getHistoryLimit10($conversationId);
-
-        $conversationService = app(ConversationService::class);
-        $historial5 = $conversationService->getHistoryLimit10($conversationId);
-
-        $textoHistorial = "";
-        if (!empty($historial5)) {
-            $textoHistorial = "RESPUESTAS RECIENTES DADAS POR EL USUARIO (CAPÍTULO 1):\n";
-            foreach ($historial5 as $item) {
-                $textoHistorial .= "- {$item['content']}\n\n";
-            }
-        }
-
-        $textoCompleto = trim($textoDiagnostico . $textoHistorial);
-     
-        if (!empty($textoCompleto)) {
-            return $textoCompleto;
-        }
-
-        return '';
+        return app(ThesisContextService::class)->buildValidationText($conversationId);
     }
 
     /**
@@ -299,11 +236,6 @@ PROMPT;
 
             $thesisContext->plan_context = $planContext;
             $thesisContext->save();
-
-            \Log::info("Capítulo {$numeroCapitulo} consolidado en plan_context", [
-                'clave' => $claveCap,
-                'conversation_id' => $conversationId
-            ]);
 
         } catch (\Throwable $e) {
             \Log::error("Error al consolidar plan_context capítulo {$numeroCapitulo}: " . $e->getMessage());

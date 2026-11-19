@@ -12,6 +12,10 @@ use App\Models\Question;
 use App\Models\ConversationSectionProgress;
 use App\Services\ConversationService;
 use App\Services\AnswerValidationService;
+use App\Services\ThesisContextService;
+use App\Services\AttachmentTextService;
+use App\Services\CalculationService;
+use App\Services\AnswerModificationService;
 use App\Services\PromptService;
 use App\Services\OpenAIService;
 use App\Services\Prompts\PlanPromptResolver;
@@ -20,12 +24,16 @@ use App\Http\Resources\SubscriptionResource;
 
 class ConversationController extends Controller
 {
+    // Máximo de caracteres del texto de un archivo adjunto en el asistente
+    private const ASSISTANT_ATTACHMENT_MAX_CHARS = 8000;
+
     private ConversationService $conversationService;
 
     public function __construct(ConversationService $conversationService,
     protected PromptService $promptService, protected OpenAIService $openAIService,
     protected PlanPromptResolver $planPromptResolver,
-    protected AnswerValidationService $answerValidationService )
+    protected AnswerValidationService $answerValidationService,
+    protected ThesisContextService $thesisContextService )
     {
         $this->conversationService = $conversationService;
     }
@@ -97,9 +105,16 @@ class ConversationController extends Controller
 
             $planContextData = array_merge($basePlanContext, $thesisContext->plan_context ?? []);
             $planContextData['diagnostico_inicial'] = $diagnosticoArray;
-            
+            // Los datos de la portada del Word salen del diagnóstico: con un diagnóstico nuevo se regeneran
+            unset($planContextData['portada']);
+
             $thesisContext->plan_context = $planContextData;
             $thesisContext->save();
+
+            $this->thesisContextService->prefillKnownDataFromDiagnostic(
+                $thesisContext,
+                $this->planPromptResolver->forConversation($conversation)
+            );
 
             // 3. Obtener los nodos base del plan para que la IA los filtre basados en el diagnóstico completo
             $plansNode = PlanNode::whereNull('user_plan_id')
@@ -107,7 +122,15 @@ class ConversationController extends Controller
                 ->oldest('id')
                 ->get();
 
-            $nodesForAI = $plansNode->map(function ($node) {
+            // Los nodos obligatorios (mandatoryCodes y fase 2) se incluyen siempre; la IA elige solo entre los opcionales
+            $planPrompts = $this->planPromptResolver->forConversation($conversation);
+
+            [$mandatoryNodes, $optionalNodes] = $plansNode->partition(
+                fn ($node) => (int) $node->execution_phase === 2
+                    || ((int) $node->execution_phase !== 0 && $planPrompts->isMandatory($node->codigo))
+            );
+
+            $nodesForAI = $optionalNodes->map(function ($node) {
                 return [
                     'id' => $node->id,
                     'codigo' => $node->codigo,
@@ -115,21 +138,33 @@ class ConversationController extends Controller
                 ];
             })->values()->toArray();
 
+            // Títulos de capítulos y apartados obligatorios, para que la IA no duplique su contenido
+            $includedTitles = $mandatoryNodes
+                ->filter(fn ($node) => (int) $node->nivel <= 2 || substr_count((string) $node->codigo, '.') <= 1)
+                ->map(fn ($node) => trim(($node->codigo ? $node->codigo . ' ' : '') . rtrim($node->titulo, '.')))
+                ->implode('; ');
+
             // 4. Llamar a la IA con el nuevo prompt basado en el diagnóstico inicial completo
             // ... Recolectar respuestas del diagnóstico y obtener nodos maestros
             // SE REALIZARA UN FILTRO DE NODOS POR PLAN EN EL PROMPT
-        
+
         $promptFiltroNodes = $this->promptService->promptFiltroNodePorDiagnostico(
-            $this->planPromptResolver->forConversation($conversation),
+            $planPrompts,
             $diagnosticoArray,
-            $nodesForAI
+            $nodesForAI,
+            $includedTitles
         );
 
         $resultFiltro = $this->openAIService->json($promptFiltroNodes);
 
-            $nodeIdsFiltrados = collect($resultFiltro['nodes'] ?? [])
-                ->pluck('id')
-                ->toArray();
+            // Opcionales que eligió la IA (solo ids que existen en la lista enviada) + obligatorios siempre
+            $nodeIdsFiltrados = array_values(array_unique(array_merge(
+                array_intersect(
+                    collect($resultFiltro['nodes'] ?? [])->pluck('id')->map(fn ($id) => (int) $id)->toArray(),
+                    $optionalNodes->pluck('id')->toArray()
+                ),
+                $mandatoryNodes->pluck('id')->toArray()
+            )));
 
             // =========================================================================
             // MEDIDA DE SEGURIDAD: ASEGURAR QUE NINGÚN SUBNODO SE QUEDE SIN SU PADRE/CAPÍTULO
@@ -218,6 +253,11 @@ public function flattenNodeIds(array $nodes): array
             'messages.*.role' => 'required|in:user,assistant',
             'messages.*.content' => 'required|string',
             'user_message' => 'nullable|string',
+            'current_answer' => 'nullable|string|max:20000',
+            // Archivos adjuntos en el asistente, ya leídos (assistantReadAttachment): nombre y texto
+            'attachments' => 'nullable|array|max:2',
+            'attachments.*.name' => 'required|string|max:255',
+            'attachments.*.text' => 'required|string|max:12000',
         ]);
 
         $conversation = Conversation::with(['userPlan.plan'])->findOrFail($validated['idConversation']);
@@ -235,21 +275,23 @@ public function flattenNodeIds(array $nodes): array
         // =========================================================================
         // OBTENER CONTEXTOS LIGEROS DE THESIS_CONTEXT Y PREPARAR MEMORIA
         // =========================================================================
-        $thesisContext = \App\Models\ThesisContext::where('conversation_id', $conversation->id)->first();
-        
-        $resumenGeneralAnterior = $thesisContext?->plan_context['resumen_general'] ?? '';
+        $thesisContext = \App\Models\ThesisContext::firstOrCreate(
+            ['conversation_id' => $conversation->id],
+            ['user_plan_id' => $conversation->user_plan_id, 'confidence' => 0]
+        );
+        $planPrompts = $this->planPromptResolver->forConversation($conversation);
+
+        $resumenGeneralAnterior = $thesisContext->plan_context['resumen_general'] ?? '';
         $textoMemoria = "";
-        
-        // 1. EL PASADO: Si hay resumen general, lo usamos. Si no, usamos el diagnóstico inicial.
+
+        // 1. EL PASADO: Si hay resumen general, lo usamos. Si no, usamos el diagnóstico inicial
+        //    (con cada pregunta y su respuesta).
         if (!empty(trim($resumenGeneralAnterior))) {
             $textoMemoria = "RESUMEN DE CAPÍTULOS COMPLETADOS:\n" . $resumenGeneralAnterior . "\n";
         } else {
-            $diagnosticoInicial = $thesisContext?->plan_context['diagnostico_inicial'] ?? [];
-            if (!empty($diagnosticoInicial)) {
-                $textoMemoria = "DIAGNÓSTICO INICIAL (Datos Crudos):\n";
-                foreach ($diagnosticoInicial as $diag) {
-                    $textoMemoria .= "- Respuesta: {$diag['answer']}\n";
-                }
+            $diagnostico = $this->thesisContextService->diagnosticText($thesisContext);
+            if ($diagnostico !== '') {
+                $textoMemoria = $diagnostico . "\n";
             }
         }
 
@@ -267,12 +309,15 @@ public function flattenNodeIds(array $nodes): array
             $resumenGeneral = 'No hay datos previos.';
         }
 
-        // Permitimos que el contexto reciba las claves dinámicas que la IA invente
-        $assistantData = $thesisContext?->assistant_context ?? [];
-
         // Tomar únicamente los últimos 6 turnos del chat actual
         $chatMessages = $validated['messages'] ?? [];
-        if (!empty($validated['user_message'])) {
+        $lastMessage = end($chatMessages) ?: null;
+
+        $alreadyIncluded = $lastMessage
+            && ($lastMessage['role'] ?? '') === 'user'
+            && trim($lastMessage['content'] ?? '') === trim((string) ($validated['user_message'] ?? ''));
+
+        if (!empty($validated['user_message']) && !$alreadyIncluded) {
             $chatMessages[] = [
                 'role' => 'user',
                 'content' => $validated['user_message']
@@ -283,75 +328,56 @@ public function flattenNodeIds(array $nodes): array
         // =========================================================================
         // LOG PARA DEPURAR QUÉ CONTEXTO ESTÁ RECIBIENDO REALMENTE LA IA
         // =========================================================================
-        \Log::info('=== DEBUG: CONTEXTO ENVIADO AL ASISTENTE IA (Resolutor de Brechas) ===', [
-            'conversation_id' => $conversation->id,
-            'tiene_resumen_general_oficial' => !empty(trim($resumenGeneralAnterior)),
-            'longitud_texto_enviado' => strlen($resumenGeneral),
-            'contenido_texto_enviado' => $resumenGeneral,
-            'datos_conocidos_actuales' => $assistantData,
-            'mensajes_chat_recientes' => count($chatMessages)
-        ]);
 
-        // Construir el prompt
-        $prompt = $this->promptService->promptAssistantCoCreation($this->planPromptResolver->forConversation($conversation), [
+        // Construir el prompt: el catálogo del plan con el valor actual de cada dato
+        $prompt = $this->promptService->promptAssistantCoCreation($planPrompts, [
             'question' => $question->question_text,
             'detail' => $question->question_detail,
             'objective' => $planNode?->objective ?? $planNode?->titulo ?? '',
             'resumen_general' => $resumenGeneral,
-            'assistant_context' => $assistantData,
+            'assistant_context_text' => $this->thesisContextService->catalogForPrompt($thesisContext, $planPrompts),
             'chat_messages' => $chatMessages,
+            'structure' => $this->thesisContextService->structureText($conversation->id),
+            'current_answer' => $validated['current_answer'] ?? '',
+            'attachments_text' => $this->attachmentsText($validated['attachments'] ?? []),
         ]);
 
         try {
             $aiResult = $this->openAIService->json($prompt);
-            
+
             // =========================================================================
-            // GUARDAR LOS NUEVOS DATOS ESPECÍFICOS DINÁMICOS EXTRAÍDOS POR LA IA
-            // =========================================================================
-            if (!empty($aiResult['updated_specific_data']) && is_array($aiResult['updated_specific_data'])) {
-                $hasChanges = false;
-                $addedKeys = [];
-                foreach ($aiResult['updated_specific_data'] as $key => $val) {
-                    $valorActual = trim((string)($assistantData[$key] ?? ''));
-                    $nuevoValor = trim((string)$val);
+            // Al abrir el asistente se registra lo ya escrito en la respuesta; después, cada mensaje del chat
+            $isOpening = empty($validated['messages']) && trim((string) ($validated['user_message'] ?? '')) === '';
+            $this->thesisContextService->extractKnownDataFromMessage(
+                $thesisContext,
+                $planPrompts,
+                $isOpening ? (string) ($validated['current_answer'] ?? '') : (string) ($validated['user_message'] ?? ''),
+                $question->id
+            );
 
-                    // Solo actualiza si el valor actual estaba vacío y el nuevo no
-                    if ($valorActual === '' && $nuevoValor !== '') {
-                        $assistantData[$key] = $nuevoValor;
-                        $addedKeys[] = $key;
-                        $hasChanges = true;
-                    }
-                }
-
-                if ($hasChanges && $thesisContext) {
-                    // Se anota de qué pregunta salió cada dato nuevo, para borrarlo
-                    // si el tesista vuelve a la pregunta anterior
-                    $planContext = $thesisContext->plan_context ?? [];
-                    foreach ($addedKeys as $key) {
-                        $planContext[ConversationService::ORIGIN_KEY][$key] = $question->id;
-                    }
-
-                    $thesisContext->assistant_context = $assistantData;
-                    $thesisContext->plan_context = $planContext;
-                    $thesisContext->save();
-                }
-            }
+            // Las cifras calculadas vienen como {{operación}}: las calcula CalculationService
+            $calculator = app(CalculationService::class);
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'chat_message' => $aiResult['chat_message'] ?? '',
-                    'draft_text' => $aiResult['draft_text'] ?? '',
+                    'chat_message' => $calculator->resolve((string) ($aiResult['chat_message'] ?? ''))['text'],
+                    'draft_text' => $calculator->resolve((string) ($aiResult['draft_text'] ?? ''))['text'],
                     'is_complete' => (bool)($aiResult['is_complete'] ?? false),
                     'progress_percentage' => (int)($aiResult['progress_percentage'] ?? 20),
                     'metrics_summary' => $aiResult['metrics_summary'] ?? null,
                     
                     'brechas_detectadas' => $aiResult['brechas_detectadas'] ?? [],
-                    'variables_negocio' => $aiResult['variables_negocio'] ?? [],
+                    // El estado lo propone el modelo; aquí se verifica
+                    'variables_negocio' => $this->checkBusinessVariables(
+                        $this->calculateVariables((array) ($aiResult['variables_negocio'] ?? []), $calculator),
+                        $this->userTextOfChat($validated)
+                    ),
                     'formulas_utilizadas' => $aiResult['formulas_utilizadas'] ?? [],
                     
                     'contexto_general' => $resumenGeneral,
-                    'datos_conocidos' => $assistantData 
+                    // [{key, label, value}] en el orden del catálogo
+                    'datos_conocidos' => $this->thesisContextService->knownData($thesisContext, $planPrompts)
                 ]
             ]);
         } catch (\Throwable $e) {
@@ -361,6 +387,181 @@ public function flattenNodeIds(array $nodes): array
                 'message' => 'Error al conectar con el asistente de redacción.'
             ], 500);
         }
+    }
+
+    // El valor de una variable "Calculado" se obtiene de su fórmula, no del modelo
+    private function calculateVariables(array $variables, CalculationService $calculator): array
+    {
+        foreach ($variables as &$variable) {
+            if (!is_array($variable)) {
+                continue;
+            }
+
+            $value = (string) ($variable['valor'] ?? '');
+            $formula = str_replace(['{{', '}}'], '', (string) ($variable['formula'] ?? ''));
+            $variable['formula'] = $formula;
+
+            if (str_contains($value, '{{')) {
+                $variable['valor'] = $calculator->resolve($value)['text'];
+                continue;
+            }
+
+            if (($variable['estado'] ?? '') === 'Calculado' && ($result = $calculator->evaluateFormula($formula)) !== null) {
+                $formatted = $calculator->format($result);
+                $variable['valor'] = preg_match('/\d/', $value)
+                    ? preg_replace('/\d[\d,]*(?:\.\d+)?/', $formatted, $value, 1)
+                    : $formatted;
+            }
+        }
+        unset($variable);
+
+        return $variables;
+    }
+
+    // Corrige el estado de cada variable: solo cifras; "Calculado" exige operación; lo que dio el estudiante
+    // es "Dato del usuario" y lo demás "Supuesto"
+    private function checkBusinessVariables(array $variables, string $userText): array
+    {
+        $numbers = function (string $text): array {
+            preg_match_all('/\d+(?:[.,]\d+)?/u', $text, $match);
+            return array_map(fn ($number) => str_replace(',', '.', $number), $match[0]);
+        };
+
+        $userNumbers = $numbers($userText);
+        $result = [];
+
+        foreach ($variables as $variable) {
+            if (!is_array($variable)) {
+                continue;
+            }
+
+            $valueNumbers = $numbers((string) ($variable['valor'] ?? ''));
+
+            if (empty($valueNumbers)) {
+                continue;
+            }
+
+            // "S/" (soles) no es una división
+            $formula = preg_replace('/\bS\/\.?/iu', '', (string) ($variable['formula'] ?? ''));
+            $hasOperation = (bool) preg_match('/[+*\/×÷=]|\d\s*[-x%]\s*\d/u', $formula);
+            $fromUser = !array_diff($valueNumbers, $userNumbers);
+            $state = $variable['estado'] ?? '';
+
+            if (!$hasOperation && $fromUser) {
+                $state = 'Dato del usuario';
+            } elseif ($state === 'Calculado' && !$hasOperation) {
+                $state = 'Supuesto';
+            } elseif ($state === 'Dato del usuario' && !$fromUser) {
+                $state = $hasOperation ? 'Calculado' : 'Supuesto';
+            } elseif (!in_array($state, ['Calculado', 'Supuesto', 'Dato del usuario'], true)) {
+                $state = $hasOperation ? 'Calculado' : 'Supuesto';
+            }
+
+            $variable['estado'] = $state;
+
+            if ($state === 'Dato del usuario') {
+                $variable['formula'] = '';
+            }
+
+            $result[] = $variable;
+        }
+
+        return $result;
+    }
+
+    // Lee un adjunto de Impulsa una sola vez (el modal reenvía el texto) y completa los datos conocidos
+    public function assistantReadAttachment(Request $request, AttachmentTextService $attachmentText)
+    {
+        $validated = $request->validate([
+            'idConversation' => 'required|integer',
+            'idQuestion' => 'required|integer|exists:questions,id',
+            'file' => 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
+        ]);
+
+        $conversation = Conversation::where('id', $validated['idConversation'])
+            ->whereHas('userPlan', fn ($query) => $query->where('user_id', auth()->id()))
+            ->first();
+
+        if (!$conversation) {
+            return response()->json(['success' => false, 'message' => 'Conversación no encontrada.'], 404);
+        }
+
+        $file = $request->file('file');
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        // Del Excel solo se usa la primera hoja (mismo aviso que al guardar la respuesta)
+        if (in_array($extension, ['xls', 'xlsx']) && app(\App\Services\ExcelService::class)->sheetsCount($file->getRealPath()) > 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El archivo tiene varias hojas. Deja solo la que contiene tu información y vuelve a intentarlo.',
+            ], 422);
+        }
+
+        $extraction = $attachmentText->extract([$file]);
+
+        if ($extraction['error']) {
+            return response()->json(['success' => false, 'message' => $extraction['error']], $extraction['status']);
+        }
+
+        $isImage = $extraction['image'] !== '';
+        $text = trim($isImage ? $extraction['image'] : $extraction['document']);
+
+        // Un texto muy largo encarecería cada mensaje del chat: se recorta
+        $truncated = mb_strlen($text) > self::ASSISTANT_ATTACHMENT_MAX_CHARS;
+        if ($truncated) {
+            $text = mb_substr($text, 0, self::ASSISTANT_ATTACHMENT_MAX_CHARS);
+        }
+
+        $thesisContext = \App\Models\ThesisContext::firstOrCreate(
+            ['conversation_id' => $conversation->id],
+            ['user_plan_id' => $conversation->user_plan_id, 'confidence' => 0]
+        );
+        $planPrompts = $this->planPromptResolver->forConversation($conversation);
+
+        $this->thesisContextService->extractKnownDataFromMessage($thesisContext, $planPrompts, $text, (int) $validated['idQuestion']);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'name' => $file->getClientOriginalName(),
+                'type' => $isImage ? 'image' : 'document',
+                'text' => $text,
+                'truncated' => $truncated,
+                'datos_conocidos' => $this->thesisContextService->knownData($thesisContext->fresh(), $planPrompts),
+            ],
+        ]);
+    }
+
+    // Texto de los adjuntos del asistente para el prompt
+    private function attachmentsText(array $attachments): string
+    {
+        $parts = [];
+
+        foreach ($attachments as $attachment) {
+            $parts[] = "Archivo \"{$attachment['name']}\":\n" . trim($attachment['text']);
+        }
+
+        return implode("\n\n", $parts);
+    }
+
+    // Todo lo que escribió el estudiante: el cuadro de respuesta, sus archivos y sus mensajes del chat
+    private function userTextOfChat(array $validated): string
+    {
+        $parts = [(string) ($validated['current_answer'] ?? '')];
+
+        foreach ($validated['attachments'] ?? [] as $attachment) {
+            $parts[] = (string) ($attachment['text'] ?? '');
+        }
+
+        foreach ($validated['messages'] ?? [] as $message) {
+            if (($message['role'] ?? '') === 'user') {
+                $parts[] = (string) ($message['content'] ?? '');
+            }
+        }
+
+        $parts[] = (string) ($validated['user_message'] ?? '');
+
+        return implode("\n", $parts);
     }
 
     // =====================================================================================
@@ -386,12 +587,6 @@ public function flattenNodeIds(array $nodes): array
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:20480', 
 
         ]);
-         \Log::info('DEBUG conversationSaveReply', [
-                'metadata' => json_decode($request->metadata, true),
-                'files' => $request->file('files'),
-                'references' => json_decode($request->references, true),
-                'all_request' => $request->all(),
-            ]);
 
         $files = $request->file('files') ?? [];
         $metadata = json_decode($request->metadata, true) ?? [];
@@ -812,21 +1007,15 @@ public function flattenNodeIds(array $nodes): array
 
             $thesisContext = \App\Models\ThesisContext::where('conversation_id', $idConversation)->first();
             $resumenGeneral = $thesisContext?->plan_context['resumen_general'] ?? null;
-            $assistantData = $thesisContext?->assistant_context ?? [];  
 
-            // Filtrar solo los datos específicos que realmente tengan información (no nulos ni vacíos)
-            $datosEspecificosLimpios = array_filter($assistantData, fn($val) => !empty($val));
-
-            // Si ya existe resumen consolidado
+            // Si ya existe resumen consolidado: resumen + datos conocidos del catálogo del plan
             if (!empty($resumenGeneral)) {
-                $contextoParaValidar = "RESUMEN GENERAL CONSOLIDADO DEL PROYECTO:\n" . $resumenGeneral . "\n\n";
-                
-                if (!empty($datosEspecificosLimpios)) {
-                    $contextoParaValidar .= "DATOS ESPECÍFICOS Y CUANTITATIVOS REGISTRADOS:\n";
-                    foreach ($datosEspecificosLimpios as $campo => $valor) {
-                        $contextoParaValidar .= "- " . ucfirst(str_replace('_', ' ', $campo)) . ": {$valor}\n";
-                    }
-                }
+                $contextoParaValidar = "RESUMEN GENERAL CONSOLIDADO DEL PROYECTO:\n" . $resumenGeneral . "\n\n"
+                    . $this->thesisContextService->knownDataText(
+                        $thesisContext,
+                        $planPrompts,
+                        'DATOS ESPECÍFICOS Y CUANTITATIVOS REGISTRADOS'
+                    );
             } else {
                 $contextoParaValidar = $this->conversationService->getHistoryLimit10($idConversation);
             }
@@ -844,7 +1033,8 @@ public function flattenNodeIds(array $nodes): array
                         $planPrompts,
                         $contextoParaValidar,
                         $question->question_text,
-                        $isPhase2
+                        $isPhase2,
+                        $this->thesisContextService->structureText($conversation->id)
                     );
 
                 $resultIA = $this->openAIService->json($promptQuestion);
@@ -869,6 +1059,15 @@ public function flattenNodeIds(array $nodes): array
             if (($resultIA['show'] ?? true) === false) {
 
                 $responseAutomatic = $resultIA['resp'] ?? '';
+
+                // Cifras calculadas ({{operación}}). Si alguna no se pudo calcular, no se sugiere:
+                // el usuario responde la pregunta
+                $calculation = app(CalculationService::class)->resolve((string) $responseAutomatic);
+                $responseAutomatic = empty($calculation['errors']) ? $calculation['text'] : '';
+
+                if (!empty($calculation['errors'])) {
+                    \Log::info('RESPUESTA SUGERIDA DESCARTADA: CÁLCULO NO VÁLIDO', ['errors' => $calculation['errors']]);
+                }
 
                 // Antes de mostrarla, la sugerencia pasa por las mismas revisiones de
                 // "Validar información". Si no pasa, se muestra la pregunta para que la
@@ -898,12 +1097,6 @@ public function flattenNodeIds(array $nodes): array
 
                 // Validar que realmente exista una respuesta
                 if (!empty(trim($responseAutomatic))) {
-
-                    \Log::info('PREGUNTA PROPUESTA AUTOMATICAMENTE PARA MODAL', [
-                        'conversation_id' => $idConversation,
-                        'question_id' => $question->id,
-                        'response' => $responseAutomatic
-                    ]);
 
                     return response()->json([
                         'completed' => false,
@@ -1016,40 +1209,61 @@ public function flattenNodeIds(array $nodes): array
             ->orderBy('orden', 'asc')
             ->get();
 
+            // Rutas de las imágenes, datos de las tablas, título legible y fuente por defecto (como en el Word)
+            $planNodes->each(function ($node) {
+                $node->questions->each(function ($question) {
+                    if (!$question->answer) {
+                        return;
+                    }
+
+                    $question->answer->files->each(function ($file) {
+                        $file->file_path = asset('storage/' . $file->file_path);
+                    });
+
+                    $question->answer->tables->each(function ($table) {
+                        if (is_string($table->data)) {
+                            $table->data = json_decode($table->data, true);
+                        }
+                        $table->nombre = $table->nombre
+                            ? \App\Http\Controllers\Document\DocumentController::readableTitle($table->nombre)
+                            : $table->nombre;
+                        $table->fuente = trim((string) $table->fuente) !== '' ? $table->fuente : 'Elaboración propia';
+                    });
+                });
+            });
+
+            // Numera figuras y tablas en el orden del documento (igual que el Word)
+            $nodesByParent = $planNodes->groupBy(fn ($node) => $node->parent_id ?? 0);
             $imageOrden = 1;
             $tableOrden = 1;
 
-            $planNodes->each(function ($node) use (&$imageOrden, &$tableOrden) {
+            $numerar = function ($parentId) use (&$numerar, $nodesByParent, &$imageOrden, &$tableOrden) {
+                $children = $nodesByParent->get($parentId, collect())
+                    ->sortBy([['orden', 'asc'], ['id', 'asc']]);
 
-                $node->questions->each(function ($question) use (&$imageOrden, &$tableOrden) {
+                foreach ($children as $node) {
+                    foreach ($node->questions->sortBy('order_index') as $question) {
+                        if (!$question->answer) {
+                            continue;
+                        }
 
-                    if ($question->answer) {
-
-                        // Enumeración global de imágenes
-                        $question->answer->files->each(function ($file) use (&$imageOrden) {
-
+                        foreach ($question->answer->files as $file) {
                             $file->orden = $imageOrden++;
+                        }
 
-                            $file->file_path = asset(
-                                'storage/' . $file->file_path
-                            );
-                        });
-
-                        // Enumeración global de tablas
-                        $question->answer->tables->each(function ($table) use (&$tableOrden) {
-
-                            $table->orden = $tableOrden++;
-
-                            if (is_string($table->data)) {
-                                $table->data = json_decode(
-                                    $table->data,
-                                    true
-                                );
-                            }
-                        });
+                        // Como el Word: solo cuentan las tablas con columnas y filas
+                        foreach ($question->answer->tables as $table) {
+                            $table->orden = !empty($table->data['columns']) && isset($table->data['rows'])
+                                ? $tableOrden++
+                                : null;
+                        }
                     }
-                });
-            });
+
+                    $numerar($node->id);
+                }
+            };
+
+            $numerar(0);
 
 
 
@@ -1241,11 +1455,6 @@ public function flattenNodeIds(array $nodes): array
                     if (!empty($newQuestions)) {
                         Question::insert($newQuestions);
                         
-                        \Log::info("Preguntas oficiales recuperadas para nodo predefinido de forma única", [
-                            'node_id' => $node->id,
-                            'titulo' => $node->titulo,
-                            'cantidad_insertada' => count($newQuestions)
-                        ]);
                     }
 
                     return false; // Excluir de la generación por IA
@@ -1305,19 +1514,7 @@ public function flattenNodeIds(array $nodes): array
             allNodes: $estructuraCompleta
         );
 
-        \Log::info('NODOS SIN PREGUNTAS', [
-            'nodes' => $nodosSinPreguntas,
-        ]);
-
-        \Log::info('ESTRUCTURA COMPLETA', [
-            'nodes' => $estructuraCompleta,
-        ]);
-
         $respuesta = $this->openAIService->chat($prompt);
-
-        \Log::info('RESPUESTA OPENAI - GENERACIÓN DE PREGUNTAS', [
-            'respuesta' => $respuesta,
-        ]);
 
         $data = json_decode($respuesta, true);
 
@@ -1535,6 +1732,135 @@ public function flattenNodeIds(array $nodes): array
     }
 
     // Si desde la pregunta actual se puede volver a la anterior, y si no, por qué
+    // ===== MODIFICAR RESPUESTA: editar una respuesta guardada; si el cambio es de fondo, se borra lo posterior =====
+
+    // Preguntas ya respondidas, por capítulo, para elegir cuál modificar
+    public function modificationQuestions(Request $request)
+    {
+        $validated = $request->validate(['idConversation' => 'required|integer']);
+
+        return $this->withModificationConversation($validated['idConversation'], fn (Conversation $conversation) => [
+            'chapters' => $this->conversationService->answeredForModification($conversation),
+        ]);
+    }
+
+    // La respuesta guardada de la pregunta elegida
+    public function modificationAnswer(Request $request)
+    {
+        $validated = $request->validate([
+            'idConversation' => 'required|integer',
+            'idQuestion' => 'required|integer',
+        ]);
+
+        return $this->withModificationConversation($validated['idConversation'], fn (Conversation $conversation) =>
+            $this->conversationService->modificationData($conversation, (int) $validated['idQuestion'])
+        );
+    }
+
+    // "Validar" de Modificar respuesta: revisa la respuesta sin redactar texto nuevo y decide si es menor o de fondo
+    // (contradecir lo registrado se toma como de fondo, no como rechazo)
+    public function modificationAnalyze(Request $request, AnswerModificationService $modification)
+    {
+        $validated = $request->validate([
+            'idConversation' => 'required|integer',
+            'idQuestion' => 'required|integer',
+            'text' => 'required|string',
+        ]);
+
+        return $this->withModificationConversation($validated['idConversation'], function (Conversation $conversation) use ($validated, $modification) {
+            $questionId = (int) $validated['idQuestion'];
+            $data = $this->conversationService->modificationData($conversation, $questionId);
+
+            if (preg_replace('/\s+/u', ' ', trim($data['answer_text'])) === preg_replace('/\s+/u', ' ', trim($validated['text']))) {
+                return ['type' => AnswerModificationService::UNCHANGED, 'message' => ''];
+            }
+
+            $question = Question::find($questionId);
+            $validation = $this->answerValidationService->validate($conversation, [
+                'idConversation' => $conversation->id,
+                'idQuestion' => $questionId,
+                'question' => $question?->question_text ?? '',
+                'validation' => $question?->validation_detail ?? '',
+                'response' => $validated['text'],
+            ]);
+
+            if (empty($validation['result']['is_valid'])) {
+                return [
+                    'type' => 'invalido',
+                    'message' => trim((string) ($validation['result']['feedback'] ?? '')) ?: 'La respuesta modificada no responde adecuadamente a la pregunta.',
+                ];
+            }
+
+            if ($validation['inconsistent']) {
+                return ['type' => AnswerModificationService::DEEP, 'message' => ''];
+            }
+
+            $impact = $modification->analyze($conversation, $questionId, $data['answer_text'], $validated['text']);
+
+            return ['type' => $impact['type'], 'message' => ''];
+        });
+    }
+
+    // Guarda la modificación que el estudiante confirmó en el aviso
+    public function modificationSave(Request $request, AnswerModificationService $modification)
+    {
+        $validated = $request->validate([
+            'idConversation' => 'required|integer',
+            'idQuestion' => 'required|integer',
+            'text' => 'required|string',
+            'type' => 'required|in:menor,fondo',
+        ]);
+
+        return $this->withModificationConversation($validated['idConversation'], function (Conversation $conversation) use ($validated, $modification) {
+            $questionId = (int) $validated['idQuestion'];
+            $before = $this->conversationService->modificationData($conversation, $questionId)['answer_text'];
+
+            // Un cambio de cifras nunca se guarda como menor, aunque lo pida el cliente
+            if ($validated['type'] === AnswerModificationService::MINOR && $modification->numbersChanged($before, $validated['text'])) {
+                throw new \DomainException('Esta modificación cambia cifras e influye en lo avanzado. Vuelve a validarla para ver el aviso.');
+            }
+
+            return $this->conversationService->applyModification(
+                $conversation,
+                $questionId,
+                $validated['text'],
+                $validated['type'] === AnswerModificationService::DEEP
+            );
+        });
+    }
+
+    // Conversación del usuario con el pago aprobado; los errores de dominio van como 422
+    private function withModificationConversation(int $conversationId, callable $action)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $conversation = Conversation::where('id', $conversationId)
+            ->whereHas('userPlan', fn ($query) => $query->where('user_id', $user->id))
+            ->first();
+
+        if (!$conversation) {
+            return response()->json(['success' => false, 'message' => 'Conversación no encontrada o sin permisos.'], 404);
+        }
+
+        if (!$this->isPaymentCompleted($conversation)) {
+            return response()->json(['success' => false, 'message' => 'Acceso denegado. El pago de esta suscripción no está aprobado.'], 403);
+        }
+
+        try {
+            return response()->json(['success' => true, 'data' => $action($conversation)]);
+        } catch (\DomainException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        } catch (\Throwable $e) {
+            \Log::error('Error en Modificar respuesta: ' . $e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error al modificar la respuesta.'], 500);
+        }
+    }
+
     private function goBackStatus(Conversation $conversation): array
     {
         $info = $this->conversationService->goBackInfo($conversation);

@@ -30,7 +30,8 @@ class ConversationService
 
     // copias de "Volver a la pregunta anterior", por pregunta
     public const RESTORE_KEY = 'retroceso';
-    // pregunta en la que Impulsa extrajo cada dato de assistant_context
+    // historial de cada dato de assistant_context: en qué pregunta cambió y con qué valor
+    // (ThesisContextService::saveKnownData / revertKnownData)
     public const ORIGIN_KEY = 'assistant_context_origen';
 
     public $excelService;
@@ -194,6 +195,64 @@ class ConversationService
                 })
                 ->values()
                 ->toArray();
+    }
+
+    // Historial para redactar: últimas $limit respuestas del capítulo (y del anterior si no tiene resumen)
+    public function chapterHistory(int $conversationId, int $questionId, int $limit = 5): array
+    {
+        $question = Question::find($questionId);
+        $node = $question ? PlanNode::find($question->plan_node_id) : null;
+
+        if (!$node) {
+            return $this->getHistoryLimit10($conversationId);
+        }
+
+        $chapter = $node;
+        while ($chapter->parent_id !== null && ($parent = PlanNode::find($chapter->parent_id))) {
+            $chapter = $parent;
+        }
+
+        $answersOf = function (int $chapterId) use ($conversationId, $questionId, $limit, $chapter): array {
+            $questionIds = Question::whereIn('plan_node_id', $this->subtreeNodeIds($chapter->user_plan_id, $chapterId))->pluck('id');
+
+            return UserAnswers::where('conversation_id', $conversationId)
+                ->whereIn('question_id', $questionIds)
+                ->where('question_id', '!=', $questionId)
+                ->whereNotNull('answer_text')
+                ->where('answer_text', '!=', '')
+                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
+                ->limit($limit)
+                ->get()
+                ->reverse()
+                ->map(fn ($row) => ['role' => 'user', 'content' => $row->answer_text])
+                ->values()
+                ->toArray();
+        };
+
+        $history = $answersOf($chapter->id);
+
+        if ((int) $chapter->execution_phase === 1) {
+            $roots = PlanNode::where('user_plan_id', $chapter->user_plan_id)
+                ->whereNull('parent_id')
+                ->where('execution_phase', 1)
+                ->orderBy('orden')
+                ->orderBy('id')
+                ->pluck('id')
+                ->toArray();
+            $index = array_search($chapter->id, $roots);
+
+            // El capítulo anterior es el cap_{$index} del resumen
+            if ($index !== false && $index > 0) {
+                $planContext = ThesisContext::where('conversation_id', $conversationId)->first()?->plan_context ?? [];
+
+                if (trim((string) ($planContext['cap_' . $index] ?? '')) === '') {
+                    $history = array_merge($answersOf($roots[$index - 1]), $history);
+                }
+            }
+        }
+
+        return $history;
     }
 
    public function getHistorysentens(int $idConversation): array
@@ -407,12 +466,12 @@ class ConversationService
 
                     $sheet = $parsedData['sheets'][0] ?? [];
 
-                    \Log::info('USER ANSWER ID', [
-                        'id' => $userAnswer->id
-                    ]);
-
                     $tabla = Tabla::create([
-                        'nombre' => pathinfo(  $file->getClientOriginalName(), PATHINFO_FILENAME ) ,
+                        // Título legible ("ventas_2024" → "Ventas 2024") y fuente por defecto, como pide APA 7
+                        'nombre' => \App\Http\Controllers\Document\DocumentController::readableTitle(
+                            pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+                        ),
+                        'fuente' => 'Elaboración propia',
                         'answer_id' => $userAnswer->id ,
                         'data' => json_encode($parsedData)
                     ]);
@@ -500,75 +559,15 @@ class ConversationService
 
             /**
              * ============================================
-             * GUARDAR REFERENCIAS
+             * GUARDAR REFERENCIAS (solo las que siguen citadas en el texto final)
              * ============================================
              */
-            if (!empty($references)) {
-                foreach ($references as $index => $ref) {
-
-                    $hash = hash(
-                        'sha256',
-                        strtolower(
-                            ($ref['title'] ?? '') .
-                            ($ref['year'] ?? '') .
-                            implode(',', $ref['authors'] ?? [])
-                        )
-                    );
-
-                    $reference = DB::table('references_library')
-                        ->where('reference_hash', $hash)
-                        ->first();
-
-                    if (!$reference) {
-
-                        $referenceId = DB::table('references_library')
-                            ->insertGetId([
-                                'authors' => json_encode(
-                                    $ref['authors'] ?? []
-                                ),
-
-                                'publication_year' => $ref['year'] ?? null,
-
-                                'title' => $ref['title'] ?? '',
-
-                                'publisher' => $ref['publisher'] ?? null,
-
-                                'url' => $ref['url'] ?? null,
-
-                                'source_type' => $ref['source_type'] ?? 'book',
-
-                                'doi' => $ref['doi'] ?? null,
-
-                                // 'apa_citation' => $ref['apa_citation'] ?? null,
-
-                                'reference_hash' => $hash,
-
-                                'created_at' => now(),
-
-                                'updated_at' => now(),
-                            ]);
-
-                    } else {
-
-                        $referenceId = $reference->id;
-                    }
-
-                    /**
-                     * RELACIONAR RESPUESTA ↔ REFERENCIA
-                     */
-                    DB::table('answer_reference_rel')
-                        ->updateOrInsert(
-                            [
-                                'answer_id' => $userAnswer->id,
-                                'reference_id' => $referenceId,
-                            ],
-                            [
-                                'citation_order' => $index + 1,
-                                'created_at' => now(),
-                            ]
-                        );
-                }
-            }
+            app(ReferenceService::class)->saveForAnswer(
+                (int) $conversationId,
+                $userAnswer->id,
+                $references,
+                $reply
+            );
 
             // =========================================================================
             // VERIFICACIÓN DE CAPÍTULO COMPLETADO PARA ACTUALIZAR THESIS_CONTEXT JSON
@@ -820,6 +819,133 @@ class ConversationService
         return $ids;
     }
 
+    // ===== MODIFICAR RESPUESTA: editar una respuesta ya guardada de la Fase 1 =====
+
+    // Preguntas de la Fase 1 ya respondidas, agrupadas por capítulo
+    public function answeredForModification(Conversation $conversation): array
+    {
+        $answered = UserAnswers::where('conversation_id', $conversation->id)
+            ->whereNotNull('question_id')
+            ->whereNotNull('answer_text')
+            ->where('answer_text', '!=', '')
+            ->pluck('question_id')
+            ->flip();
+
+        $titles = PlanNode::where('user_plan_id', $conversation->user_plan_id)->pluck('titulo', 'id');
+        $chapters = [];
+
+        foreach ($this->orderedQuestions($conversation->user_plan_id, 1) as $item) {
+            $question = $item['question'];
+
+            if (!isset($answered[$question->id])) {
+                continue;
+            }
+
+            $rootId = $item['root_id'];
+            $chapters[$rootId] ??= ['chapter_id' => $rootId, 'chapter' => (string) ($titles[$rootId] ?? ''), 'questions' => []];
+            $chapters[$rootId]['questions'][] = [
+                'id' => $question->id,
+                'text' => $question->question_text,
+                'section' => (string) ($titles[$question->plan_node_id] ?? ''),
+            ];
+        }
+
+        return array_values($chapters);
+    }
+
+    // Respuesta que figura en el plan, para modificarla
+    public function modificationData(Conversation $conversation, int $questionId): array
+    {
+        $ordered = $this->orderedQuestions($conversation->user_plan_id, 1);
+        $question = $ordered[$this->questionStartIndex($ordered, $questionId)]['question'];
+
+        $answer = UserAnswers::withCount(['files', 'tables'])
+            ->where('conversation_id', $conversation->id)
+            ->where('question_id', $questionId)
+            ->first();
+
+        if (!$answer || trim((string) $answer->answer_text) === '') {
+            throw new \DomainException('Esta pregunta todavía no tiene una respuesta guardada.');
+        }
+
+        return [
+            'question_id' => $question->id,
+            'question' => $question->question_text,
+            'section' => (string) PlanNode::where('id', $question->plan_node_id)->value('titulo'),
+            'answer_text' => $answer->answer_text,
+            'has_table' => $answer->tables_count > 0,
+            'has_files' => $answer->files_count > 0,
+        ];
+    }
+
+    // Guarda la modificación; si es de fondo, borra lo posterior, actualiza los datos conocidos y el resumen
+    public function applyModification(Conversation $conversation, int $questionId, string $text, bool $deep): array
+    {
+        $ordered = $this->orderedQuestions($conversation->user_plan_id, 1);
+        $index = $this->questionStartIndex($ordered, $questionId);
+
+        $answer = UserAnswers::where('conversation_id', $conversation->id)
+            ->where('question_id', $questionId)
+            ->first();
+
+        if (!$answer) {
+            throw new \DomainException('Esta pregunta todavía no tiene una respuesta guardada.');
+        }
+
+        $deleted = 0;
+
+        DB::transaction(function () use ($conversation, $questionId, $text, $deep, $ordered, $index, $answer, &$deleted) {
+
+            if ($deep) {
+                $after = array_slice($ordered, $index + 1);
+                $deleteIds = array_merge(
+                    array_map(fn ($item) => $item['question']->id, $after),
+                    array_map(fn ($item) => $item['question']->id, $this->orderedQuestions($conversation->user_plan_id, 2))
+                );
+
+                $deleted = UserAnswers::where('conversation_id', $conversation->id)
+                    ->whereIn('question_id', $deleteIds)
+                    ->count();
+
+                $this->deleteAnswersOf($conversation->id, $deleteIds);
+                $this->deleteAnnexesOf($conversation->id);
+
+                // El capítulo de la pregunta modificada también pierde su resumen (tenía el dato
+                // anterior), y sus datos conocidos vuelven al valor previo a esa respuesta
+                $this->cleanContextAfterDelete(
+                    $conversation->id,
+                    $conversation->user_plan_id,
+                    array_unique([...array_column($after, 'root_id'), $ordered[$index]['root_id']]),
+                    [...$deleteIds, $questionId]
+                );
+            }
+
+            $answer->answer_text = $text;
+            $answer->save();
+
+            // Una cita que se borró del texto ya no debe figurar en las referencias
+            app(ReferenceService::class)->pruneUncited($conversation->id, $answer->id, $text);
+        });
+
+        if ($deep) {
+            $context = ThesisContext::where('conversation_id', $conversation->id)->first();
+
+            if ($context) {
+                app(ThesisContextService::class)->knownDataFromModification(
+                    $context,
+                    app(\App\Services\Prompts\PlanPromptResolver::class)->forConversation($conversation),
+                    $text,
+                    $questionId
+                );
+            }
+
+            // Si el capítulo sigue completo (la pregunta modificada era la última), se resume de nuevo
+            $this->checkAndConsolidateChapter($conversation->id, $questionId);
+        }
+
+        return ['deep' => $deep, 'deleted_answers_count' => $deleted];
+    }
+
     private function cleanContextAfterDelete(int $conversationId, int $userPlanId, array $affectedRootIds, array $questionIds): void
     {
         $context = ThesisContext::where('conversation_id', $conversationId)->first();
@@ -852,17 +978,9 @@ class ConversationService
 
         $planContext['resumen_general'] = $remainingSummaries ? implode("\n\n", $remainingSummaries) : null;
 
-        // Datos de Impulsa extraídos en las preguntas borradas
+        // Datos de Impulsa cambiados en las preguntas borradas: vuelven al valor que tenían antes
         $assistantData = $context->assistant_context ?? [];
-        $origins = $planContext[self::ORIGIN_KEY] ?? [];
-
-        foreach ($origins as $key => $originQuestionId) {
-            if (in_array((int) $originQuestionId, $questionIds)) {
-                unset($assistantData[$key], $origins[$key]);
-            }
-        }
-
-        $planContext[self::ORIGIN_KEY] = $origins;
+        app(ThesisContextService::class)->revertKnownData($assistantData, $planContext, $questionIds);
 
         // Copias de "Volver a la pregunta anterior" de las preguntas borradas
         foreach ($questionIds as $questionId) {
@@ -899,6 +1017,9 @@ class ConversationService
 
             // Eliminar las respuestas del usuario
             UserAnswers::whereIn('id', $answerIds)->delete();
+
+            // Referencias que ya no cita ninguna respuesta
+            app(ReferenceService::class)->deleteOrphans((int) $conversationId);
         }
 
         // Eliminar historial de mensajes IA de esas preguntas
@@ -1038,16 +1159,12 @@ class ConversationService
 
             $planContext = $context->plan_context ?? [];
             $assistantData = $context->assistant_context ?? [];
-            $origins = $planContext[self::ORIGIN_KEY] ?? [];
 
-            // Datos de Impulsa extraídos en la pregunta borrada o en la actual, que también se descarta
-            foreach ($origins as $key => $originQuestionId) {
-                if (in_array((int) $originQuestionId, [(int) $previous->id, (int) $current->id], true)) {
-                    unset($assistantData[$key], $origins[$key]);
-                }
-            }
-
-            $planContext[self::ORIGIN_KEY] = $origins;
+            app(ThesisContextService::class)->revertKnownData(
+                $assistantData,
+                $planContext,
+                [(int) $previous->id, (int) $current->id]
+            );
             // Solo la pregunta a la que se vuelve recupera su texto. Las copias anteriores se
             // descartan: si se vuelve de la 4 a la 3, al responder la 3 la 4 aparece vacía.
             $planContext[self::RESTORE_KEY] = [$previous->id => $copy];

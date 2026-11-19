@@ -46,19 +46,104 @@ abstract class PlanPrompts
     //Ejemplos de incongruencia / compatibilidad para validar coherencia.
     abstract public function coherenceExamples(): string;
 
-    // Claves iniciales de assistant_context.
-    abstract public function assistantContextDefaults(): array;
+    abstract public function assistantContextCatalog(): array;
+
+    public function assistantContextDefaults(): array
+    {
+        return array_fill_keys(array_keys($this->assistantContextCatalog()), null);
+    }
 
     // Qué datos debe destacar el resumen de cada capítulo.
     abstract public function consolidationFocus(): string;
 
-    // Nodos obligatorios del filtro de estructura según el diagnóstico.
-    abstract public function mandatoryNodes(): string;
+    // Nodos obligatorios ("3.2" = ese nodo, "3.2.*" = sus descendientes); los de fase 2 también lo son
+    abstract public function mandatoryCodes(): array;
+
+    public function isMandatory(?string $code): bool
+    {
+        $code = trim((string) $code);
+
+        if ($code === '') {
+            return false;
+        }
+
+        foreach ($this->mandatoryCodes() as $pattern) {
+            if ($code === $pattern
+                || (str_ends_with($pattern, '.*') && str_starts_with($code, substr($pattern, 0, -1)))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     // Prompt específico con los marcadores
     public function specificPrompt(): string
     {
-        return self::CONTEXTO_PREGUNTA . $this->specificInstructions() . self::ALCANCE_EVIDENCIA . self::CITAS_Y_FORMATO;
+        return self::CONTEXTO_PREGUNTA . $this->specificInstructions() . self::ALCANCE_EVIDENCIA . self::CIFRAS_DEL_TESISTA . self::REDACCION_SIN_REPETIR
+            . "\n\n\nCÁLCULOS:\n\n" . $this->reglaCalculos() . "\n" . self::CITAS_Y_FORMATO;
+    }
+
+    // Mejorar la redacción no debe borrar datos: "S/ 15 por alumno en grupo" no puede quedar como "costo diferenciado"
+    private const CIFRAS_DEL_TESISTA = <<<'TEXT'
+
+
+CIFRAS DEL TESISTA (REGLA CRÍTICA):
+
+Esta regla tiene prioridad sobre las instrucciones de estilo y de extensión.
+
+- Incluye en la respuesta TODAS las cifras de la INFORMACIÓN PROPORCIONADA POR EL TESISTA: precios, tarifas, cantidades, capacidades, porcentajes, plazos, horarios y montos, cada una con su unidad, su periodo y la condición a la que se aplica.
+- Puedes mejorar la redacción alrededor de la cifra, pero no la reemplaces por una descripción general. Incorrecto: "se aplicará un costo diferenciado para grupos". Correcto: "se aplicará una tarifa de S/ 15 por alumno en las clases grupales".
+- Si el tesista da varias cifras para casos distintos (individual y grupal, temporada alta y baja, mañana y tarde), conserva cada una con su caso; no las unas en un rango ni en un promedio.
+- No cambies el valor, la unidad ni el periodo: "S/ 15 por alumno" no es "S/ 15 por grupo", y "por semana" no es "por mes".
+TEXT;
+
+    // Las cifras calculadas las resuelve CalculationService: la IA escribe la operación, no el resultado
+    private const REGLA_CALCULOS = <<<'TEXT'
+- Cuando una cifra sea el resultado de una operación, NO escribas el resultado: escribe la operación entre llaves dobles con las cifras de origen, y el sistema la calculará. Ejemplos: "una capacidad de {{6*22}} turnos al mes", "un total ponderado de {{0.20*4 + 0.15*3 + 0.25*5}}", "un VAN de S/ {{van(0.12, 10000, 3000, 4000, 5000)}}", "una TIR de {{redondeo(tir(10000, 3000, 4000, 5000)*100, 2)}} %".
+- Dentro de las llaves usa solo cifras, + - * / ^, paréntesis, % (20% equivale a 0.20) y las funciones suma, promedio, redondeo(valor, decimales), min, max, van(tasa, inversión, flujo1, flujo2…) y tir(inversión, flujo1, flujo2…). Escribe las cifras sin separador de miles y con punto decimal (2800, 1.5). No pongas palabras, unidades ni "S/" dentro de las llaves.
+- Si un resultado depende de otro, escribe la operación completa desde las cifras originales (por ejemplo, {{6*22*12}} y no el resultado de 6*22 multiplicado por 12).
+- Las cifras que dio el estudiante o que vienen de una fuente se copian tal cual, sin llaves. No recalcules ni redondees lo que el estudiante ya calculó.
+- Si la pregunta pide un cálculo, un total o un indicador (por ejemplo, el total de una matriz ponderada, ingresos, punto de equilibrio, VAN o TIR) y tienes las cifras, escribe siempre la operación entre llaves: no describas el cálculo sin dar su resultado (incorrecto: "al multiplicar los pesos por las calificaciones se obtiene un total ponderado"; correcto: "el total ponderado es {{0.20*4 + 0.15*3}}"). En una matriz ponderada, da también el puntaje de cada factor ({{0.20*4}}) y luego el total.
+- Interpreta el resultado con prudencia y sin adelantar su valor (por ejemplo, "este resultado se compara con el punto medio de la escala"); el sistema revisará la interpretación cuando conozca el resultado.
+- No uses notación LaTeX (\frac, \dfrac, ^{ }). Si muestras una fórmula, escríbela en texto simple: "VAN = −inversión + Σ flujo / (1 + tasa)^año".
+- No conviertas en operación lo que no lo es: años, fechas, códigos y cantidades dadas no llevan llaves.
+TEXT;
+
+    // Regla de cálculo y glosario (catálogo con "glosario"): redacción, sugerencia automática e Impulsa
+    public function reglaCalculos(): string
+    {
+        $glossary = [];
+
+        foreach ($this->assistantContextCatalog() as $item) {
+            if (!empty($item['glosario'])) {
+                $glossary[] = "- {$item['label']}: {$item['description']}";
+            }
+        }
+
+        if (empty($glossary)) {
+            return self::REGLA_CALCULOS;
+        }
+
+        return self::REGLA_CALCULOS . "\n\nCONCEPTOS CON CIFRAS (no mezcles las cifras de un concepto con las de otro; por ejemplo, la meta de ventas no es el tamaño del mercado):\n" . implode("\n", $glossary);
+    }
+
+    // Proyecciones en lugar de promesas. También la usan la sugerencia automática y el agente Impulsa
+    private const REGLA_PROYECCIONES = '- Las metas, los beneficios y los resultados esperados se redactan como proyecciones o metas ("se espera", "se proyecta", "se estima", "tiene como meta"), nunca como garantías. No uses "garantizar", "asegurar", "eliminar por completo", "erradicar" ni "sin duda" para referirte a resultados futuros.';
+
+    // Lenguaje académico: sin promesas (las metas son proyecciones) y sin repeticiones entre respuestas
+    private const REDACCION_SIN_REPETIR = "\n\n\nPROYECCIONES Y REPETICIONES:\n\n" . self::REGLA_PROYECCIONES . "\n" . <<<TEXT
+- No vuelvas a presentar el proyecto (nombre de la empresa o del negocio, ubicación, rubro, problema general) al inicio de la respuesta: el lector ya lo conoce por las secciones anteriores. Menciónalo solo si la pregunta lo requiere, y en pocas palabras.
+- Empieza directamente por el contenido que pide la pregunta. No abras con fórmulas que repiten la pregunta, como "Para considerar completa y adecuadamente delimitada la sección de…" o "Para atender…".
+- No repitas datos ni ideas que ya están en las respuestas anteriores del historial, salvo que la pregunta los necesite; en ese caso, menciónalos brevemente sin volver a desarrollarlos. Esto no se aplica a la INFORMACIÓN PROPORCIONADA POR EL TESISTA en esta pregunta: sus cifras siempre se incluyen (ver CIFRAS DEL TESISTA).
+- Si un tema ya se desarrolló en un capítulo anterior (ver LO YA DESARROLLADO EN EL DOCUMENTO), no lo vuelvas a explicar: remite a ese capítulo en una frase (por ejemplo, "como se describió en el capítulo de Reseña y Contexto de la Empresa, …") y desarrolla solo lo nuevo que pide la pregunta.
+- Excepción: en el Resumen ejecutivo y en la Introducción sí se presenta el proyecto, porque son las secciones que lo introducen.
+TEXT;
+
+    // Regla de proyecciones (sin promesas) para los demás prompts que redactan contenido de la tesis
+    public function reglaProyecciones(): string
+    {
+        return self::REGLA_PROYECCIONES;
     }
 
     // Regla sobre el tamaño y alcance de la evidencia; también la usan el asistente y el resumen del capítulo.
@@ -168,15 +253,19 @@ REGLAS PARA LAS CITAS ACADÉMICAS:
 
 REGLAS PARA REFERENCES:
 
+- Las fuentes solo pueden provenir de lo que el tesista indicó en su respuesta o en sus archivos adjuntos. No agregues fuentes por tu cuenta.
 - Si no existen fuentes identificables utilizadas en response, retorna references como null.
-- Solo genera referencias cuando una fuente real haya sido utilizada o identificada y exista información suficiente para registrarla.
 - No generes referencias plausibles, hipotéticas o inventadas.
-- No completes mediante suposiciones los datos bibliográficos que no estén disponibles.
-- Si faltan datos esenciales para identificar una fuente, no generes esa referencia.
-- Utiliza formato APA 7.ª edición.
-- Cada elemento de references debe corresponder directamente a una fuente citada en response.
-- Si agregas una referencia, debe existir la cita correspondiente dentro de response.
-- Toda cita presente en response que corresponda a una fuente externa debe tener su fuente correspondiente en references cuando sea posible identificarla.
+- No completes mediante suposiciones los datos bibliográficos que no estén disponibles. Deja vacío el campo que no se conozca.
+- Datos esenciales: autor (persona o institución) y título. Si falta el año, usa "s.f.".
+- Si el tesista menciona una fuente pero falta el autor o el título, no generes esa referencia ni su cita, y explica en reference_warning, en una frase breve y dirigida al tesista, qué dato falta. Ejemplo: "Falta el título del documento del INEI que mencionas. Complétalo en tu respuesta." Si no hay nada que advertir, retorna reference_warning como null.
+- Cada elemento de references debe corresponder a una cita presente en response, y toda cita de una fuente externa en response debe tener su elemento en references.
+- authors: cada autor como "Apellido, I. I." (por ejemplo "Pérez, J. A."); si el autor es una institución, su nombre completo sin abreviar (por ejemplo "Instituto Nacional de Estadística e Informática").
+- source_type: book (libro), journal_article (artículo de revista), web_page (página o documento web), thesis (tesis), report (informe o reporte institucional), conference_paper (ponencia).
+- container_title: nombre de la revista (artículos) o del sitio web (páginas web).
+- publisher: editorial (libros), institución que publica (informes) o universidad (tesis).
+- in_text_citation: la cita exactamente como la escribiste en response, por ejemplo "(INEI, 2022)" o "Pérez y Gómez (2021)".
+- unused_sources: si recibes FUENTES QUE AGREGÓ EL TESISTA y no usas alguna, inclúyela con su título y el motivo, en una frase breve dirigida al tesista. Ejemplo: {"title": "Turismo receptivo en Cusco", "reason": "Trata sobre el turismo en Cusco, no sobre el tema de tu respuesta."}. Si usaste todas o no hay fuentes agregadas, retorna unused_sources como [].
 
 
 FORMATO DE RESPUESTA:
@@ -186,7 +275,9 @@ Devuelve únicamente JSON válido.
 {
     "is_valid": true,
     "response": "",
-    "references": null
+    "references": null,
+    "reference_warning": null,
+    "unused_sources": []
 }
 
 ó en caso se tenga referencias
@@ -197,15 +288,22 @@ Devuelve únicamente JSON válido.
     "references": [
         {
             "authors": [],
-            "title": "",
             "year": "",
-            "source_type": "book | journal_article | web_page | report",
+            "title": "",
+            "source_type": "book | journal_article | web_page | thesis | report | conference_paper",
+            "container_title": "",
+            "volume": "",
+            "issue": "",
+            "pages": "",
+            "publisher": "",
             "url": "",
-            "apa_citation": ""
+            "doi": "",
+            "in_text_citation": ""
         }
-    ]
+    ],
+    "reference_warning": null,
+    "unused_sources": []
 }
-
 
 RESTRICCIONES:
 
@@ -213,6 +311,11 @@ RESTRICCIONES:
 - No agregues texto fuera del JSON.
 - El campo response debe contener únicamente la respuesta académica final.
 - Mantén coherencia entre response y references.
+
+VERIFICACIÓN FINAL DE FUENTES (OBLIGATORIA ANTES DE RESPONDER):
+
+1. Por cada elemento de references, su in_text_citation debe aparecer escrita tal cual dentro de response, inmediatamente después de la afirmación que respalda. Si no aparece, agrégala en response.
+2. Si el tesista atribuye un dato a una fuente en su respuesta actual (por ejemplo "según un informe del Minsa") y no se puede registrar porque falta el autor o el título, reference_warning no puede ser null: indica qué dato falta. Esto se aplica aunque el dato también aparezca en el historial.
 
 TEXT;
 }

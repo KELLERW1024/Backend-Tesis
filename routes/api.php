@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PlanesController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\IaController;
 use App\Http\Controllers\Conversation\AnnexController;
+use App\Http\Controllers\Conversation\SourceController;
 use App\Http\Controllers\Conversation\StructureController;
 use App\Http\Controllers\Coupon\CouponController;
 use App\Http\Controllers\Document\DocumentController;
@@ -103,6 +104,8 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::post('/conversation/savereply',[ConversationController::class,'conversationSaveReply']);
     Route::post('/conversation/saveanswerdiagnostic',[ConversationController::class,'saveAnswerDiagnostic']);
     Route::post('/conversation/assistant-chat', [ConversationController::class, 'assistantChat']);
+    // Lee un archivo adjunto en el asistente (imagen o documento)
+    Route::post('/conversation/assistant-attachment', [ConversationController::class, 'assistantReadAttachment']);
 
     Route::get('/conversation/conversationsUser',[ConversationController::class,'conversationsUser']);
     Route::get('/conversation/conversationplanuser',[ConversationController::class,'getConversationPlanUser']);
@@ -114,12 +117,21 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::get('conversation/conversationPlan',[ConversationController::class,'getConversationPlan']);
     Route::post('/conversation/delete-chapters-answers', [ConversationController::class, 'deleteChaptersAnswers']);
     Route::post('/conversation/go-back', [ConversationController::class, 'goBack']);
+    // Modificar respuesta: editar una respuesta ya guardada de cualquier capítulo
+    Route::post('/conversation/modification/questions', [ConversationController::class, 'modificationQuestions']);
+    Route::post('/conversation/modification/answer', [ConversationController::class, 'modificationAnswer']);
+    Route::post('/conversation/modification/analyze', [ConversationController::class, 'modificationAnalyze']);
+    Route::post('/conversation/modification/save', [ConversationController::class, 'modificationSave']);
 
     // Anexos del plan (imágenes o Excel al final del documento)
     Route::get('/conversation/annexes', [AnnexController::class, 'index']);
     Route::post('/conversation/annexes', [AnnexController::class, 'store']);
     Route::patch('/conversation/annexes/{id}/move', [AnnexController::class, 'move']);
     Route::delete('/conversation/annexes/{id}', [AnnexController::class, 'destroy']);
+
+    // Fuentes de las referencias
+    Route::post('/conversation/sources/search', [SourceController::class, 'search']);
+    Route::post('/conversation/sources/format', [SourceController::class, 'format']);
     
     // Pagos del usuario
     Route::post('payment/validate', [CouponController::class, 'validateCoupon']);
